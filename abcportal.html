@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABC Secretary Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #004c99;
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 1000;
+      box-sizing: border-box;
+      height: 70px;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      height: 50px;
+      width: auto;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: black;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+
+    /* Main Layout with Fixed Sidebar adjustments */
+    .main-layout {
+      display: flex;
+      margin-top: 70px;
+      min-height: calc(100vh - 70px);
+    }
+
+    /* FIXED SIDEBAR Styling */
+    .sidebar {
+      width: 250px;
+      background: #e0e0e0;
+      padding-top: 20px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+      position: fixed;
+      top: 70px;
+      left: 0;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
+      z-index: 999;
+    }
+
+    .sidebar a {
+      display: flex; /* align icon + text */
+      align-items: center;
+      gap: 12px; /* space between icon and text */
+      padding: 12px 18px;
+      text-decoration: none;
+      color: #222;
+      font-weight: 600;
+      border-left: 5px solid transparent;
+      transition: background 0.12s, color 0.12s;
+    }
+
+    .sidebar .icon {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+      flex: 0 0 20px;
+      color: inherit; /* allow fill via currentColor */
+    }
+
+    .sidebar .icon svg { display: block; width: 100%; height: 100%; }
+
+    /* Responsive: collapse sidebar on narrow screens */
+    @media (max-width: 800px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        overflow: visible;
+      }
+
+      .main-layout { flex-direction: column; margin-top: 70px; }
+      .content-area { margin-left: 0; }
+      .sidebar a { padding: 10px; }
+    }
+
+    .sidebar a:hover, .sidebar a.active {
+      background: #cfe4ff; /* subtle blue tint on hover/active */
+      color: #003a80; /* darker blue text */
+      border-left: 5px solid #0066cc;
+    }
+
+    .sidebar:hover a.active {
+      background: transparent;
+      border-left: 5px solid transparent;
+    }
+
+    /* Pero ibalik kung mismong active link ang tinutukan ng cursor */
+    .sidebar:hover a.active:hover {
+      background: #c0c0c0;
+      border-left: 5px solid #0066cc;
+    }
+
+    /* Main content area */
+    .content-area {
+      flex-grow: 1;
+      padding: 20px;
+      margin-left: 250px;
+    }
+
+    /* Card styling */
+    .card {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    /* --- NEW CSS TO HIDE NON-ACTIVE CARDS --- */
+    .card:not(.active-card) {
+      display: none;
+    }
+    /* -------------------------------------- */
+
+    h2 {
+      margin-top: 0;
+      color: #004c99; /* Consistent with barangay portal */
+      border-bottom: 2px solid #e0e0e0; /* Consistent with barangay portal */
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    h3 {
+      color: #333;
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+
+    /* Table Styling for Professional Look (Copied from barangay portal) */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    th {
+      background-color: #f0f0f0;
+      color: #333;
+      font-weight: bold;
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 2px solid #ccc;
+    }
+
+    td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    tr:hover {
+        background-color: #f9f9f9;
+    }
+
+    /* Action Buttons Styling */
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 2px;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+    
+    .approve {
+      background: #28a745;
+      color: white;
+    }
+
+    .delete {
+      background: #dc3545;
+      color: white;
+    }
+    
+    /* Dashboard Stats Boxes (Copied from barangay portal) */
+    .dashboard-stats {
+        display: flex;
+        justify-content: space-around;
+        gap: 20px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .stat-box {
+        flex: 1;
+        min-width: 150px;
+        padding: 15px;
+        text-align: center;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        background: #f7f7f7;
+    }
+
+    .stat-box h3 {
+        margin: 0 0 5px 0;
+        font-size: 1em;
+        color: #666;
+    }
+
+    .stat-box p {
+        margin: 0;
+        font-size: 1.8em;
+        font-weight: bold;
+        color: #0066cc;
+    }
+
+    /* Status Badge Styling (Copied from barangay portal) */
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 0.85em;
+      text-align: center;
+    }
+
+    .status-approved {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-pending {
+      background-color: #cce5ff;
+      color: #004085;
+    }
+
+    .status-rejected {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .status-review {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .notification-badge {
+      background-color: #dc3545;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 0.75em;
+      margin-left: 8px;
+      font-weight: bold;
+    }
+    
+    .user-form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .user-form label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .user-form input[type="text"],
+    .user-form input[type="email"],
+    .user-form input[type="password"], 
+    .user-form select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .form-actions {
+        grid-column: 1 / -1;
+        text-align: right;
+    }
+
+    .form-actions button {
+        padding: 10px 20px;
+        font-weight: bold;
+    }
+
+    canvas {
+      max-width: 100%;
+      margin-top: 20px;
+    }
+
+    .notifications-hidden {
+      display: none !important;
+    }
+
+    .toggle-notifications {
+      background: #6c757d !important;
+      color: white;
+    }
+
+    .toggle-notifications:hover {
+      background: #545b62 !important;
+    }
+
+    .barangay-folder-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .barangay-folder {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background: #fff;
+        overflow: hidden;
+    }
+
+    .barangay-folder-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: #f0f0f0;
+        cursor: pointer;
+        border-bottom: 1px solid #ccc;
+    }
+    
+    .barangay-folder-header:hover {
+        background: #e0e0e0;
+    }
+
+    .barangay-folder-name {
+        font-weight: bold;
+        color: #004c99;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .folder-icon {
+        font-size: 1.5em;
+    }
+    
+    .expand-icon {
+        font-size: 1.2em;
+    }
+    
+    .expanded .expand-icon {
+        transform: rotate(90deg);
+    }
+
+    .sub-folder-list {
+        padding: 10px 0;
+        display: none;
+        background: #f9f9f9;
+        border-top: 1px solid #eee;
+    }
+    
+    .expanded .sub-folder-list {
+        display: block;
+    }
+
+    .sub-folder {
+        display: block;
+        padding: 10px 20px 10px 40px;
+        color: #333;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    .sub-folder-name {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sub-folder:hover {
+        background-color: #e6e6e6;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <img src="images/Mbnlg.png" alt="ABC Logo" class="logo">
+      <h1>ABC Secretary Portal</h1>
+    </div>
+    <div class="header-right">
+      <div class="user-info">
+        <span id="userInfoSpan">ABC Secretary</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <nav class="sidebar">
+      <a href="#dashboard" class="sidebar-link active" data-target="dashboard">
+        <span class="icon" aria-hidden="true">
+          <!-- Dashboard icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <rect x="3" y="3" width="8" height="8" fill="currentColor" rx="1" />
+            <rect x="13" y="3" width="8" height="5" fill="currentColor" rx="1" opacity="0.95" />
+            <rect x="13" y="10" width="8" height="11" fill="currentColor" rx="1" opacity="0.9" />
+            <rect x="3" y="13" width="8" height="7" fill="currentColor" rx="1" opacity="0.9" />
+          </svg>
+        </span>
+        Dashboard
+      </a>
+
+      <a href="#users" class="sidebar-link" data-target="users">
+        <span class="icon" aria-hidden="true">
+          <!-- Users icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4z" fill="currentColor" />
+            <path d="M4 20c0-2.21 3.58-4 8-4s8 1.79 8 4v1H4v-1z" fill="currentColor" opacity="0.95" />
+          </svg>
+        </span>
+        User Management
+      </a>
+
+      <a href="#manage" class="sidebar-link" data-target="manage">
+        <span class="icon" aria-hidden="true">
+          <!-- Folder / Submissions icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" fill="currentColor" />
+          </svg>
+        </span>
+        Manage Submissions
+      </a>
+
+      <a href="index.html" class="logout-link" id="logout-link">
+        <span class="icon" aria-hidden="true">
+          <!-- Logout icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <path d="M16 13v-2H7V8l-5 4 5 4v-3z" fill="currentColor" />
+            <path d="M20 3h-8v2h8v14h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" fill="currentColor" opacity="0.95" />
+          </svg>
+        </span>
+        Logout
+      </a>
+    </nav>
+
+    <div class="content-area">
+      <div id="dashboard" class="card active-card">
+        <h2>Dashboard Overview</h2>
+        
+        <h3>Submission Status Summary</h3>
+        <div class="dashboard-stats">
+            <div class="stat-box">
+                <h3>Total Submissions</h3>
+                <p>--</p> </div>
+            <div class="stat-box">
+                <h3>Approved</h3>
+                <p>--</p> </div>
+            <div class="stat-box">
+                <h3>Under Review</h3>
+                <p>--</p> </div>
+            <div class="stat-box">
+                <h3>Pending/Submitted</h3>
+                <p>--</p> </div>
+            <div class="stat-box">
+                <h3>Rejected</h3>
+                <p>--</p> </div>
+        </div>
+        <p style="font-style: italic; color: #666;">Summary of all barangay document processing status.</p>
+        
+        <hr style="border: 0; height: 1px; background-color: #ccc; margin: 20px 0;">
+        <h3>Analytics Dashboard</h3>
+        <p style="color: #555;">Visual representation of submissions across all barangays.</p>
+        <canvas id="chartSubmissions"></canvas>
+        
+        <hr style="border: 0; height: 1px; background-color: #ccc; margin: 20px 0;">
+        <h3>Decision Support & Alerts</h3>
+        <p>📊 **Forecast:** Data analysis pending.</p> 
+        <p>⚠️ **Alert:** No alerts at this time.</p> </div>
+      
+      <div id="users" class="card">
+        <h2>User Management</h2>
+
+        <h3>Add New User</h3>
+        <form class="user-form" id="addUserForm">
+            <div>
+                <label for="userEmail">Email</label>
+                <input type="email" id="userEmail" name="userEmail" required>
+            </div>
+            <div>
+                <label for="userBarangay">Barangay</label>
+                <select id="userBarangay" name="userBarangay" required>
+                    <option value="">Select Barangay</option>
+                    <option value="Anilao Proper">Anilao Proper</option>
+                    <option value="Anilao East">Anilao East</option>
+                    <option value="Bagalangit">Bagalangit</option>
+                    <option value="Bulacan">Bulacan</option>
+                    <option value="Calamias">Calamias</option>
+                    <option value="Estrella">Estrella</option>
+                    <option value="Gasang">Gasang</option>
+                    <option value="Laurel">Laurel</option>
+                    <option value="Ligaya">Ligaya</option>
+                    <option value="Mainaga">Mainaga</option>
+                    <option value="Mainit">Mainit</option>
+                    <option value="Majuben">Majuben</option>
+                    <option value="Malimatoc I">Malimatoc I</option>
+                    <option value="Malimatoc II">Malimatoc II</option>
+                    <option value="Nag-Iba">Nag-Iba</option>
+                    <option value="Pilahan">Pilahan</option>
+                    <option value="Poblacion">Poblacion</option>
+                    <option value="Pulang Lupa">Pulang Lupa</option>
+                    <option value="Pulong Anahao">Pulong Anahao</option>
+                    <option value="Pulong Balibaguhan">Pulong Balibaguhan</option>
+                    <option value="Pulong Niogan">Pulong Niogan</option>
+                    <option value="Saguing">Saguing</option>
+                    <option value="Sampaguita">Sampaguita</option>
+                    <option value="San Francisco">San Francisco</option>
+                    <option value="San Jose">San Jose</option>
+                    <option value="San Juan">San Juan</option>
+                    <option value="San Teodoro">San Teodoro</option>
+                    <option value="Santa Ana">Santa Ana</option>
+                    <option value="Santa Mesa">Santa Mesa</option>
+                    <option value="Santo Niño">Santo Niño</option>
+                    <option value="Santo Tomas">Santo Tomas</option>
+                    <option value="Solo">Solo</option>
+                    <option value="Talaga Proper">Talaga Proper</option>
+                    <option value="Talaga East">Talaga East</option>
+                </select>
+            </div>
+      <div>
+        <label for="userPassword">Password</label>
+        <input type="password" id="userPassword" name="userPassword" minlength="8" required title="Password must be at least 8 characters long">
+      </div>
+      <div>
+        <label for="userConfirmPassword">Confirm Password</label>
+        <input type="password" id="userConfirmPassword" name="userConfirmPassword" minlength="8" required title="Password must be at least 8 characters long">
+      </div>
+            <div>
+                <label for="userRole">Role</label>
+                <input type="text" id="userRole" name="userRole" value="Barangay Secretary" readonly required>
+            </div> 
+            <div class="form-actions">
+                <button type="submit" class="approve">Add User</button>
+            </div>
+        </form>
+        <p id="userMessage" style="color: green; font-weight: bold; margin-bottom: 15px; display: none;"></p>
+
+        <h3>Password Change Notifications 
+          <span id="passwordNotificationBadge" class="notification-badge" style="display: none;">0</span>
+        </h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 0.9em; color: #666;">Recent password changes from users</span>
+          <button id="toggleNotifications" class="toggle-notifications" style="padding: 6px 12px; font-size: 12px;">
+            Hide All
+          </button>
+        </div>
+        <div id="passwordNotifications" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin-bottom: 20px;">
+          <p style="text-align: center; color: #666; font-style: italic;">Loading notifications...</p>
+        </div>
+
+        <h3>Existing Users</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Barangay</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            </tbody>
+        </table>
+      </div>
+
+      <div id="manage" class="card">
+        <h2>Manage Submissions</h2>
+        <div class="barangay-folder-list" id="barangay-folders">
+            </div>
+      </div>
+      
+      </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ctx = document.getElementById('chartSubmissions').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Submissions by Barangay',
+          data: [],
+          backgroundColor: '#0066cc'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    const barangays = [
+        "Anilao Proper", "Anilao East", "Bagalangit", "Bulacan", "Calamias", "Estrella",
+        "Gasang", "Laurel", "Ligaya", "Mainaga", "Mainit", "Majuben",
+        "Malimatoc I", "Malimatoc II", "Nag-Iba", "Pilahan", "Poblacion", "Pulang Lupa",
+        "Pulong Anahao", "Pulong Balibaguhan", "Pulong Niogan", "Saguing", "Sampaguita",
+        "San Francisco", "San Jose", "San Juan", "San Teodoro", "Santa Ana",
+        "Santa Mesa", "Santo Niño", "Santo Tomas", "Solo", "Talaga Proper", "Talaga East"
+    ];
+
+    const subFolderTypes = [
+        { name: "Monthly Reports", key: "monthly" },
+        { name: "Quarterly Reports", key: "quarterly" },
+        { name: "Annual Reports", key: "annual" }
+    ];
+
+    const folderContainer = document.getElementById('barangay-folders');
+
+    barangays.forEach(barangay => {
+        const folder = document.createElement('div');
+        folder.className = 'barangay-folder';
+        
+        const header = document.createElement('div');
+        header.className = 'barangay-folder-header';
+        
+        header.onclick = function() {
+            folder.classList.toggle('expanded');
+        };
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'barangay-folder-name';
+        nameSpan.innerHTML = `<span class="folder-icon">📁</span> ${barangay}`;
+
+        const expandIcon = document.createElement('span');
+        expandIcon.className = 'expand-icon';
+        expandIcon.innerHTML = '&#9654;';
+
+        header.appendChild(nameSpan);
+        header.appendChild(expandIcon);
+        
+        const subFolderList = document.createElement('div');
+        subFolderList.className = 'sub-folder-list';
+
+        subFolderTypes.forEach(type => {
+            const subFolder = document.createElement('div');
+            subFolder.className = 'sub-folder';
+            
+            const subFolderName = document.createElement('span');
+            subFolderName.className = 'sub-folder-name';
+            subFolderName.innerHTML = `<span class="folder-icon" style="font-size: 1.2em;">📄</span> ${type.name}`;
+
+            subFolder.appendChild(subFolderName);
+            
+            subFolder.onclick = (e) => {
+                e.stopPropagation(); 
+                alert(`Viewing ${type.name} for: ${barangay}`);
+            };
+
+            subFolderList.appendChild(subFolder);
+        });
+        
+        folder.appendChild(header);
+        folder.appendChild(subFolderList);
+        folderContainer.appendChild(folder);
+    });
+    
+    // --- JAVASCRIPT FOR LOGIN CHECK AND USER MANAGEMENT ---
+    
+    // Make deleteNotification function global for easier access
+    window.deleteNotification = async function(notificationId) {
+        console.log('Deleting notification with ID:', notificationId);
+        
+        if (!confirm('Are you sure you want to delete this notification?')) {
+            return;
+        }
+        
+        try {
+            const res = await fetch(`api/delete_password_notification.php?id=${notificationId}`, {
+                method: 'DELETE'
+            });
+            
+            const data = await res.json();
+            console.log('Delete notification response:', data);
+            
+            if (data.ok) {
+                // Remove the notification from the DOM immediately
+                const notificationElement = document.getElementById(`notification-${notificationId}`);
+                if (notificationElement) {
+                    notificationElement.style.transition = 'opacity 0.3s ease-out';
+                    notificationElement.style.opacity = '0';
+                    setTimeout(() => {
+                        notificationElement.remove();
+                    }, 300);
+                }
+                
+                // Update the badge count
+                const badge = document.getElementById('passwordNotificationBadge');
+                const currentCount = parseInt(badge.textContent) || 0;
+                const newCount = Math.max(0, currentCount - 1);
+                
+                if (newCount > 0) {
+                    badge.textContent = newCount;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+                
+                // Show success message briefly
+                const container = document.getElementById('passwordNotifications');
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'background: #d4edda; color: #155724; padding: 8px; border-radius: 4px; margin-bottom: 10px; text-align: center; opacity: 1; transition: opacity 0.3s ease-out;';
+                successMsg.textContent = '✅ Notification deleted successfully';
+                container.insertBefore(successMsg, container.firstChild);
+                
+                // Remove success message after 1 second
+                setTimeout(() => {
+                    if (successMsg.parentNode) {
+                        successMsg.style.opacity = '0';
+                        setTimeout(() => successMsg.remove(), 300);
+                    }
+                }, 1000);
+                
+            } else {
+                alert('Failed to delete notification: ' + (data.error || 'Unknown error'));
+            }
+            
+        } catch (error) {
+            console.error('Error deleting notification:', error);
+            alert('Error deleting notification: ' + error.message);
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const userInfoSpan = document.getElementById('userInfoSpan');
+        const logoutLink = document.getElementById('logout-link');
+
+        // Verify current session via backend
+        async function checkAuth() {
+            try {
+                const res = await fetch('api/me.php');
+                const data = await res.json();
+                if (!data.ok || !data.user || data.user.role !== 'ABC Secretary') {
+                    alert('Access Denied. Please login as ABC Secretary.');
+                    window.location.href = 'index.html';
+                    return null;
+                }
+                return data.user;
+            } catch (e) {
+                alert('Unable to verify session.');
+                window.location.href = 'index.html';
+                return null;
+            }
+        }
+
+        // Logout via backend
+        logoutLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try { await fetch('api/logout.php', { method: 'POST' }); } catch {}
+            window.location.href = 'index.html';
+        });
+
+        // Users table and form handlers using backend API
+        const addUserForm = document.getElementById('addUserForm');
+        const userTableBody = document.getElementById('userTableBody');
+        const userMessage = document.getElementById('userMessage');
+
+        async function loadUsers() {
+            try {
+                const res = await fetch('api/users.php');
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Failed to load users');
+                userTableBody.innerHTML = '';
+                data.users.forEach(user => {
+                    const row = userTableBody.insertRow();
+                    const status = user.role === 'ABC Secretary' 
+                        ? '<span class="status-badge status-approved">Active</span>' 
+                        : '<span class="status-badge status-pending">Pending Use</span>';
+                    row.innerHTML = `
+                        <td>${user.email}</td>
+                        <td>${user.barangay}</td>
+                        <td>${user.role}</td>
+                        <td>${status}</td>
+                        <td>${user.role !== 'ABC Secretary' ? '<button class="delete" data-email="' + user.email + '">Delete</button>' : ''}</td>
+                    `;
+                });
+                document.querySelectorAll('.delete').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const email = this.getAttribute('data-email');
+                        if (!confirm(`Are you sure you want to delete user: ${email}?`)) return;
+                        try {
+                            const res = await fetch('api/users.php?email=' + encodeURIComponent(email), { method: 'DELETE' });
+                            const data = await res.json();
+                            if (!data.ok) throw new Error(data.error || 'Delete failed');
+                            userMessage.textContent = `User ${email} successfully deleted.`;
+                            userMessage.style.color = 'green';
+                            userMessage.style.display = 'block';
+                            setTimeout(() => {
+                                userMessage.style.display = 'none';
+                            }, 1000);
+                            loadUsers();
+                        } catch (err) {
+                            userMessage.textContent = err.message;
+                            userMessage.style.color = 'red';
+                            userMessage.style.display = 'block';
+                            setTimeout(() => {
+                                userMessage.style.display = 'none';
+                            }, 1000);
+                        }
+                    });
+                });
+            } catch (err) {
+                userMessage.textContent = err.message;
+                userMessage.style.color = 'red';
+                userMessage.style.display = 'block';
+                setTimeout(() => {
+                    userMessage.style.display = 'none';
+                }, 1000);
+            }
+        }
+
+        // Password change notifications
+        async function loadPasswordNotifications() {
+            console.log('Loading password notifications...');
+            try {
+                // Check if we're authenticated first
+                const authCheck = await checkAuth();
+                if (!authCheck) {
+                    console.log('Not authenticated, skipping notifications');
+                    return;
+                }
+                
+                const res = await fetch('api/get_password_notifications.php');
+                console.log('Fetch response status:', res.status);
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                
+                const data = await res.json();
+                console.log('Notifications API response:', data);
+                
+                if (!data.ok) {
+                    console.error('API error:', data.error);
+                    document.getElementById('passwordNotifications').innerHTML = 
+                        '<p style="text-align: center; color: red;">Failed to load notifications: ' + (data.error || 'Unknown error') + '</p>';
+                    return;
+                }
+                
+                const notifications = data.notifications || [];
+                const unreadCount = data.unread_count || 0;
+                const badge = document.getElementById('passwordNotificationBadge');
+                
+                // Update badge
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+                
+                // Display notifications
+                const container = document.getElementById('passwordNotifications');
+                if (notifications.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No recent password changes</p>';
+                    return;
+                }
+                
+                let html = '';
+                notifications.forEach(notification => {
+                    const statusClass = notification.status === 'new' ? 'status-rejected' : 
+                                      notification.status === 'recent' ? 'status-review' : 'status-approved';
+                    const timeAgo = formatTimeAgo(notification.changed_at);
+                    
+                    html += `
+                        <div style="border-bottom: 1px solid #eee; padding: 8px 0;" id="notification-${notification.id}">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong>${notification.user_email}</strong>
+                                    <span class="status-badge ${statusClass}" style="margin-left: 10px;">${notification.status}</span>
+                                </div>
+                                <button class="delete delete-notification-btn" data-notification-id="${notification.id}" 
+                                        style="padding: 4px 8px; font-size: 12px;" title="Delete notification">
+                                    ✕
+                                </button>
+                            </div>
+                            <div style="font-size: 0.9em; color: #666;">
+                                Barangay: ${notification.user_barangay} • ${timeAgo}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                
+                // Add event listeners to delete buttons
+                container.querySelectorAll('.delete-notification-btn').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const notificationId = this.getAttribute('data-notification-id');
+                        window.deleteNotification(notificationId);
+                    });
+                });
+                
+            } catch (err) {
+                console.error('Error loading notifications:', err);
+                document.getElementById('passwordNotifications').innerHTML = 
+                    '<p style="text-align: center; color: red;">Error loading notifications: ' + err.message + '</p>';
+            }
+        }
+        
+        function formatTimeAgo(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffHours / 24);
+            
+            if (diffHours < 1) return 'Just now';
+            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            return date.toLocaleDateString();
+        }
+
+        // Toggle notifications visibility function
+        function toggleNotifications() {
+            const container = document.getElementById('passwordNotifications');
+            const toggleBtn = document.getElementById('toggleNotifications');
+            
+            if (container.classList.contains('notifications-hidden')) {
+                // Show notifications
+                container.classList.remove('notifications-hidden');
+                toggleBtn.textContent = 'Hide All';
+                toggleBtn.className = 'toggle-notifications';
+                toggleBtn.style.padding = '6px 12px';
+                toggleBtn.style.fontSize = '12px';
+            } else {
+                // Hide notifications
+                container.classList.add('notifications-hidden');
+                toggleBtn.textContent = 'Show All';
+                toggleBtn.className = 'approve'; // Green color for show button
+                toggleBtn.style.padding = '6px 12px';
+                toggleBtn.style.fontSize = '12px';
+            }
+        }
+
+        addUserForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('userEmail').value.trim().toLowerCase();
+            const role = document.getElementById('userRole').value;
+            const password = document.getElementById('userPassword').value.trim();
+            const confirmPassword = document.getElementById('userConfirmPassword').value.trim();
+            const barangay = document.getElementById('userBarangay').value;
+
+            if (!barangay) {
+                userMessage.textContent = 'Please select a Barangay.';
+                userMessage.style.color = 'red';
+                userMessage.style.display = 'block';
+                setTimeout(() => {
+                    userMessage.style.display = 'none';
+                }, 1000);
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                userMessage.textContent = 'Passwords do not match. Please try again.';
+                userMessage.style.color = 'red';
+                userMessage.style.display = 'block';
+                setTimeout(() => {
+                    userMessage.style.display = 'none';
+                }, 1000);
+                return;
+            }
+
+      if (password.length < 8) {
+        userMessage.textContent = 'Password must be at least 8 characters long.';
+                userMessage.style.color = 'red';
+                userMessage.style.display = 'block';
+                setTimeout(() => {
+                    userMessage.style.display = 'none';
+                }, 1000);
+                return;
+            }
+
+            try {
+                const res = await fetch('api/users.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, barangay, role })
+                });
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Failed to add user');
+                userMessage.textContent = `Successfully added new user for ${barangay}. Email: ${email}`;
+                userMessage.style.color = 'green';
+                userMessage.style.display = 'block';
+                setTimeout(() => {
+                    userMessage.style.display = 'none';
+                }, 1000);
+                addUserForm.reset();
+                loadUsers();
+            } catch (err) {
+                userMessage.textContent = err.message;
+                userMessage.style.color = 'red';
+                userMessage.style.display = 'block';
+                setTimeout(() => {
+                    userMessage.style.display = 'none';
+                }, 1000);
+            }
+        });
+
+        // Sidebar navigation (unchanged)
+        const sidebarLinks = document.querySelectorAll('.sidebar a.sidebar-link:not(#logout-link)'); 
+        const contentCards = document.querySelectorAll('.content-area .card');
+        function showContent(targetId) {
+            contentCards.forEach(card => card.classList.remove('active-card'));
+            document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
+            const targetCard = document.getElementById(targetId);
+            if (targetCard) targetCard.classList.add('active-card');
+            const activeLink = document.querySelector(`.sidebar a[data-target="${targetId}"]`);
+            if (activeLink) activeLink.classList.add('active');
+            
+            // Load notifications when showing users section
+            if (targetId === 'users') {
+                console.log('Switching to users section, loading notifications...');
+                loadPasswordNotifications();
+            }
+        }
+        sidebarLinks.forEach(link => link.addEventListener('click', (event) => {
+            event.preventDefault();
+            showContent(event.currentTarget.getAttribute('data-target'));
+        }));
+
+        // Add event listener for toggle notifications button
+        document.getElementById('toggleNotifications').addEventListener('click', toggleNotifications);
+
+        // Auto-refresh password notifications every 30 seconds
+        setInterval(loadPasswordNotifications, 30000);
+
+        (async () => {
+            const user = await checkAuth();
+            if (!user) return;
+            userInfoSpan.textContent = 'ABC Secretary';
+            await loadUsers();
+            await loadPasswordNotifications();
+            showContent('dashboard');
+        })();
+    });
+
+  </script>
+</body>
+</html>

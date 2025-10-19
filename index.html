@@ -1,1 +1,259 @@
-index
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-image: url('images/background.jpg'); 
+      background-size: cover; 
+      background-position: center; 
+      background-repeat: no-repeat; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .logo-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .logo {
+      width: 600px;
+      height: auto;
+    }
+
+    .login-container {
+      flex: 1;
+      background-color: white;
+      border-radius: 12px;
+      padding: 50px 40px;
+      max-width: 500px;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 30px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 25px 0;
+      font-size: 26px;
+      font-weight: bold;
+      border-radius: 8px;
+      background-color: #0066cc;
+      color: white;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #0066cc;
+      background-color: #eef6ff;
+    }
+
+    .forgot-password {
+      text-align: right;
+      margin-bottom: 25px;
+      font-size: 14px;
+    }
+
+    .forgot-password a {
+      color: #000000;
+      text-decoration: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background-color: #0066cc;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background-color: #004a99;
+    }
+    
+    /* New style for login message */
+    .login-message {
+        text-align: center;
+        margin-top: 10px;
+        color: red;
+        font-weight: bold;
+        display: none;
+    }
+
+    @media (max-width: 1200px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .logo-container {
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        width: 500px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        width: 400px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img src="images/Mbnlg.png" alt="Bayan ng Mabini, Lalawigan ng Batangas" class="logo">
+    </div>
+    <div class="login-container">
+      <div class="tabs">
+        <div class="tab">Login</div>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required>
+        </div>
+        <div class="forgot-password">
+          <a href="forgot.html">Forgot password?</a>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <p id="loginMessage" class="login-message">Invalid Email or Password.</p>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('loginForm');
+        const loginMessage = document.getElementById('loginMessage');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        // Login via PHP backend
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginMessage.style.display = 'none';
+
+            const email = emailInput.value.trim().toLowerCase();
+            const password = passwordInput.value.trim();
+
+            // Debug logging
+            console.log('Attempting login with:', { email, password: '***' });
+
+            try {
+                const res = await fetch('api/login.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                console.log('Response status:', res.status);
+                console.log('Response headers:', res.headers);
+                
+                const data = await res.json();
+                console.log('Response data:', data);
+                
+                if (!data.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                const user = data.user;
+                console.log('User role:', user.role);
+        // Persist user for client-side checks (barangay portal relies on this)
+        try {
+          sessionStorage.setItem('loggedInUser', JSON.stringify(user));
+        } catch (e) {
+          console.warn('Unable to persist sessionStorage:', e);
+        }
+                
+                if (user.role === 'ABC Secretary') {
+                    console.log('Redirecting to ABC portal');
+                    window.location.href = 'abcportal.html';
+                } else if (user.role === 'Barangay Secretary') {
+                    console.log('Redirecting to Barangay portal');
+                    window.location.href = 'barangayportal.html';
+                } else {
+                    console.log('Unknown role:', user.role);
+                    loginMessage.textContent = 'User role not recognized.';
+                    loginMessage.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                loginMessage.textContent = 'Invalid Email or Password. Error: ' + err.message;
+                loginMessage.style.display = 'block';
+            }
+        });
+    });
+  </script>
+</body>
+</html>

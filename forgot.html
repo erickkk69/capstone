@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-image: url('images/background.jpg'); 
+      background-size: cover; 
+      background-position: center; 
+      background-repeat: no-repeat; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .logo-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .logo {
+      width: 600px;
+      height: auto;
+    }
+
+    .login-container {
+      flex: 1;
+      background-color: white;
+      border-radius: 12px;
+      padding: 50px 40px;
+      max-width: 500px;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 30px;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 25px 0;
+      font-size: 26px;
+      font-weight: bold;
+      border-radius: 8px;
+      background-color: #0066cc;
+      color: white;
+    }
+    
+    .reset-container h2 {
+      text-align: center;
+      font-size: 26px;
+      margin-bottom: 10px;
+    }
+
+    .reset-container p {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #555;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #0066cc;
+      background-color: #eef6ff;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background-color: #0066cc;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn:hover {
+      background-color: #004a99;
+    }
+ 
+    .back-link {
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .back-link a {
+        color: #000;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    @media (max-width: 1200px) {
+      .container {
+        flex-direction: column;
+      }
+
+      .logo-container {
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        width: 500px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        width: 400px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img src="images/Mbnlg.png" alt="Bayan ng Mabini, Lalawigan ng Batangas" class="logo">
+    </div>
+    <div class="login-container">
+      <div class="reset-container">
+        <h2>Reset Password</h2>
+        <p>Please create a new password for your account</p>
+      </div>
+    <form id="resetForm">
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+        <div class="form-group">
+            <label for="new-password">New Password</label>
+            <input type="password" id="new-password" minlength="8" required>
+        </div>
+        <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" minlength="8" required>
+        </div>
+        <button type="submit" class="btn">Save New Password</button>
+        </form>
+        
+        <!-- Message Display -->
+        <div id="message" style="display: none; margin-top: 15px; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold;"></div>
+      <div class="back-link">
+        <a href="index.html">Back</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const resetForm = document.getElementById('resetForm');
+      const messageDiv = document.getElementById('message');
+
+      function showMessage(text, isError = false) {
+        messageDiv.textContent = text;
+        messageDiv.style.display = 'block';
+        messageDiv.style.backgroundColor = isError ? '#f8d7da' : '#d4edda';
+        messageDiv.style.color = isError ? '#721c24' : '#155724';
+        messageDiv.style.border = isError ? '1px solid #f5c6cb' : '1px solid #c3e6cb';
+      }
+
+      resetForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim().toLowerCase();
+        const newPassword = document.getElementById('new-password').value.trim();
+        const confirmPassword = document.getElementById('confirm-password').value.trim();
+
+        // Validate passwords match
+        if (newPassword !== confirmPassword) {
+          showMessage('Passwords do not match', true);
+          return;
+        }
+
+        // Validate password length
+        if (newPassword.length < 8) {
+          showMessage('Password must be at least 8 characters long', true);
+          return;
+        }
+
+        try {
+          // Call the direct password change API
+          const response = await fetch('api/change_password.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              email: email, 
+              new_password: newPassword 
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.ok) {
+            showMessage('Password changed successfully! You can now login with your new password.');
+            resetForm.reset();
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 3000);
+          } else {
+            showMessage(data.error || 'Failed to change password', true);
+          }
+        } catch (error) {
+          showMessage('Error changing password. Please try again.', true);
+          console.error('Password change error:', error);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
