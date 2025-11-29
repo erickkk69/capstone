@@ -48,9 +48,16 @@ function current_user(): ?array {
     }
     try {
         $pdo = get_pdo();
-        $stmt = $pdo->prepare('SELECT id, email, role, barangay, created_at FROM users WHERE id = ?');
+        $stmt = $pdo->prepare('SELECT id, email, role, barangay, created_at, archived FROM users WHERE id = ?');
         $stmt->execute([$_SESSION['user_id']]);
         $user = $stmt->fetch();
+        
+        // If user is archived, logout and return null
+        if ($user && isset($user['archived']) && $user['archived'] == 1) {
+            session_destroy();
+            return null;
+        }
+        
         return $user ?: null;
     } catch (Throwable $e) {
         return null;
@@ -70,10 +77,10 @@ function require_login(): array {
 
 function require_abc_role(): array {
     $u = require_login();
-    if (($u['role'] ?? '') !== 'ABC Secretary') {
+    if (($u['role'] ?? '') !== 'ABC') {
         http_response_code(403);
         header('Content-Type: application/json');
-        echo json_encode(['ok' => false, 'error' => 'Forbidden: ABC Secretary only']);
+        echo json_encode(['ok' => false, 'error' => 'Forbidden: ABC only']);
         exit;
     }
     return $u;

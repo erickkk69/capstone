@@ -27,7 +27,7 @@ if (strlen($new_password) < 8) {
 
 $pdo = get_pdo();
 
-// Check if user exists and is not ABC Secretary
+// Check if user exists and is not ABC
 $stmt = $pdo->prepare('SELECT id, role, barangay FROM users WHERE email = ?');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
@@ -36,61 +36,58 @@ if (!$user) {
     json_response(['ok' => false, 'error' => 'User not found'], 404);
 }
 
-// Don't allow ABC Secretary password change
-if ($user['role'] === 'ABC Secretary') {
-    json_response(['ok' => false, 'error' => 'ABC Secretary password cannot be changed via this system'], 403);
+// Don't allow ABC password change
+if ($user['role'] === 'ABC') {
+    json_response(['ok' => false, 'error' => 'ABC password cannot be changed via this system'], 403);
 }
 
-// Create password change logs table if it doesn't exist
-$pdo->exec('
-    CREATE TABLE IF NOT EXISTS password_change_logs (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL,
-        user_email VARCHAR(255) NOT NULL,
-        user_role VARCHAR(64) NOT NULL,
-        user_barangay VARCHAR(128) NOT NULL,
-        changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        ip_address VARCHAR(45) NULL,
-        user_agent TEXT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-');
+// Check if user already has a pending reset request
+$check_stmt = $pdo->prepare('SELECT id FROM password_reset_requests WHERE user_id = ? AND status = "pending"');
+$check_stmt->execute([$user['id']]);
+if ($check_stmt->fetch()) {
+    json_response(['ok' => false, 'error' => 'You already have a pending password reset request. Please wait for admin approval.'], 400);
+}
 
 // Begin transaction
 $pdo->beginTransaction();
 
 try {
-    // Update user password
+    // Hash the new password
     $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
-    $stmt = $pdo->prepare('UPDATE users SET password_hash = ? WHERE id = ?');
-    $stmt->execute([$password_hash, $user['id']]);
     
-    // Log the password change
+    // Get IP and user agent
     $ip_address = $_SERVER['REMOTE_ADDR'] ?? null;
     $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? null;
     
-    $log_stmt = $pdo->prepare('
-        INSERT INTO password_change_logs (user_id, user_email, user_role, user_barangay, ip_address, user_agent) 
-        VALUES (?, ?, ?, ?, ?, ?)
+    // Create password reset request instead of directly changing password
+    $req_stmt = $pdo->prepare('
+        INSERT INTO password_reset_requests 
+        (user_id, user_email, user_role, user_barangay, new_password_hash, ip_address, user_agent) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     ');
-    $log_stmt->execute([
+    $req_stmt->execute([
         $user['id'], 
         $email, 
         $user['role'], 
-        $user['barangay'], 
+        $user['barangay'],
+        $password_hash,
         $ip_address, 
         $user_agent
     ]);
+    
+    // Lock the user account until admin approves
+    $lock_stmt = $pdo->prepare('UPDATE users SET account_locked = 1 WHERE id = ?');
+    $lock_stmt->execute([$user['id']]);
     
     $pdo->commit();
     
     json_response([
         'ok' => true,
-        'message' => 'Password has been successfully changed'
+        'message' => 'Password reset request submitted successfully. Your account is temporarily locked. An admin will review your request soon.'
     ]);
     
 } catch (Exception $e) {
     $pdo->rollBack();
-    json_response(['ok' => false, 'error' => 'Failed to change password'], 500);
+    json_response(['ok' => false, 'error' => 'Failed to submit password reset request: ' . $e->getMessage()], 500);
 }
 ?>

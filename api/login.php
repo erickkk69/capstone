@@ -20,12 +20,104 @@ if ($email === '' || $password === '') {
 }
 
 $pdo = get_pdo();
-$stmt = $pdo->prepare('SELECT id, email, password_hash, role, barangay FROM users WHERE email = ?');
+
+// Check login attempts and lockout status
+$attemptStmt = $pdo->prepare('SELECT failed_attempts, lockout_count, locked_until FROM login_attempts WHERE email = ?');
+$attemptStmt->execute([$email]);
+$attemptData = $attemptStmt->fetch();
+
+if ($attemptData && $attemptData['locked_until']) {
+    $lockedUntil = new DateTime($attemptData['locked_until']);
+    $now = new DateTime();
+    
+    if ($now < $lockedUntil) {
+        $remainingSeconds = $lockedUntil->getTimestamp() - $now->getTimestamp();
+        $minutes = floor($remainingSeconds / 60);
+        $seconds = $remainingSeconds % 60;
+        
+        $timeMsg = $minutes > 0 
+            ? "{$minutes} minute" . ($minutes > 1 ? 's' : '') . " and {$seconds} second" . ($seconds != 1 ? 's' : '')
+            : "{$seconds} second" . ($seconds != 1 ? 's' : '');
+        
+        json_response([
+            'ok' => false, 
+            'error' => "Account is temporarily locked due to multiple failed login attempts. Please try again in {$timeMsg}.",
+            'error_code' => 'ACCOUNT_LOCKED_ATTEMPTS',
+            'locked_until' => $attemptData['locked_until'],
+            'remaining_seconds' => $remainingSeconds
+        ], 403);
+    } else {
+        // Cooldown period has expired, clear locked_until but keep failed_attempts count
+        $clearLockStmt = $pdo->prepare('UPDATE login_attempts SET locked_until = NULL WHERE email = ?');
+        $clearLockStmt->execute([$email]);
+    }
+}
+
+$stmt = $pdo->prepare('SELECT id, email, password_hash, role, barangay, archived, account_locked FROM users WHERE email = ?');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
-if (!$user || !password_verify($password, $user['password_hash'])) {
+if (!$user) {
     json_response(['ok' => false, 'error' => 'Invalid email or password'], 401);
+}
+
+// Check if user is archived
+if (isset($user['archived']) && $user['archived'] == 1) {
+    json_response(['ok' => false, 'error' => 'This account has been archived and cannot be used. Please contact the administrator.', 'error_code' => 'ACCOUNT_ARCHIVED'], 403);
+}
+
+// Check if account is locked due to pending password reset request
+if (isset($user['account_locked']) && $user['account_locked'] == 1) {
+    json_response(['ok' => false, 'error' => 'Your account is temporarily locked due to a pending password reset request. Please wait for admin approval.', 'error_code' => 'ACCOUNT_LOCKED'], 403);
+}
+
+// Verify password after checking account status
+if (!password_verify($password, $user['password_hash'])) {
+    // Record failed attempt
+    if ($attemptData) {
+        $failedAttempts = (int)$attemptData['failed_attempts'] + 1;
+        $lockoutCount = (int)$attemptData['lockout_count'];
+        $lockedUntil = null;
+        
+        // Check if we need to lock the account
+        if ($failedAttempts >= 5) {
+            $lockoutCount++;
+            // Calculate lockout duration: 30 seconds for first lockout, then doubles each time
+            $lockoutSeconds = 30 * pow(2, $lockoutCount - 1); // 30, 60, 120, 240, etc.
+            $lockedUntil = date('Y-m-d H:i:s', time() + $lockoutSeconds);
+            // Keep failed_attempts at 5 so after cooldown, next wrong attempt triggers next lockout
+            
+            $updateStmt = $pdo->prepare('UPDATE login_attempts SET failed_attempts = ?, lockout_count = ?, locked_until = ? WHERE email = ?');
+            $updateStmt->execute([$failedAttempts, $lockoutCount, $lockedUntil, $email]);
+            
+            $minutes = floor($lockoutSeconds / 60);
+            $seconds = $lockoutSeconds % 60;
+            $timeMsg = $minutes > 0 
+                ? "{$minutes} minute" . ($minutes > 1 ? 's' : '') . ($seconds > 0 ? " and {$seconds} second" . ($seconds != 1 ? 's' : '') : '')
+                : "{$seconds} second" . ($seconds != 1 ? 's' : '');
+            
+            json_response([
+                'ok' => false, 
+                'error' => "Too many failed login attempts. Your account has been locked for {$timeMsg}.",
+                'error_code' => 'ACCOUNT_LOCKED_ATTEMPTS'
+            ], 403);
+        } else {
+            $updateStmt = $pdo->prepare('UPDATE login_attempts SET failed_attempts = ?, locked_until = NULL WHERE email = ?');
+            $updateStmt->execute([$failedAttempts, $email]);
+        }
+    } else {
+        // First failed attempt for this email
+        $insertStmt = $pdo->prepare('INSERT INTO login_attempts (email, failed_attempts, lockout_count) VALUES (?, 1, 0)');
+        $insertStmt->execute([$email]);
+    }
+    
+    json_response(['ok' => false, 'error' => 'Invalid email or password'], 401);
+}
+
+// Successful login - reset all login attempts and lockout count
+if ($attemptData) {
+    $resetStmt = $pdo->prepare('UPDATE login_attempts SET failed_attempts = 0, lockout_count = 0, locked_until = NULL WHERE email = ?');
+    $resetStmt->execute([$email]);
 }
 
 // Set session

@@ -1,0 +1,11 @@
+# Prevent execution of PHP files in uploads directory
+<FilesMatch "\.(php|php3|php4|php5|phtml)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Allow downloading of document files
+<FilesMatch "\.(pdf|doc|docx|xls|xlsx)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>

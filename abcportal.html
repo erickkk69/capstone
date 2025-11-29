@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ABC Secretary Portal</title>
+  <title>ABC Portal</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -142,11 +142,9 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
     
-    /* --- NEW CSS TO HIDE NON-ACTIVE CARDS --- */
     .card:not(.active-card) {
       display: none;
     }
-    /* -------------------------------------- */
 
     h2 {
       margin-top: 0;
@@ -272,6 +270,56 @@
       color: #856404;
     }
 
+    /* Comment-related styles */
+    .comment-section {
+      background: #f8f9fa;
+      border-left: 4px solid #007bff;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+    }
+
+    .comment-entry {
+      background: white;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .comment-timestamp {
+      font-size: 0.85em;
+      color: #6c757d;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .comment-text {
+      color: #495057;
+      line-height: 1.4;
+    }
+
+    .comment-button {
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85em;
+      transition: background-color 0.2s;
+    }
+
+    .comment-button:hover {
+      background: #218838;
+    }
+
+    .comment-indicator {
+      color: #28a745;
+      font-size: 0.9em;
+    }
+
     .notification-badge {
       background-color: #dc3545;
       color: white;
@@ -280,6 +328,32 @@
       font-size: 0.75em;
       margin-left: 8px;
       font-weight: bold;
+    }
+
+    /* Sidebar notification badge */
+    .sidebar-notif-badge {
+      background-color: #dc3545;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7em;
+      font-weight: bold;
+      margin-left: auto;
+      display: none;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .sidebar a {
+      position: relative;
     }
     
     .user-form {
@@ -450,17 +524,342 @@
         background-color: #e6e6e6;
     }
 
+    /* Alert Box Styling */
+    .alert-box {
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border-left: 5px solid;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-critical {
+        background-color: #fee;
+        border-left-color: #dc3545;
+        color: #721c24;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-left-color: #ffc107;
+        color: #856404;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        border-left-color: #17a2b8;
+        color: #0c5460;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-left-color: #28a745;
+        color: #155724;
+    }
+
+    .alert-icon {
+        font-size: 1.5em;
+        flex-shrink: 0;
+    }
+
+    .alert-content {
+        flex-grow: 1;
+    }
+
+    .alert-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+        font-size: 1.05em;
+    }
+
+    .alert-message {
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+
+    .alert-list {
+        margin: 8px 0 0 0;
+        padding-left: 20px;
+        font-size: 0.9em;
+    }
+
+    .alert-list li {
+        margin-bottom: 4px;
+    }
+
+    /* Document Viewer Modal */
+    .doc-viewer-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .doc-viewer-container {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 1200px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .doc-viewer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 2px solid #e0e0e0;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .doc-viewer-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #004c99;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-right: 15px;
+    }
+
+    .doc-viewer-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .doc-viewer-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .doc-viewer-download {
+        background: #28a745;
+        color: white;
+        text-decoration: none;
+    }
+
+    .doc-viewer-download:hover {
+        background: #218838;
+    }
+
+    .doc-viewer-close {
+        background: #dc3545;
+        color: white;
+    }
+
+    .doc-viewer-close:hover {
+        background: #c82333;
+    }
+
+    .doc-viewer-content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+        background: #f5f5f5;
+    }
+
+    .doc-viewer-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .doc-viewer-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #666;
+    }
+
+    .doc-viewer-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #004c99;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Custom Alert Modal */
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+        from { 
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+        to { 
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .custom-modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 0;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideDown 0.3s ease-out;
+        overflow: hidden;
+    }
+
+    .custom-modal-header {
+        background: linear-gradient(135deg, #004c99 0%, #0066cc 100%);
+        color: white;
+        padding: 20px 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .custom-modal-header.success {
+        background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+    }
+
+    .custom-modal-header.error {
+        background: linear-gradient(135deg, #dc3545 0%, #e74c5c 100%);
+    }
+
+    .custom-modal-header.warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%);
+    }
+
+    .custom-modal-icon {
+        font-size: 28px;
+        line-height: 1;
+    }
+
+    .custom-modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+    }
+
+    .custom-modal-body {
+        padding: 25px;
+        color: #333;
+        font-size: 15px;
+        line-height: 1.6;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .custom-modal-footer {
+        padding: 15px 25px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .custom-modal-button {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 80px;
+    }
+
+    .custom-modal-button.primary {
+        background: #004c99;
+        color: white;
+    }
+
+    .custom-modal-button.primary:hover {
+        background: #003d7a;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 76, 153, 0.3);
+    }
+
+    .custom-modal-button.success {
+        background: #28a745;
+        color: white;
+    }
+
+    .custom-modal-button.success:hover {
+        background: #218838;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+
   </style>
 </head>
 <body>
   <header>
     <div class="header-left">
       <img src="images/Mbnlg.png" alt="ABC Logo" class="logo">
-      <h1>ABC Secretary Portal</h1>
+      <h1>ABC Portal</h1>
     </div>
     <div class="header-right">
       <div class="user-info">
-        <span id="userInfoSpan">ABC Secretary</span>
+        <span id="userInfoSpan">ABC</span>
       </div>
     </div>
   </header>
@@ -499,6 +898,18 @@
           </svg>
         </span>
         Manage Submissions
+        <span class="sidebar-notif-badge" id="manageNotifBadge">0</span>
+      </a>
+
+      <a href="#reset-requests" class="sidebar-link" data-target="reset-requests">
+        <span class="icon" aria-hidden="true">
+          <!-- Password Reset icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9z" fill="currentColor" />
+          </svg>
+        </span>
+        Password Reset Requests
+        <span class="sidebar-notif-badge" id="resetRequestsNotifBadge">0</span>
       </a>
 
       <a href="index.html" class="logout-link" id="logout-link">
@@ -517,25 +928,30 @@
       <div id="dashboard" class="card active-card">
         <h2>Dashboard Overview</h2>
         
-        <h3>Submission Status Summary</h3>
+        <h3>Document Submission Status Summary</h3>
         <div class="dashboard-stats">
             <div class="stat-box">
-                <h3>Total Submissions</h3>
-                <p>--</p> </div>
+                <h3>Total Documents</h3>
+                <p id="total-submissions">--</p>
+            </div>
             <div class="stat-box">
                 <h3>Approved</h3>
-                <p>--</p> </div>
+                <p id="approved-count">--</p>
+            </div>
             <div class="stat-box">
                 <h3>Under Review</h3>
-                <p>--</p> </div>
+                <p id="review-count">--</p>
+            </div>
             <div class="stat-box">
                 <h3>Pending/Submitted</h3>
-                <p>--</p> </div>
+                <p id="pending-count">--</p>
+            </div>
             <div class="stat-box">
                 <h3>Rejected</h3>
-                <p>--</p> </div>
+                <p id="rejected-count">--</p>
+            </div>
         </div>
-        <p style="font-style: italic; color: #666;">Summary of all barangay document processing status.</p>
+        <p style="font-style: italic; color: #666;">Summary of document submissions only (excludes password changes and other system activities).</p>
         
         <hr style="border: 0; height: 1px; background-color: #ccc; margin: 20px 0;">
         <h3>Analytics Dashboard</h3>
@@ -544,8 +960,10 @@
         
         <hr style="border: 0; height: 1px; background-color: #ccc; margin: 20px 0;">
         <h3>Decision Support & Alerts</h3>
-        <p>📊 **Forecast:** Data analysis pending.</p> 
-        <p>⚠️ **Alert:** No alerts at this time.</p> </div>
+        <div id="alerts-container" style="margin-top: 15px;">
+            <p style="text-align: center; color: #666; font-style: italic;">Loading alerts...</p>
+        </div>
+      </div>
       
       <div id="users" class="card">
         <h2>User Management</h2>
@@ -654,19 +1072,6 @@
         }
         </script>
 
-        <h3>Password Change Notifications 
-          <span id="passwordNotificationBadge" class="notification-badge" style="display: none;">0</span>
-        </h3>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <span style="font-size: 0.9em; color: #666;">Recent password changes from users</span>
-          <button id="toggleNotifications" class="toggle-notifications" style="padding: 6px 12px; font-size: 12px;">
-            Hide All
-          </button>
-        </div>
-        <div id="passwordNotifications" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 10px; margin-bottom: 20px;">
-          <p style="text-align: center; color: #666; font-style: italic;">Loading notifications...</p>
-        </div>
-
         <h3>Existing Users</h3>
         <table>
           <thead>
@@ -681,42 +1086,200 @@
           <tbody id="userTableBody">
             </tbody>
         </table>
+
+        <h3 style="margin-top: 40px;">Archived Users</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Barangay</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="archivedUserTableBody">
+            </tbody>
+        </table>
       </div>
 
       <div id="manage" class="card">
         <h2>Manage Submissions</h2>
+        
+        <!-- Search Bar -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+          <input 
+            type="text" 
+            id="barangay-search" 
+            placeholder="Search by barangay name..." 
+            style="flex: 1; margin: 0; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95em;"
+          />
+          <button id="clear-barangay-search" type="button" style="width: auto; padding: 10px 20px; margin: 0; background-color: #ffcccc; color: #000; border: none; cursor: pointer; border-radius: 6px; font-weight: bold;" 
+            onmouseover="this.style.backgroundColor='#ff0000'; this.style.color='#fff';" 
+            onmouseout="this.style.backgroundColor='#ffcccc'; this.style.color='#000';">Clear</button>
+        </div>
+        
         <div class="barangay-folder-list" id="barangay-folders">
             </div>
+      </div>
+
+      <!-- Password Reset Requests Section -->
+      <div id="reset-requests" class="card">
+        <h2>Password Reset & Change Management</h2>
+        
+        <!-- Password Change Notifications Section -->
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #dee2e6;">
+          <h3 style="margin-top: 0; display: flex; justify-content: space-between; align-items: center;">
+            <span>
+              Password Change Notifications 
+              <span id="passwordNotificationBadge" class="notification-badge" style="display: none;">0</span>
+            </span>
+            <button id="toggleNotifications" class="toggle-notifications" style="padding: 6px 12px; font-size: 12px;">
+              Show
+            </button>
+          </h3>
+          <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Recent password changes that have been approved</p>
+          <div id="passwordNotifications" class="notifications-hidden" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 10px; background: white;">
+            <p style="text-align: center; color: #666; font-style: italic;">Loading notifications...</p>
+          </div>
+        </div>
+
+        <!-- Reset Requests Section -->
+        <h3>Password Reset Requests</h3>
+        
+        <!-- Filter Tabs -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <button class="reset-filter-btn active" data-filter="pending">
+            Pending (<span id="reset-pending-count">0</span>)
+          </button>
+          <button class="reset-filter-btn" data-filter="approved">
+            Approved (<span id="reset-approved-count">0</span>)
+          </button>
+          <button class="reset-filter-btn" data-filter="rejected">
+            Rejected (<span id="reset-rejected-count">0</span>)
+          </button>
+          <button class="reset-filter-btn" data-filter="all">
+            All
+          </button>
+        </div>
+
+        <!-- Reset Requests Table -->
+        <div id="reset-requests-container">
+          <table style="width: 100%; border-collapse: collapse; background: white;">
+            <thead>
+              <tr style="background-color: #f0f0f0;">
+                <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Email</th>
+                <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Role</th>
+                <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Barangay</th>
+                <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Requested</th>
+                <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Status</th>
+                <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reset-requests-tbody">
+              <tr>
+                <td colspan="6" style="padding: 20px; text-align: center; color: #666;">
+                  Loading requests...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
       
       </div>
   </div>
 
+  <!-- Rejection Reason Modal -->
+  <div id="rejection-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%;">
+      <h3 style="margin-top: 0;">Reject Password Reset Request</h3>
+      <p style="margin-bottom: 20px; color: #666;">
+        Email: <strong id="reject-modal-email">-</strong>
+      </p>
+      <label style="display: block; margin-bottom: 8px; font-weight: bold;">Reason for rejection:</label>
+      <textarea 
+        id="rejection-reason" 
+        rows="4" 
+        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: Arial, sans-serif; resize: vertical;"
+        placeholder="Enter reason for rejection..."
+      ></textarea>
+      <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+        <button onclick="closeRejectionModal()" style="padding: 10px 20px; background: #ccc; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+          Cancel
+        </button>
+        <button onclick="submitRejection()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
+          Reject Request
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .reset-filter-btn {
+      padding: 10px 20px;
+      border: 2px solid #0066cc;
+      background: white;
+      color: #0066cc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    .reset-filter-btn:hover {
+      background: #e6f2ff;
+    }
+    .reset-filter-btn.active {
+      background: #0066cc;
+      color: white;
+    }
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .status-pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .status-approved {
+      background: #d4edda;
+      color: #155724;
+    }
+    .status-rejected {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.9em;
+      margin: 0 3px;
+    }
+    .approve-btn {
+      background: #28a745;
+      color: white;
+    }
+    .approve-btn:hover {
+      background: #218838;
+    }
+    .reject-btn {
+      background: #dc3545;
+      color: white;
+    }
+    .reject-btn:hover {
+      background: #c82333;
+    }
+  </style>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const ctx = document.getElementById('chartSubmissions').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: [],
-        datasets: [{
-          label: 'Submissions by Barangay',
-          data: [],
-          backgroundColor: '#0066cc'
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
+    // Chart will be initialized by updateChart() function
 
     const barangays = [
         "Anilao Proper", "Anilao East", "Bagalangit", "Bulacan", "Calamias", "Estrella",
@@ -732,64 +1295,945 @@
         { name: "Quarterly Reports", key: "quarterly" },
         { name: "Annual Reports", key: "annual" }
     ];
+    
+    // Global submissions data
+    let allSubmissions = [];
 
-    const folderContainer = document.getElementById('barangay-folders');
+    // Helper function to update sidebar notification badges
+    function updateSidebarBadge(badgeId, count) {
+        const badge = document.getElementById(badgeId);
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
 
-    barangays.forEach(barangay => {
-        const folder = document.createElement('div');
-        folder.className = 'barangay-folder';
-        
-        const header = document.createElement('div');
-        header.className = 'barangay-folder-header';
-        
-        header.onclick = function() {
-            folder.classList.toggle('expanded');
-        };
-
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'barangay-folder-name';
-        nameSpan.innerHTML = `<span class="folder-icon">📁</span> ${barangay}`;
-
-        const expandIcon = document.createElement('span');
-        expandIcon.className = 'expand-icon';
-        expandIcon.innerHTML = '&#9654;';
-
-        header.appendChild(nameSpan);
-        header.appendChild(expandIcon);
-        
-        const subFolderList = document.createElement('div');
-        subFolderList.className = 'sub-folder-list';
-
-        subFolderTypes.forEach(type => {
-            const subFolder = document.createElement('div');
-            subFolder.className = 'sub-folder';
+    // Load all submissions
+    async function loadAllSubmissions() {
+        const indicator = document.getElementById('autoRefreshIndicator');
+        try {
+            // Show refreshing state
+            if (indicator) indicator.classList.add('refreshing');
             
-            const subFolderName = document.createElement('span');
-            subFolderName.className = 'sub-folder-name';
-            subFolderName.innerHTML = `<span class="folder-icon" style="font-size: 1.2em;">📄</span> ${type.name}`;
-
-            subFolder.appendChild(subFolderName);
+            const response = await fetch('api/submissions.php');
             
-            subFolder.onclick = (e) => {
-                e.stopPropagation(); 
-                alert(`Viewing ${type.name} for: ${barangay}`);
-            };
-
-            subFolderList.appendChild(subFolder);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            
+            if (result.ok && Array.isArray(result.submissions)) {
+                allSubmissions = result.submissions;
+                
+                // Update dashboard stats with proper counting
+                const total = allSubmissions.length;
+                const approved = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+                const review = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length;
+                const pending = allSubmissions.filter(s => {
+                    if (!s.status) return false;
+                    const statusLower = s.status.toLowerCase().trim();
+                    return statusLower === 'pending' || statusLower === 'submitted';
+                }).length;
+                const rejected = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'rejected').length;
+                
+                // Force update the DOM elements
+                const totalEl = document.getElementById('total-submissions');
+                const approvedEl = document.getElementById('approved-count');
+                const reviewEl = document.getElementById('review-count');
+                const pendingEl = document.getElementById('pending-count');
+                const rejectedEl = document.getElementById('rejected-count');
+                
+                if (totalEl) totalEl.textContent = total;
+                if (approvedEl) approvedEl.textContent = approved;
+                if (reviewEl) reviewEl.textContent = review;
+                if (pendingEl) pendingEl.textContent = pending;
+                if (rejectedEl) rejectedEl.textContent = rejected;
+                
+                console.log('Dashboard Stats Updated:', {
+                    total: total,
+                    approved: approved,
+                    review: review,
+                    pending: pending,
+                    rejected: rejected
+                });
+                
+                // Update sidebar badge for Manage Submissions (show pending + review count)
+                const actionNeeded = pending + review;
+                updateSidebarBadge('manageNotifBadge', actionNeeded);
+                
+                // Update chart
+                updateChart();
+                
+                // Generate alerts
+                generateAlerts();
+                
+                // Render folders
+                renderBarangayFolders();
+            } else {
+                console.error('Error in result:', result.error || 'Invalid data format');
+                // Set zero values if data is invalid
+                document.getElementById('total-submissions').textContent = '0';
+                document.getElementById('approved-count').textContent = '0';
+                document.getElementById('review-count').textContent = '0';
+                document.getElementById('pending-count').textContent = '0';
+                document.getElementById('rejected-count').textContent = '0';
+            }
+        } catch (error) {
+            console.error('Error loading submissions:', error);
+            // Set error state
+            document.getElementById('total-submissions').textContent = 'Error';
+            document.getElementById('approved-count').textContent = 'Error';
+            document.getElementById('review-count').textContent = 'Error';
+            document.getElementById('pending-count').textContent = 'Error';
+            document.getElementById('rejected-count').textContent = 'Error';
+        } finally {
+            // Remove refreshing state
+            if (indicator) indicator.classList.remove('refreshing');
+        }
+    }
+    
+    // Update chart with submission data
+    function updateChart() {
+        const submissionsByBarangay = {};
+        
+        barangays.forEach(barangay => {
+            submissionsByBarangay[barangay] = allSubmissions.filter(s => s.barangay === barangay).length;
         });
         
-        folder.appendChild(header);
-        folder.appendChild(subFolderList);
-        folderContainer.appendChild(folder);
-    });
+        const ctx = document.getElementById('chartSubmissions').getContext('2d');
+        if (window.submissionsChart) {
+            window.submissionsChart.destroy();
+        }
+        
+        window.submissionsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: barangays,
+                datasets: [{
+                    label: 'Submissions by Barangay',
+                    data: barangays.map(b => submissionsByBarangay[b]),
+                    backgroundColor: 'rgba(0, 102, 204, 0.7)',
+                    borderColor: 'rgba(0, 102, 204, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
     
-    // --- JAVASCRIPT FOR LOGIN CHECK AND USER MANAGEMENT ---
+    // Generate decision support and alerts based on submission data
+    function generateAlerts() {
+        const alertsContainer = document.getElementById('alerts-container');
+        if (!alertsContainer) return;
+        
+        const alerts = [];
+        
+        // 1. Check for barangays with no submissions
+        const barangaysWithNoSubmissions = barangays.filter(barangay => 
+            !allSubmissions.some(s => s.barangay === barangay)
+        );
+        
+        if (barangaysWithNoSubmissions.length > 0) {
+            alerts.push({
+                type: 'critical',
+                icon: '🚨',
+                title: 'Barangays with Zero Submissions',
+                message: `${barangaysWithNoSubmissions.length} barangay(s) have not submitted any documents yet.`,
+                list: barangaysWithNoSubmissions.slice(0, 5),
+                extra: barangaysWithNoSubmissions.length > 5 ? `and ${barangaysWithNoSubmissions.length - 5} more...` : null
+            });
+        }
+        
+        // 2. Check for pending/submitted status that needs review
+        const pendingSubmissions = allSubmissions.filter(s => 
+            s.status && (s.status.toLowerCase() === 'pending' || s.status.toLowerCase() === 'submitted')
+        );
+        
+        if (pendingSubmissions.length > 0) {
+            const barangaysWithPending = [...new Set(pendingSubmissions.map(s => s.barangay))];
+            alerts.push({
+                type: 'warning',
+                icon: '⏳',
+                title: 'Pending Submissions Require Action',
+                message: `${pendingSubmissions.length} submission(s) are waiting for review from ${barangaysWithPending.length} barangay(s).`,
+                list: barangaysWithPending.slice(0, 5),
+                extra: barangaysWithPending.length > 5 ? `and ${barangaysWithPending.length - 5} more...` : null
+            });
+        }
+        
+        // 3. Check for barangays with low submission counts
+        const submissionCounts = barangays.map(barangay => ({
+            barangay,
+            count: allSubmissions.filter(s => s.barangay === barangay).length
+        })).filter(item => item.count > 0 && item.count < 3);
+        
+        if (submissionCounts.length > 0) {
+            alerts.push({
+                type: 'warning',
+                icon: '⚠️',
+                title: 'Low Submission Activity',
+                message: `${submissionCounts.length} barangay(s) have submitted fewer than 3 documents.`,
+                list: submissionCounts.slice(0, 5).map(item => `${item.barangay} (${item.count})`),
+                extra: submissionCounts.length > 5 ? `and ${submissionCounts.length - 5} more...` : null
+            });
+        }
+        
+        // 4. Check for rejected submissions
+        const rejectedSubmissions = allSubmissions.filter(s => 
+            s.status && s.status.toLowerCase() === 'rejected'
+        );
+        
+        if (rejectedSubmissions.length > 0) {
+            const barangaysWithRejected = [...new Set(rejectedSubmissions.map(s => s.barangay))];
+            alerts.push({
+                type: 'info',
+                icon: '📋',
+                title: 'Rejected Submissions',
+                message: `${rejectedSubmissions.length} submission(s) have been rejected from ${barangaysWithRejected.length} barangay(s).`,
+                list: barangaysWithRejected.slice(0, 5),
+                extra: barangaysWithRejected.length > 5 ? `and ${barangaysWithRejected.length - 5} more...` : null
+            });
+        }
+        
+        // 5. Check for high-performing barangays
+        const highPerformers = barangays.map(barangay => {
+            const submissions = allSubmissions.filter(s => s.barangay === barangay);
+            const approved = submissions.filter(s => s.status && s.status.toLowerCase() === 'approved').length;
+            return { barangay, count: submissions.length, approved };
+        }).filter(item => item.count >= 5 && item.approved >= 3);
+        
+        if (highPerformers.length > 0) {
+            alerts.push({
+                type: 'success',
+                icon: '✅',
+                title: 'High-Performing Barangays',
+                message: `${highPerformers.length} barangay(s) have excellent submission records.`,
+                list: highPerformers.slice(0, 5).map(item => `${item.barangay} (${item.count} total, ${item.approved} approved)`),
+                extra: highPerformers.length > 5 ? `and ${highPerformers.length - 5} more...` : null
+            });
+        }
+        
+        // 6. Overall status summary
+        const totalBarangays = barangays.length;
+        const activeBarangays = barangays.filter(b => allSubmissions.some(s => s.barangay === b)).length;
+        const completionRate = ((activeBarangays / totalBarangays) * 100).toFixed(1);
+        
+        alerts.push({
+            type: 'info',
+            icon: '📊',
+            title: 'Overall Submission Status',
+            message: `${activeBarangays} out of ${totalBarangays} barangays (${completionRate}%) have submitted documents.`,
+            list: null,
+            extra: null
+        });
+        
+        // Render alerts
+        if (alerts.length === 0) {
+            alertsContainer.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No alerts at this time.</p>';
+            return;
+        }
+        
+        let html = '';
+        alerts.forEach(alert => {
+            html += `
+                <div class="alert-box alert-${alert.type}">
+                    <div class="alert-icon">${alert.icon}</div>
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.title}</div>
+                        <div class="alert-message">${alert.message}</div>
+                        ${alert.list ? `
+                            <ul class="alert-list">
+                                ${alert.list.map(item => `<li>${item}</li>`).join('')}
+                                ${alert.extra ? `<li><em>${alert.extra}</em></li>` : ''}
+                            </ul>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+        
+        alertsContainer.innerHTML = html;
+    }
+    
+    // Update submission status
+    async function updateSubmissionStatus(id, status, remarks = '') {
+        try {
+            // Add timestamp to the status change
+            const currentDateTime = new Date().toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            
+            const response = await fetch('api/submissions.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    id, 
+                    status, 
+                    remarks,
+                    status_changed_at: currentDateTime
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.ok) {
+                showCustomAlert('Status updated successfully at ' + currentDateTime, 'success');
+                await loadAllSubmissions();
+                
+                // Auto-update the modal if it's currently open
+                updateModalStatusIfOpen(id, status, currentDateTime);
+            } else {
+                showCustomAlert('Error: ' + (result.error || 'Failed to update status'), 'error');
+            }
+        } catch (error) {
+            showCustomAlert('Failed to update status', 'error');
+        }
+    }
+    
+    // Function to update status in open modal
+    function updateModalStatusIfOpen(submissionId, newStatus, timestamp) {
+        // Find all status badges and dropdowns in open modals
+        const openModals = document.querySelectorAll('div[style*="position: fixed"]');
+        
+        openModals.forEach(modal => {
+            // Find the row for this submission
+            const rows = modal.querySelectorAll('tr');
+            rows.forEach(row => {
+                // Check if this row contains a select with the submission ID
+                const select = row.querySelector(`select[onchange*="updateSubmissionStatus(${submissionId}"]`);
+                if (select) {
+                    // Update the status badge in this row
+                    const statusCell = row.querySelector('td:nth-child(4)');
+                    if (statusCell) {
+                        const statusBadge = statusCell.querySelector('.status-badge');
+                        if (statusBadge) {
+                            // Update badge class
+                            statusBadge.className = 'status-badge';
+                            const statusClass = {
+                                'pending': 'status-pending',
+                                'review': 'status-review',
+                                'approved': 'status-approved',
+                                'rejected': 'status-rejected'
+                            }[newStatus] || 'status-pending';
+                            statusBadge.classList.add(statusClass);
+                            
+                            // Update badge text
+                            const statusText = {
+                                'pending': 'Pending',
+                                'review': 'Under Review',
+                                'approved': 'Approved',
+                                'rejected': 'Rejected'
+                            }[newStatus] || newStatus;
+                            statusBadge.textContent = statusText;
+                        }
+                        
+                        // Add or update timestamp below status badge
+                        let timestampDiv = statusCell.querySelector('.status-timestamp');
+                        if (!timestampDiv) {
+                            timestampDiv = document.createElement('div');
+                            timestampDiv.className = 'status-timestamp';
+                            timestampDiv.style.cssText = 'font-size: 0.75em; color: #007bff; margin-top: 4px; font-weight: bold;';
+                            statusCell.appendChild(timestampDiv);
+                        }
+                        timestampDiv.innerHTML = `🕒 ${timestamp}`;
+                    }
+                    
+                    // Reset the dropdown
+                    select.value = '';
+                }
+            });
+        });
+    }
+    
+    // Make status update function global
+    window.updateSubmissionStatus = updateSubmissionStatus;
+    
+    // Render barangay folders with submissions
+    function renderBarangayFolders() {
+        const folderContainer = document.getElementById('barangay-folders');
+        if (!folderContainer) {
+            return;
+        }
+        
+        folderContainer.innerHTML = '';
+
+        // Sort barangays by submission count (descending) - barangays with submissions first
+        const sortedBarangays = [...barangays].sort((a, b) => {
+            const aCount = allSubmissions.filter(s => s.barangay === a).length;
+            const bCount = allSubmissions.filter(s => s.barangay === b).length;
+            return bCount - aCount; // Descending order
+        });
+
+        sortedBarangays.forEach(barangay => {
+            const barangaySubmissions = allSubmissions.filter(s => s.barangay === barangay);
+            
+            const folder = document.createElement('div');
+            folder.className = 'barangay-folder';
+            
+            const header = document.createElement('div');
+            header.className = 'barangay-folder-header';
+            
+            header.onclick = function() {
+                folder.classList.toggle('expanded');
+            };
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'barangay-folder-name';
+            nameSpan.innerHTML = `<span class="folder-icon">📁</span> ${barangay} <span style="font-size: 0.85em; color: #666;">(${barangaySubmissions.length} submissions)</span>`;
+
+            const expandIcon = document.createElement('span');
+            expandIcon.className = 'expand-icon';
+            expandIcon.innerHTML = '&#9654;';
+
+            header.appendChild(nameSpan);
+            header.appendChild(expandIcon);
+            
+            const subFolderList = document.createElement('div');
+            subFolderList.className = 'sub-folder-list';
+
+            // Group submissions by period
+            subFolderTypes.forEach(type => {
+                const periodSubmissions = barangaySubmissions.filter(s => s.period === type.key);
+                
+                const subFolder = document.createElement('div');
+                subFolder.className = 'sub-folder';
+                
+                const subFolderName = document.createElement('span');
+                subFolderName.className = 'sub-folder-name';
+                subFolderName.innerHTML = `<span class="folder-icon" style="font-size: 1.2em;">📄</span> ${type.name} (${periodSubmissions.length})`;
+
+                subFolder.appendChild(subFolderName);
+                
+                subFolder.onclick = (e) => {
+                    e.stopPropagation(); 
+                    showSubmissionModal(barangay, type.name, periodSubmissions);
+                };
+
+                subFolderList.appendChild(subFolder);
+            });
+            
+            folder.appendChild(header);
+            folder.appendChild(subFolderList);
+            folderContainer.appendChild(folder);
+        });
+    }
+    
+    // Search functionality for barangay folders
+    function initializeBarangaySearch() {
+        const searchInput = document.getElementById('barangay-search');
+        const clearButton = document.getElementById('clear-barangay-search');
+        
+        if (!searchInput || !clearButton) {
+            return;
+        }
+        
+        // Search functionality
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            filterBarangayFolders(searchTerm);
+        });
+        
+        // Clear button functionality
+        clearButton.addEventListener('click', function() {
+            searchInput.value = '';
+            filterBarangayFolders('');
+        });
+    }
+    
+    // Filter barangay folders based on search term
+    function filterBarangayFolders(searchTerm) {
+        const folderContainer = document.getElementById('barangay-folders');
+        if (!folderContainer) return;
+        
+        const folders = folderContainer.querySelectorAll('.barangay-folder');
+        
+        if (searchTerm === '') {
+            // Show all folders
+            folders.forEach(folder => {
+                folder.style.display = 'block';
+            });
+            return;
+        }
+        
+        folders.forEach(folder => {
+            const barangayNameElement = folder.querySelector('.barangay-folder-name');
+            const barangayName = barangayNameElement ? barangayNameElement.textContent.toLowerCase() : '';
+            
+            // Get the barangay name from the folder
+            const actualBarangayName = barangays.find(b => barangayName.includes(b.toLowerCase()));
+            
+            if (!actualBarangayName) {
+                folder.style.display = 'none';
+                return;
+            }
+            
+            // Check if barangay name matches search term
+            const barangayMatches = actualBarangayName.toLowerCase().includes(searchTerm);
+            
+            // Show/hide folder based on barangay name match only
+            if (barangayMatches) {
+                folder.style.display = 'block';
+            } else {
+                folder.style.display = 'none';
+            }
+        });
+    }
+    
+    // Show submissions in a modal
+    function showSubmissionModal(barangay, period, submissions) {
+        if (submissions.length === 0) {
+            showCustomAlert(`No ${period} submissions for ${barangay}`, 'info');
+            return;
+        }
+        
+        let html = `
+            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
+                <div style="background: white; padding: 30px; border-radius: 8px; max-width: 900px; width: 90%; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                    <h2>${barangay} - ${period}</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 10px; background: #f0f0f0; border-bottom: 2px solid #ccc;">Title</th>
+                                <th style="text-align: left; padding: 10px; background: #f0f0f0; border-bottom: 2px solid #ccc;">Category</th>
+                                <th style="text-align: left; padding: 10px; background: #f0f0f0; border-bottom: 2px solid #ccc;">Date</th>
+                                <th style="text-align: left; padding: 10px; background: #f0f0f0; border-bottom: 2px solid #ccc;">Status</th>
+                                <th style="text-align: left; padding: 10px; background: #f0f0f0; border-bottom: 2px solid #ccc;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
+        
+        submissions.forEach(sub => {
+            const statusClass = {
+                'pending': 'status-pending',
+                'review': 'status-review',
+                'approved': 'status-approved',
+                'rejected': 'status-rejected'
+            }[sub.status] || 'status-pending';
+            
+            const statusText = {
+                'pending': 'Pending',
+                'review': 'Under Review',
+                'approved': 'Approved',
+                'rejected': 'Rejected'
+            }[sub.status] || sub.status;
+            
+            const date = new Date(sub.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+            
+            // Format status change timestamp if available
+            let statusChangedTime = '';
+            if (sub.status_changed_at) {
+                statusChangedTime = `<br><small style="color: #007bff; font-weight: bold; font-size: 0.75em;">🕒 ${sub.status_changed_at}</small>`;
+            }
+            
+            const hasComments = sub.remarks && sub.remarks.trim() !== '';
+            const commentIndicator = hasComments ? ' 💬' : '';
+            const commentCount = hasComments ? (sub.remarks.split('[').length - 1) : 0;
+            
+            // Get latest comment for preview
+            let latestComment = '';
+            if (hasComments) {
+                const entries = sub.remarks.split('\n\n').filter(entry => entry.trim() !== '');
+                if (entries.length > 0) {
+                    const lastEntry = entries[entries.length - 1];
+                    const match = lastEntry.match(/^\[([^\]]+)\]\s*(.*)$/s);
+                    if (match) {
+                        latestComment = match[2].substring(0, 50) + (match[2].length > 50 ? '...' : '');
+                    } else {
+                        latestComment = lastEntry.substring(0, 50) + (lastEntry.length > 50 ? '...' : '');
+                    }
+                }
+            }
+            
+            html += `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px;">
+                        ${sub.title}${commentIndicator}
+                        ${hasComments ? `<br><small style="color: #6c757d; font-style: italic;">Latest: "${latestComment}"</small>` : ''}
+                    </td>
+                    <td style="padding: 10px;">${sub.category}</td>
+                    <td style="padding: 10px;">${date}</td>
+                    <td style="padding: 10px;"><span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}</td>
+                    <td style="padding: 10px;">
+                        <a href="javascript:void(0)" onclick="showDocumentViewer('${sub.filename}', '${sub.title}')" style="color: #0066cc; margin-right: 10px; cursor: pointer; text-decoration: none;">📄 View</a>
+                        <button onclick="showCommentModal(${sub.id}, '${sub.title}', '${sub.barangay}')" style="padding: 4px 8px; background: ${hasComments ? '#17a2b8' : '#28a745'}; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; font-size: 0.85em;" title="${hasComments ? 'View and manage comments' : 'Add a comment'}">💬 ${hasComments ? 'Comments (' + commentCount + ')' : 'Comment'}</button>
+                        <select onchange="if(this.value) { updateSubmissionStatus(${sub.id}, this.value); this.value=''; }" style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; margin-left: 5px;">
+                            <option value="">📝 Change Status</option>
+                            <option value="pending">⏳ Pending</option>
+                            <option value="review">🔍 Under Review</option>
+                            <option value="approved">✅ Approve</option>
+                            <option value="rejected">❌ Reject</option>
+                        </select>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                        </tbody>
+                    </table>
+                    
+                    <!-- Show summary of comments if any exist -->
+                    ${(() => {
+                        const hasComments = submissions.some(sub => sub.remarks && sub.remarks.trim() !== '');
+                        if (hasComments) {
+                            const totalComments = submissions.reduce((total, sub) => {
+                                if (sub.remarks && sub.remarks.trim() !== '') {
+                                    return total + (sub.remarks.split('[').length - 1);
+                                }
+                                return total;
+                            }, 0);
+                            return `
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #28a745;">
+                                    <strong>💬 Comments Summary:</strong> ${totalComments} comment(s) across ${submissions.filter(sub => sub.remarks && sub.remarks.trim() !== '').length} submission(s)
+                                </div>
+                            `;
+                        }
+                        return '';
+                    })()}
+                    
+                    <div style="text-align: right; margin-top: 20px;">
+                        <button onclick="this.closest('div[style*=\\'position: fixed\\']').remove()" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', html);
+    }
+    
+    window.showSubmissionModal = showSubmissionModal;
+    
+    // Format comments for display
+    function formatComments(remarksText) {
+        if (!remarksText || remarksText.trim() === '') {
+            return '<em style="color: #6c757d;">No comments or remarks yet.</em>';
+        }
+        
+        // Split by double newlines to separate different comment entries
+        const entries = remarksText.split('\n\n').filter(entry => entry.trim() !== '');
+        
+        if (entries.length === 0) {
+            return '<em style="color: #6c757d;">No comments or remarks yet.</em>';
+        }
+        
+        let formattedHtml = '';
+        entries.forEach((entry, index) => {
+            // Check if entry has timestamp format [datetime]
+            const timestampMatch = entry.match(/^\[([^\]]+)\]\s*(.*)$/s);
+            
+            if (timestampMatch) {
+                const timestamp = timestampMatch[1];
+                const content = timestampMatch[2].trim();
+                
+                formattedHtml += `
+                    <div class="comment-entry" style="background: white; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <div class="comment-timestamp" style="font-size: 0.85em; color: #6c757d; font-weight: bold; margin-bottom: 5px;">
+                            🕒 ${timestamp}
+                        </div>
+                        <div class="comment-text" style="color: #495057; line-height: 1.4;">
+                            ${content.replace(/\n/g, '<br>')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Entry without timestamp - legacy format
+                formattedHtml += `
+                    <div class="comment-entry" style="background: white; padding: 12px; margin: 8px 0; border-radius: 6px; border: 1px solid #dee2e6;">
+                        <div class="comment-text" style="color: #495057; line-height: 1.4;">
+                            ${entry.replace(/\n/g, '<br>')}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        
+        return formattedHtml;
+    }
+    
+    // Show comment modal for a specific submission
+    async function showCommentModal(submissionId, title, barangay) {
+        try {
+            // Get current submission details and comments
+            const response = await fetch(`api/submissions.php?id=${submissionId}`);
+            const result = await response.json();
+            
+            if (!result.ok) {
+                showCustomAlert('Error loading submission details: ' + (result.error || 'Unknown error'), 'error');
+                return;
+            }
+            
+            const submission = result.submission || {};
+            const currentRemarks = submission.remarks || '';
+            
+            let html = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
+                    <div style="background: white; padding: 30px; border-radius: 8px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
+                        <h2 style="margin-top: 0; color: #004c99;">💬 Comments & Remarks</h2>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #007bff;">
+                            <strong>Submission:</strong> ${title}<br>
+                            <strong>Barangay:</strong> ${barangay}<br>
+                            <strong>Status:</strong> <span class="status-badge status-${submission.status || 'pending'}">${submission.status || 'Pending'}</span>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #495057; font-size: 1.1em; margin-bottom: 10px;">📝 Current Comments/Remarks:</h3>
+                            <div id="current-remarks" style="background: #f8f9fa; padding: 15px; border-radius: 6px; min-height: 60px; border: 1px solid #dee2e6; max-height: 300px; overflow-y: auto;">
+                                ${formatComments(currentRemarks)}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <h3 style="color: #495057; font-size: 1.1em; margin-bottom: 10px;">➕ Add New Comment/Remark:</h3>
+                            <textarea id="new-comment" placeholder="Enter your comment or remarks here..." style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid #ced4da; border-radius: 6px; font-family: Arial, sans-serif; resize: vertical; box-sizing: border-box;"></textarea>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button onclick="this.closest('div[style*=\\'position: fixed\\']').remove()" style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Cancel</button>
+                            <button onclick="addComment(${submissionId})" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">💬 Add Comment</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', html);
+        } catch (error) {
+            showCustomAlert('Error loading comment modal: ' + error.message, 'error');
+        }
+    }
+    
+    // Add comment to submission
+    async function addComment(submissionId) {
+        const commentTextarea = document.getElementById('new-comment');
+        const newComment = commentTextarea.value.trim();
+        
+        if (!newComment) {
+            showCustomAlert('Please enter a comment before adding.', 'warning');
+            return;
+        }
+        
+        try {
+            // Get current remarks
+            const currentRemarksDiv = document.getElementById('current-remarks');
+            const currentRemarksText = currentRemarksDiv.innerHTML.includes('<em') ? '' : currentRemarksDiv.textContent;
+            
+            // Combine existing and new remarks
+            const currentDateTime = new Date().toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const newRemarkEntry = `[${currentDateTime}] ${newComment}`;
+            const updatedRemarks = currentRemarksText ? 
+                currentRemarksText + '\n\n' + newRemarkEntry : 
+                newRemarkEntry;
+            
+            // Update submission with new remarks
+            const response = await fetch('api/submissions.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    id: submissionId, 
+                    action: 'add_comment',
+                    remarks: updatedRemarks 
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.ok) {
+                // Update the current remarks display with formatted comments
+                currentRemarksDiv.innerHTML = formatComments(updatedRemarks);
+                
+                // Clear the textarea
+                commentTextarea.value = '';
+                
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin: 10px 0; text-align: center;';
+                successMsg.textContent = '✅ Comment added successfully!';
+                commentTextarea.parentElement.insertBefore(successMsg, commentTextarea);
+                
+                // Remove success message after 3 seconds
+                setTimeout(() => {
+                    if (successMsg.parentNode) {
+                        successMsg.remove();
+                    }
+                }, 3000);
+                
+                // Refresh submissions data
+                await loadAllSubmissions();
+            } else {
+                showCustomAlert('Error adding comment: ' + (result.error || 'Unknown error'), 'error');
+            }
+        } catch (error) {
+            showCustomAlert('Failed to add comment: ' + error.message, 'error');
+        }
+    }
+    
+    // Function to show document viewer modal
+    function showDocumentViewer(filename, title) {
+        const modal = document.createElement('div');
+        modal.className = 'doc-viewer-modal';
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        };
+        
+        // Get file extension to determine how to display
+        const extension = filename.split('.').pop().toLowerCase();
+        const fileUrl = `api/view_file.php?file=${filename}`;
+        const downloadUrl = `api/view_file.php?file=${filename}&download=1`;
+        
+        modal.innerHTML = `
+            <div class="doc-viewer-container" onclick="event.stopPropagation()">
+                <div class="doc-viewer-header">
+                    <div class="doc-viewer-title">
+                        📄 ${title || filename}
+                    </div>
+                    <div class="doc-viewer-actions">
+                        <button class="doc-viewer-btn doc-viewer-download" onclick="downloadFile('${downloadUrl}', '${title || filename}')">
+                            ⬇️ Download
+                        </button>
+                        <button class="doc-viewer-btn doc-viewer-close" onclick="this.closest('.doc-viewer-modal').remove()">
+                            ✖ Close
+                        </button>
+                    </div>
+                </div>
+                <div class="doc-viewer-content">
+                    <div class="doc-viewer-loading">
+                        <div class="doc-viewer-spinner"></div>
+                        <p>Loading document...</p>
+                    </div>
+                    <iframe class="doc-viewer-iframe" src="" style="display: none;"></iframe>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Load the document
+        const iframe = modal.querySelector('.doc-viewer-iframe');
+        const loading = modal.querySelector('.doc-viewer-loading');
+        
+        // For PDF files, we can use Google Docs Viewer or display directly
+        if (extension === 'pdf') {
+            // Try to display PDF directly first, fallback to Google Docs Viewer
+            iframe.src = fileUrl;
+        } else if (['doc', 'docx', 'xls', 'xlsx'].includes(extension)) {
+            // Use Google Docs Viewer for Office documents
+            iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + '/' + fileUrl)}&embedded=true`;
+        } else {
+            // For other file types, just show download option
+            iframe.src = fileUrl;
+        }
+        
+        iframe.onload = function() {
+            loading.style.display = 'none';
+            iframe.style.display = 'block';
+        };
+        
+        iframe.onerror = function() {
+            loading.innerHTML = `
+                <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot preview this file type</p>
+                <p>Please use the download button above to view the document.</p>
+            `;
+        };
+    }
+    
+    // Function to download file without opening
+    async function downloadFile(url, filename) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Download failed:', error);
+            showCustomAlert('Failed to download file. Please try again.', 'error');
+        }
+    }
+    
+    // Make functions global
+    window.showCommentModal = showCommentModal;
+    window.addComment = addComment;
+    window.showDocumentViewer = showDocumentViewer;
+    window.downloadFile = downloadFile;
+    
+    // Function to open file in native application
+    function openFileInNativeApp(filepath, filename) {
+        // Extract file extension to get proper filename
+        const extension = filepath.split('.').pop().toLowerCase();
+        
+        // Get filename from path if not provided
+        if (!filename || filename === 'undefined') {
+            const pathParts = filepath.split('/');
+            filename = pathParts[pathParts.length - 1];
+        } else {
+            // Make sure filename has the correct extension
+            if (!filename.toLowerCase().endsWith('.' + extension)) {
+                filename = filename + '.' + extension;
+            }
+        }
+        
+        // Create a temporary link element to trigger download
+        const link = document.createElement('a');
+        link.href = filepath;
+        link.download = filename; // This triggers download instead of opening in browser
+        link.style.display = 'none';
+        
+        // Add to DOM, click it, then remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    
+    window.openFileInNativeApp = openFileInNativeApp;
     
     // Make deleteNotification function global for easier access
     window.deleteNotification = async function(notificationId) {
-        console.log('Deleting notification with ID:', notificationId);
-        
-        if (!confirm('Are you sure you want to delete this notification?')) {
+        const proceed = await showCustomConfirm('Are you sure you want to delete this notification?', 'warning');
+        if (!proceed) {
             return;
         }
         
@@ -799,7 +2243,6 @@
             });
             
             const data = await res.json();
-            console.log('Delete notification response:', data);
             
             if (data.ok) {
                 // Remove the notification from the DOM immediately
@@ -840,14 +2283,142 @@
                 }, 1000);
                 
             } else {
-                alert('Failed to delete notification: ' + (data.error || 'Unknown error'));
+                showCustomAlert('Failed to delete notification: ' + (data.error || 'Unknown error'), 'error');
             }
             
         } catch (error) {
-            console.error('Error deleting notification:', error);
-            alert('Error deleting notification: ' + error.message);
+            showCustomAlert('Error deleting notification: ' + error.message, 'error');
         }
     };
+
+    // Custom Alert Modal Function
+    function showCustomAlert(message, type = 'info', callback = null) {
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+
+        const titles = {
+            success: 'Success',
+            error: 'Error',
+            warning: 'Warning',
+            info: 'Information'
+        };
+
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-modal-overlay';
+
+        overlay.innerHTML = `
+            <div class="custom-modal-content">
+                <div class="custom-modal-header ${type}">
+                    <div class="custom-modal-icon">${icons[type]}</div>
+                    <h3 class="custom-modal-title">${titles[type]}</h3>
+                </div>
+                <div class="custom-modal-body">
+                    ${message}
+                </div>
+                <div class="custom-modal-footer">
+                    <button class="custom-modal-button ${type === 'success' ? 'success' : 'primary'}" onclick="this.closest('.custom-modal-overlay').remove(); ${callback ? '(' + callback.toString() + ')();' : ''}">OK</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Click outside to close
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                overlay.remove();
+                if (callback) callback();
+            }
+        });
+
+        // ESC key to close
+        const escHandler = function(e) {
+            if (e.key === 'Escape') {
+                overlay.remove();
+                if (callback) callback();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+
+    window.showCustomAlert = showCustomAlert;
+
+    // Custom Confirm Modal Function
+    function showCustomConfirm(message, type = 'warning') {
+        return new Promise((resolve) => {
+            const icons = {
+                success: '✓',
+                error: '✕',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+
+            const titles = {
+                success: 'Confirm',
+                error: 'Warning',
+                warning: 'Confirm Action',
+                info: 'Confirmation'
+            };
+
+            const overlay = document.createElement('div');
+            overlay.className = 'custom-modal-overlay';
+
+            overlay.innerHTML = `
+                <div class="custom-modal-content">
+                    <div class="custom-modal-header ${type}">
+                        <div class="custom-modal-icon">${icons[type]}</div>
+                        <h3 class="custom-modal-title">${titles[type]}</h3>
+                    </div>
+                    <div class="custom-modal-body">
+                        ${message}
+                    </div>
+                    <div class="custom-modal-footer">
+                        <button class="custom-modal-button" style="background: #dc3545; color: white;" onclick="this.closest('.custom-modal-overlay').remove(); this.closest('.custom-modal-overlay').userChoice = false;">Cancel</button>
+                        <button class="custom-modal-button ${type === 'success' ? 'success' : 'primary'}" onclick="this.closest('.custom-modal-overlay').remove(); this.closest('.custom-modal-overlay').userChoice = true;">Confirm</button>
+                    </div>
+                </div>
+            `;
+
+            overlay.userChoice = false;
+
+            document.body.appendChild(overlay);
+
+            // Click outside to cancel
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.userChoice = false;
+                    overlay.remove();
+                }
+            });
+
+            // ESC key to cancel
+            const escHandler = function(e) {
+                if (e.key === 'Escape') {
+                    overlay.userChoice = false;
+                    overlay.remove();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+
+            // Wait for modal to be removed, then resolve with user choice
+            const observer = new MutationObserver((mutations) => {
+                if (!document.body.contains(overlay)) {
+                    observer.disconnect();
+                    document.removeEventListener('keydown', escHandler);
+                    resolve(overlay.userChoice);
+                }
+            });
+            observer.observe(document.body, { childList: true });
+        });
+    }
+
+    window.showCustomConfirm = showCustomConfirm;
 
     document.addEventListener('DOMContentLoaded', () => {
         const userInfoSpan = document.getElementById('userInfoSpan');
@@ -858,15 +2429,17 @@
             try {
                 const res = await fetch('api/me.php');
                 const data = await res.json();
-                if (!data.ok || !data.user || data.user.role !== 'ABC Secretary') {
-                    alert('Access Denied. Please login as ABC Secretary.');
-                    window.location.href = 'index.html';
+                if (!data.ok || !data.user || data.user.role !== 'ABC') {
+                    showCustomAlert('Access Denied. Please login as ABC.', 'error', function() {
+                        window.location.href = 'index.html';
+                    });
                     return null;
                 }
                 return data.user;
             } catch (e) {
-                alert('Unable to verify session.');
-                window.location.href = 'index.html';
+                showCustomAlert('Unable to verify session.', 'error', function() {
+                    window.location.href = 'index.html';
+                });
                 return null;
             }
         }
@@ -891,39 +2464,47 @@
                 userTableBody.innerHTML = '';
                 data.users.forEach(user => {
                     const row = userTableBody.insertRow();
-                    const status = user.role === 'ABC Secretary' 
-                        ? '<span class="status-badge status-approved">Active</span>' 
+                    const status = user.role === 'ABC'
+                        ? '<span class="status-badge status-approved">Active</span>'
                         : '<span class="status-badge status-pending">Pending Use</span>';
+                    // include data-id to make delete/archive requests more reliable
                     row.innerHTML = `
                         <td>${user.email}</td>
                         <td>${user.barangay}</td>
                         <td>${user.role}</td>
                         <td>${status}</td>
-                        <td>${user.role !== 'ABC Secretary' ? '<button class="delete" data-email="' + user.email + '">Delete</button>' : ''}</td>
+                        <td>${user.role !== 'ABC' ? '<button class="delete" data-id="' + user.id + '" data-email="' + user.email + '">Archive</button>' : ''}</td>
                     `;
                 });
                 document.querySelectorAll('.delete').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const email = this.getAttribute('data-email');
-                        if (!confirm(`Are you sure you want to delete user: ${email}?`)) return;
+                        const id = this.getAttribute('data-id');
+                        const proceed = await showCustomConfirm(`Are you sure you want to archive user: ${email || id}?`, 'warning');
+                        if (!proceed) return;
                         try {
-                            const res = await fetch('api/users.php?email=' + encodeURIComponent(email), { method: 'DELETE' });
+                            // Prefer deleting by id for reliability when available
+                            const url = id ? `api/users.php?id=${encodeURIComponent(id)}` : `api/users.php?email=${encodeURIComponent(email)}`;
+                            const res = await fetch(url, { method: 'DELETE', credentials: 'same-origin' });
                             const data = await res.json();
-                            if (!data.ok) throw new Error(data.error || 'Delete failed');
-                            userMessage.textContent = `User ${email} successfully deleted.`;
+                            if (!data.ok) throw new Error(data.error || 'Archive failed');
+                            userMessage.textContent = `User ${email || id} successfully archived.`;
                             userMessage.style.color = 'green';
                             userMessage.style.display = 'block';
                             setTimeout(() => {
                                 userMessage.style.display = 'none';
-                            }, 1000);
+                            }, 2000);
                             loadUsers();
+                            loadArchivedUsers();
+                            // Immediately refresh dashboard to reflect archived user's data removal
+                            await loadAllSubmissions();
                         } catch (err) {
                             userMessage.textContent = err.message;
                             userMessage.style.color = 'red';
                             userMessage.style.display = 'block';
                             setTimeout(() => {
                                 userMessage.style.display = 'none';
-                            }, 1000);
+                            }, 2000);
                         }
                     });
                 });
@@ -933,33 +2514,126 @@
                 userMessage.style.display = 'block';
                 setTimeout(() => {
                     userMessage.style.display = 'none';
-                }, 1000);
+                }, 2000);
+            }
+        }
+
+        // Load archived users
+        async function loadArchivedUsers() {
+            const archivedUserTableBody = document.getElementById('archivedUserTableBody');
+            const userMessage = document.getElementById('userMessage');
+            try {
+                const res = await fetch('api/users.php?archived=1');
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Failed to load archived users');
+                archivedUserTableBody.innerHTML = '';
+                data.users.forEach(user => {
+                    const row = archivedUserTableBody.insertRow();
+                    // include id attribute for reliable permanent delete
+                    row.innerHTML = `
+                        <td>${user.email}</td>
+                        <td>${user.barangay}</td>
+                        <td>${user.role}</td>
+                        <td><span class="status-badge status-rejected">Archived</span></td>
+                        <td>
+                            <button class="approve restore-btn" data-email="${user.email}">Restore</button>
+                            <button class="delete permanent-delete-btn" data-id="${user.id}" data-email="${user.email}" style="margin-left: 5px;">Delete</button>
+                        </td>
+                    `;
+                });
+                
+                // Restore button handler
+                document.querySelectorAll('#archivedUserTableBody .restore-btn').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const email = this.getAttribute('data-email');
+                        const proceed = await showCustomConfirm(`Are you sure you want to restore user: ${email}?`, 'info');
+                        if (!proceed) return;
+                        try {
+                            const res = await fetch('api/users.php', {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email: email, action: 'restore' })
+                            });
+                            const data = await res.json();
+                            if (!data.ok) throw new Error(data.error || 'Restore failed');
+                            userMessage.textContent = `User ${email} successfully restored.`;
+                            userMessage.style.color = 'green';
+                            userMessage.style.display = 'block';
+                            setTimeout(() => {
+                                userMessage.style.display = 'none';
+                            }, 2000);
+                            loadUsers();
+                            loadArchivedUsers();
+                            // Immediately refresh dashboard to show restored user's data
+                            await loadAllSubmissions();
+                        } catch (err) {
+                            userMessage.textContent = err.message;
+                            userMessage.style.color = 'red';
+                            userMessage.style.display = 'block';
+                            setTimeout(() => {
+                                userMessage.style.display = 'none';
+                            }, 2000);
+                        }
+                    });
+                });
+                
+                // Delete button handler (permanent delete)
+                document.querySelectorAll('#archivedUserTableBody .permanent-delete-btn').forEach(btn => {
+                    btn.addEventListener('click', async function() {
+                        const email = this.getAttribute('data-email');
+                        const id = this.getAttribute('data-id');
+                        const firstConfirm = await showCustomConfirm(`⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE user: ${email || id}?<br><br>This action CANNOT be undone!<br><br>All data associated with this user will be permanently removed.`, 'error');
+                        if (!firstConfirm) return;
+                        
+                        // Second confirmation for safety
+                        const finalConfirm = await showCustomConfirm(`FINAL CONFIRMATION: Delete ${email || id} permanently?`, 'error');
+                        if (!finalConfirm) return;
+                        
+                        try {
+                            const url = id ? `api/users.php?id=${encodeURIComponent(id)}&permanent=1` : `api/users.php?email=${encodeURIComponent(email)}&permanent=1`;
+                            const res = await fetch(url, { method: 'DELETE', credentials: 'same-origin' });
+                            const data = await res.json();
+                            if (!data.ok) throw new Error(data.error || 'Delete failed');
+                            userMessage.textContent = `User ${email || id} permanently deleted.`;
+                            userMessage.style.color = 'green';
+                            userMessage.style.display = 'block';
+                            setTimeout(() => {
+                                userMessage.style.display = 'none';
+                            }, 2000);
+                            loadUsers();
+                            loadArchivedUsers();
+                        } catch (err) {
+                            userMessage.textContent = err.message;
+                            userMessage.style.color = 'red';
+                            userMessage.style.display = 'block';
+                            setTimeout(() => {
+                                userMessage.style.display = 'none';
+                            }, 2000);
+                        }
+                    });
+                });
+            } catch (err) {
             }
         }
 
         // Password change notifications
         async function loadPasswordNotifications() {
-            console.log('Loading password notifications...');
             try {
                 // Check if we're authenticated first
                 const authCheck = await checkAuth();
                 if (!authCheck) {
-                    console.log('Not authenticated, skipping notifications');
                     return;
                 }
                 
                 const res = await fetch('api/get_password_notifications.php');
-                console.log('Fetch response status:', res.status);
                 
                 if (!res.ok) {
                     throw new Error(`HTTP ${res.status}: ${res.statusText}`);
                 }
                 
                 const data = await res.json();
-                console.log('Notifications API response:', data);
                 
                 if (!data.ok) {
-                    console.error('API error:', data.error);
                     document.getElementById('passwordNotifications').innerHTML = 
                         '<p style="text-align: center; color: red;">Failed to load notifications: ' + (data.error || 'Unknown error') + '</p>';
                     return;
@@ -989,12 +2663,14 @@
                     const statusClass = notification.status === 'new' ? 'status-rejected' : 
                                       notification.status === 'recent' ? 'status-review' : 'status-approved';
                     const timeAgo = formatTimeAgo(notification.changed_at);
+                    const exactTime = formatExactTime(notification.changed_at);
+                    const isVeryRecent = notification.status === 'new';
                     
                     html += `
-                        <div style="border-bottom: 1px solid #eee; padding: 8px 0;" id="notification-${notification.id}">
+                        <div style="border-bottom: 1px solid #eee; padding: 8px 0; ${isVeryRecent ? 'background: #fff3cd; margin: -8px; padding: 16px; border-radius: 4px; margin-bottom: 8px;' : ''}" id="notification-${notification.id}">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
-                                    <strong>${notification.user_email}</strong>
+                                    ${isVeryRecent ? '🔔 ' : ''}<strong>${notification.user_email}</strong>
                                     <span class="status-badge ${statusClass}" style="margin-left: 10px;">${notification.status}</span>
                                 </div>
                                 <button class="delete delete-notification-btn" data-notification-id="${notification.id}" 
@@ -1002,8 +2678,11 @@
                                     ✕
                                 </button>
                             </div>
-                            <div style="font-size: 0.9em; color: #666;">
-                                Barangay: ${notification.user_barangay} • ${timeAgo}
+                            <div style="font-size: 0.9em; color: #666; margin-top: 4px;">
+                                Barangay: ${notification.user_barangay}
+                            </div>
+                            <div style="font-size: 0.85em; color: #007bff; font-weight: bold; margin-top: 4px;">
+                                🕒 Changed: ${exactTime} (${timeAgo})
                             </div>
                         </div>
                     `;
@@ -1020,7 +2699,6 @@
                 });
                 
             } catch (err) {
-                console.error('Error loading notifications:', err);
                 document.getElementById('passwordNotifications').innerHTML = 
                     '<p style="text-align: center; color: red;">Error loading notifications: ' + err.message + '</p>';
             }
@@ -1030,13 +2708,28 @@
             const date = new Date(dateString);
             const now = new Date();
             const diffMs = now - date;
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
             const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
             const diffDays = Math.floor(diffHours / 24);
             
-            if (diffHours < 1) return 'Just now';
+            if (diffMinutes < 1) return 'Just now';
+            if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
             if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
             if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
             return date.toLocaleDateString();
+        }
+        
+        function formatExactTime(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
         }
 
         // Toggle notifications visibility function
@@ -1047,14 +2740,14 @@
             if (container.classList.contains('notifications-hidden')) {
                 // Show notifications
                 container.classList.remove('notifications-hidden');
-                toggleBtn.textContent = 'Hide All';
+                toggleBtn.textContent = 'Hide';
                 toggleBtn.className = 'toggle-notifications';
                 toggleBtn.style.padding = '6px 12px';
                 toggleBtn.style.fontSize = '12px';
             } else {
                 // Hide notifications
                 container.classList.add('notifications-hidden');
-                toggleBtn.textContent = 'Show All';
+                toggleBtn.textContent = 'Show';
                 toggleBtn.className = 'approve'; // Green color for show button
                 toggleBtn.style.padding = '6px 12px';
                 toggleBtn.style.fontSize = '12px';
@@ -1075,8 +2768,28 @@
                 userMessage.style.display = 'block';
                 setTimeout(() => {
                     userMessage.style.display = 'none';
-                }, 1000);
+                }, 2000);
                 return;
+            }
+
+            // Check if barangay already has a user
+            try {
+                const checkRes = await fetch('api/users.php');
+                const checkData = await checkRes.json();
+                if (checkData.ok && checkData.users) {
+                    const existingUser = checkData.users.find(user => user.barangay === barangay && user.archived === '0');
+                    if (existingUser) {
+                        userMessage.textContent = `A user account already exists for ${barangay} barangay (Email: ${existingUser.email})`;
+                        userMessage.style.color = 'red';
+                        userMessage.style.display = 'block';
+                        setTimeout(() => {
+                            userMessage.style.display = 'none';
+                        }, 3000);
+                        return;
+                    }
+                }
+            } catch (checkErr) {
+                // Continue with form submission if check fails
             }
 
             if (password !== confirmPassword) {
@@ -1085,7 +2798,7 @@
                 userMessage.style.display = 'block';
                 setTimeout(() => {
                     userMessage.style.display = 'none';
-                }, 1000);
+                }, 2000);
                 return;
             }
 
@@ -1095,7 +2808,7 @@
                 userMessage.style.display = 'block';
                 setTimeout(() => {
                     userMessage.style.display = 'none';
-                }, 1000);
+                }, 2000);
                 return;
             }
 
@@ -1112,21 +2825,22 @@
                 userMessage.style.display = 'block';
                 setTimeout(() => {
                     userMessage.style.display = 'none';
-                }, 1000);
+                }, 2000);
                 addUserForm.reset();
                 loadUsers();
+                loadArchivedUsers();
             } catch (err) {
                 userMessage.textContent = err.message;
                 userMessage.style.color = 'red';
                 userMessage.style.display = 'block';
                 setTimeout(() => {
                     userMessage.style.display = 'none';
-                }, 1000);
+                }, 2000);
             }
         });
 
-        // Sidebar navigation (unchanged)
-        const sidebarLinks = document.querySelectorAll('.sidebar a.sidebar-link:not(#logout-link)'); 
+        // Sidebar navigation
+        const sidebarLinks = document.querySelectorAll('.sidebar a.sidebar-link'); 
         const contentCards = document.querySelectorAll('.content-area .card');
         function showContent(targetId) {
             contentCards.forEach(card => card.classList.remove('active-card'));
@@ -1136,9 +2850,9 @@
             const activeLink = document.querySelector(`.sidebar a[data-target="${targetId}"]`);
             if (activeLink) activeLink.classList.add('active');
             
-            // Load notifications when showing users section
-            if (targetId === 'users') {
-                console.log('Switching to users section, loading notifications...');
+            // Load reset requests and notifications when showing reset-requests section
+            if (targetId === 'reset-requests') {
+                loadResetRequests(currentResetFilter);
                 loadPasswordNotifications();
             }
         }
@@ -1150,15 +2864,242 @@
         // Add event listener for toggle notifications button
         document.getElementById('toggleNotifications').addEventListener('click', toggleNotifications);
 
-        // Auto-refresh password notifications every 30 seconds
-        setInterval(loadPasswordNotifications, 30000);
+        // Password Reset Requests Functions
+        let currentResetFilter = 'pending';
+        let currentRequestToReject = null;
+
+        async function loadResetRequests(filter = 'pending') {
+            try {
+                const response = await fetch(`api/get_reset_requests.php?status=${filter}`);
+                const result = await response.json();
+                
+                if (result.ok) {
+                    displayResetRequests(result.requests);
+                    
+                    // Get password change notifications count
+                    const notifResponse = await fetch('api/get_password_notifications.php');
+                    const notifData = await notifResponse.json();
+                    const notifCount = notifData.ok ? (notifData.unread_count || 0) : 0;
+                    
+                    // Update sidebar badge with combined count (pending reset requests + notifications)
+                    const combinedCount = result.pending_count + notifCount;
+                    updateSidebarBadge('resetRequestsNotifBadge', combinedCount);
+                    
+                    // Update filter button counts
+                    const pendingCount = result.requests.filter(r => r.status === 'pending').length;
+                    const approvedCount = result.requests.filter(r => r.status === 'approved').length;
+                    const rejectedCount = result.requests.filter(r => r.status === 'rejected').length;
+                    
+                    if (filter === 'all') {
+                        document.getElementById('reset-pending-count').textContent = pendingCount;
+                        document.getElementById('reset-approved-count').textContent = approvedCount;
+                        document.getElementById('reset-rejected-count').textContent = rejectedCount;
+                    } else {
+                        // Fetch all to get accurate counts
+                        const allResponse = await fetch('api/get_reset_requests.php?status=all');
+                        const allResult = await allResponse.json();
+                        if (allResult.ok) {
+                            const pCount = allResult.requests.filter(r => r.status === 'pending').length;
+                            const aCount = allResult.requests.filter(r => r.status === 'approved').length;
+                            const rCount = allResult.requests.filter(r => r.status === 'rejected').length;
+                            document.getElementById('reset-pending-count').textContent = pCount;
+                            document.getElementById('reset-approved-count').textContent = aCount;
+                            document.getElementById('reset-rejected-count').textContent = rCount;
+                        }
+                    }
+                }
+            } catch (error) {
+            }
+        }
+
+        function displayResetRequests(requests) {
+            const tbody = document.getElementById('reset-requests-tbody');
+            
+            if (requests.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="padding: 20px; text-align: center; color: #666;">
+                            No ${currentResetFilter === 'all' ? '' : currentResetFilter} requests found.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = requests.map(req => {
+                const requestDate = new Date(req.requested_at);
+                const dateStr = requestDate.toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const statusClass = `status-${req.status}`;
+                const statusText = req.status.charAt(0).toUpperCase() + req.status.slice(1);
+                
+                let actionsHtml = '';
+                if (req.status === 'pending') {
+                    actionsHtml = `
+                        <button class="action-btn approve-btn" onclick="approveResetRequest(${req.id}, '${req.user_email}')">
+                            Approve
+                        </button>
+                        <button class="action-btn reject-btn" onclick="openRejectionModal(${req.id}, '${req.user_email}')">
+                            Reject
+                        </button>
+                    `;
+                } else if (req.status === 'approved') {
+                    actionsHtml = `<span style="color: #28a745;">✓ Approved</span>`;
+                } else {
+                    actionsHtml = `<span style="color: #dc3545;">✗ Rejected</span>`;
+                }
+                
+                return `
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${req.user_email}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${req.user_role}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${req.user_barangay}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">${dateStr}</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                        </td>
+                        <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">
+                            ${actionsHtml}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function approveResetRequest(requestId, email) {
+            const proceed = await showCustomConfirm(`Are you sure you want to approve the password reset request for ${email}?`, 'info');
+            if (!proceed) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('api/approve_reset_request.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        request_id: requestId,
+                        action: 'approve'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert(`Password reset request approved successfully for ${email}`, 'success');
+                    await loadResetRequests(currentResetFilter);
+                } else {
+                    showCustomAlert('Failed to approve request: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showCustomAlert('Error approving request. Please try again.', 'error');
+            }
+        }
+
+        function openRejectionModal(requestId, email) {
+            currentRequestToReject = requestId;
+            document.getElementById('reject-modal-email').textContent = email;
+            document.getElementById('rejection-reason').value = '';
+            document.getElementById('rejection-modal').style.display = 'flex';
+        }
+
+        function closeRejectionModal() {
+            currentRequestToReject = null;
+            document.getElementById('rejection-modal').style.display = 'none';
+        }
+
+        async function submitRejection() {
+            const reason = document.getElementById('rejection-reason').value.trim();
+            
+            if (!reason) {
+                showCustomAlert('Please provide a reason for rejection', 'warning');
+                return;
+            }
+            
+            try {
+                const response = await fetch('api/approve_reset_request.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        request_id: currentRequestToReject,
+                        action: 'reject',
+                        rejection_reason: reason
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert(`Password reset request rejected for ${result.user_email}`, 'success');
+                    closeRejectionModal();
+                    await loadResetRequests(currentResetFilter);
+                } else {
+                    showCustomAlert('Failed to reject request: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showCustomAlert('Error rejecting request. Please try again', 'error');
+            }
+        }
+
+        // Make functions global so they can be called from onclick handlers
+        window.approveResetRequest = approveResetRequest;
+        window.openRejectionModal = openRejectionModal;
+        window.closeRejectionModal = closeRejectionModal;
+        window.submitRejection = submitRejection;
+
+        // Add event listeners for reset request filter buttons
+        document.querySelectorAll('.reset-filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.reset-filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentResetFilter = this.getAttribute('data-filter');
+                loadResetRequests(currentResetFilter);
+            });
+        });
+
+        // Auto-refresh password notifications every 5 seconds for real-time updates
+        setInterval(loadPasswordNotifications, 5000);
+
+        // Auto-refresh dashboard data every 10 seconds
+        setInterval(async () => {
+            // Only refresh if dashboard is active and preserve scroll position
+            const dashboardCard = document.getElementById('dashboard');
+            if (dashboardCard && dashboardCard.classList.contains('active-card')) {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                await loadAllSubmissions();
+                window.scrollTo(0, scrollTop);
+            }
+        }, 10000);
+
+        // Auto-refresh user lists every 15 seconds
+        setInterval(async () => {
+            await loadUsers();
+            await loadArchivedUsers();
+        }, 15000);
+
+        // Auto-refresh reset requests every 15 seconds (only if on that tab)
+        setInterval(async () => {
+            const resetRequestsCard = document.getElementById('reset-requests');
+            if (resetRequestsCard && resetRequestsCard.classList.contains('active-card')) {
+                await loadResetRequests(currentResetFilter);
+            }
+        }, 15000);
 
         (async () => {
             const user = await checkAuth();
             if (!user) return;
-            userInfoSpan.textContent = 'ABC Secretary';
+            userInfoSpan.textContent = 'ABC';
             await loadUsers();
+            await loadArchivedUsers();
             await loadPasswordNotifications();
+            await loadAllSubmissions();
+            await loadResetRequests('pending');
+            initializeBarangaySearch(); // Initialize search functionality
             showContent('dashboard');
         })();
     });

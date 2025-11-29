@@ -68,7 +68,6 @@
       z-index: 999;
     }
 
-
     .sidebar a {
       display: flex;
       align-items: center;
@@ -249,6 +248,32 @@
       text-align: center;
     }
 
+    /* Sidebar notification badge */
+    .sidebar-notif-badge {
+      background-color: #dc3545;
+      color: white;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7em;
+      font-weight: bold;
+      margin-left: auto;
+      display: none;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .sidebar a {
+      position: relative;
+    }
+
     .status-approved {
       background-color: #d4edda;
       color: #155724;
@@ -257,6 +282,125 @@
     .status-pending {
       background-color: #cce5ff;
       color: #004085;
+    }
+
+    .status-review {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .status-rejected {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Comment-related styles */
+    .comment-indicator {
+      color: #28a745;
+      font-size: 0.9em;
+      margin-left: 5px;
+    }
+
+    .comment-button {
+      background: #17a2b8;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8em;
+      margin-left: 5px;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .comment-button:hover {
+      background: #138496;
+      color: white;
+      text-decoration: none;
+    }
+
+    .comment-preview {
+      font-size: 0.85em;
+      color: #6c757d;
+      font-style: italic;
+      margin-top: 3px;
+      padding: 3px 0;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .comment-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .comment-modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      max-width: 700px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .comment-entry {
+      background: #f8f9fa;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 6px;
+      border-left: 4px solid #007bff;
+    }
+
+    .comment-timestamp {
+      font-size: 0.85em;
+      color: #6c757d;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .comment-text {
+      color: #495057;
+      line-height: 1.4;
+    }
+
+    /* Status Filter Buttons */
+    .status-filter-btn {
+      padding: 8px 16px;
+      border: 2px solid #ddd;
+      background-color: #f8f9fa;
+      color: #495057;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      margin-bottom: 5px;
+    }
+
+    .status-filter-btn:hover {
+      background-color: #e9ecef;
+      border-color: #007bff;
+    }
+
+    .status-filter-btn.active {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    .status-filter-btn.active:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
     }
 
     .dashboard-stats {
@@ -308,6 +452,99 @@
         text-align: right;
     }
     
+    /* Password Notification Styles */
+    .password-notif-section {
+        margin-top: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .password-notif-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .password-notif-header h3 {
+        margin: 0;
+        color: #333;
+        font-size: 1.1em;
+    }
+    
+    .toggle-password-notif-btn {
+        padding: 8px 16px;
+        background: #0066cc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 600;
+        transition: background 0.3s;
+        margin: 0;
+    }
+    
+    .toggle-password-notif-btn:hover {
+        background: #004c99;
+    }
+    
+    .password-notif-content {
+        display: none;
+        margin-top: 15px;
+    }
+    
+    .password-notif-content.show {
+        display: block;
+    }
+    
+    .password-notif-item {
+        background: white;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-left: 4px solid #ffc107;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .password-notif-item.new {
+        border-left-color: #28a745;
+    }
+    
+    .password-notif-item.recent {
+        border-left-color: #ffc107;
+    }
+    
+    .password-notif-item.old {
+        border-left-color: #6c757d;
+    }
+    
+    .password-notif-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.75em;
+        font-weight: bold;
+        margin-left: 8px;
+    }
+    
+    .password-notif-badge.new {
+        background: #28a745;
+        color: white;
+    }
+    
+    .password-notif-badge.recent {
+        background: #ffc107;
+        color: #333;
+    }
+    
+    .password-notif-badge.old {
+        background: #6c757d;
+        color: white;
+    }
+    
     .form-row {
       display: flex;
       gap: 20px;
@@ -320,6 +557,253 @@
 
     .form-column label {
       margin-top: 0;
+    }
+
+    /* Document Viewer Modal */
+    .doc-viewer-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .doc-viewer-container {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 1200px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .doc-viewer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 2px solid #e0e0e0;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .doc-viewer-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #004c99;
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-right: 15px;
+    }
+
+    .doc-viewer-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .doc-viewer-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .doc-viewer-download {
+        background: #28a745;
+        color: white;
+        text-decoration: none;
+    }
+
+    .doc-viewer-download:hover {
+        background: #218838;
+    }
+
+    .doc-viewer-close {
+        background: #dc3545;
+        color: white;
+    }
+
+    .doc-viewer-close:hover {
+        background: #c82333;
+    }
+
+    .doc-viewer-content {
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+        background: #f5f5f5;
+    }
+
+    .doc-viewer-iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .doc-viewer-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: #666;
+    }
+
+    .doc-viewer-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #004c99;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Custom Alert Modal */
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+        from { 
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+        to { 
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .custom-modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 0;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideDown 0.3s ease-out;
+        overflow: hidden;
+    }
+
+    .custom-modal-header {
+        background: linear-gradient(135deg, #004c99 0%, #0066cc 100%);
+        color: white;
+        padding: 20px 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .custom-modal-header.success {
+        background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+    }
+
+    .custom-modal-header.error {
+        background: linear-gradient(135deg, #dc3545 0%, #e74c5c 100%);
+    }
+
+    .custom-modal-header.warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%);
+    }
+
+    .custom-modal-icon {
+        font-size: 28px;
+        line-height: 1;
+    }
+
+    .custom-modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+    }
+
+    .custom-modal-body {
+        padding: 25px;
+        color: #333;
+        font-size: 15px;
+        line-height: 1.6;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .custom-modal-footer {
+        padding: 15px 25px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .custom-modal-button {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 80px;
+    }
+
+    .custom-modal-button.primary {
+        background: #004c99;
+        color: white;
+    }
+
+    .custom-modal-button.primary:hover {
+        background: #003d7a;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 76, 153, 0.3);
+    }
+
+    .custom-modal-button.success {
+        background: #28a745;
+        color: white;
+    }
+
+    .custom-modal-button.success:hover {
+        background: #218838;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
     }
 
   </style>
@@ -371,6 +855,17 @@
           </svg>
         </span>
         Submissions
+        <span class="sidebar-notif-badge" id="submissionsNotifBadge">0</span>
+      </a>
+
+      <a href="#archived" class="sidebar-link" data-target="archived">
+        <span class="icon" aria-hidden="true">
+          <!-- Archive icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 4H4V4h16v2zM6 20V8h12v12H6zm4-9h4v2h-4z" fill="currentColor" />
+          </svg>
+        </span>
+        Archived
       </a>
 
       <a href="index.html" class="sidebar-link" id="logout-link">
@@ -417,13 +912,17 @@
         <div class="dashboard-grid">
              <div>
                  <h2 style="margin-top: 20px;">Quick Access</h2>
-                <div class="card" style="padding: 15px; border-left: 5px solid #0066cc; margin-bottom: 10px;">
-                    <h3>Submit New Report</h3>
-                    <p>Mabilis na pag-access sa <a href="#" onclick="showContent('upload'); return false;">Upload Report</a> form.</p>
+                <div class="card" style="padding: 15px; border-left: 5px solid #0066cc; margin-bottom: 10px; cursor: pointer;" onclick="showContent('upload')">
+                    <h3 style="margin-top: 0;">📤 Submit New Report</h3>
+                    <p style="margin-bottom: 0;">Quick access to <a href="#" onclick="showContent('upload'); return false;">Upload Report</a> form to submit documents.</p>
                 </div>
-                 <div class="card" style="padding: 15px; border-left: 5px solid #0066cc;">
-                    <h3>View All Submissions</h3>
-                    <p>Tingnan ang kumpletong listahan ng mga dokumentong naisumite sa <a href="#" onclick="showContent('submissions'); return false;">Submissions</a> page.</p>
+                 <div class="card" style="padding: 15px; border-left: 5px solid #28a745; margin-bottom: 10px; cursor: pointer;" onclick="showContent('submissions')">
+                    <h3 style="margin-top: 0;">📋 View All Submissions</h3>
+                    <p style="margin-bottom: 0;">View the complete list of submitted documents on the <a href="#" onclick="showContent('submissions'); return false;">Submissions</a> page.</p>
+                </div>
+                <div class="card" style="padding: 15px; border-left: 5px solid #ffc107;">
+                    <h3 style="margin-top: 0;">📊 Recent Activity</h3>
+                    <p id="recent-activity-text" style="margin-bottom: 0; color: #666;">Loading...</p>
                 </div>
             </div>
 
@@ -431,6 +930,19 @@
               <h2>Recent Notifications</h2>
               <div id="notifications-container">
                 <div class="notif">No new notifications <span class="notif-timestamp">--</span></div>
+                </div>
+                
+                <!-- Password Change Notifications Section -->
+                <div class="password-notif-section">
+                    <div class="password-notif-header">
+                        <h3>🔐 Password Changes</h3>
+                        <button class="toggle-password-notif-btn" onclick="togglePasswordNotifications()">Show</button>
+                    </div>
+                    <div class="password-notif-content" id="password-notif-content">
+                        <div style="text-align: center; color: #666; padding: 20px;">
+                            Loading password notifications...
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -479,7 +991,40 @@
       </div>
       
       <div id="submissions" class="card">
-        <h2>Recent Document Submissions</h2>
+        <h2>Document Submissions Management</h2>
+        
+        <!-- Status Filter Tabs -->
+        <div style="margin-bottom: 20px; display: flex; gap: 5px; flex-wrap: wrap;">
+          <button id="filter-all" class="status-filter-btn active" onclick="filterSubmissionsByStatus('all')">
+            All Submissions (<span id="count-all">0</span>)
+          </button>
+          <button id="filter-pending" class="status-filter-btn" onclick="filterSubmissionsByStatus('pending')">
+            Pending (<span id="count-pending-filter">0</span>)
+          </button>
+          <button id="filter-review" class="status-filter-btn" onclick="filterSubmissionsByStatus('review')">
+            Under Review (<span id="count-review-filter">0</span>)
+          </button>
+          <button id="filter-approved" class="status-filter-btn" onclick="filterSubmissionsByStatus('approved')">
+            Approved (<span id="count-approved-filter">0</span>)
+          </button>
+          <button id="filter-rejected" class="status-filter-btn" onclick="filterSubmissionsByStatus('rejected')">
+            Rejected (<span id="count-rejected-filter">0</span>)
+          </button>
+        </div>
+        
+        <!-- Search and Actions Bar -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <input 
+            type="text" 
+            id="submission-search" 
+            placeholder="Search by title, category, or status..." 
+            style="flex: 1; margin: 0; min-width: 250px;"
+          />
+          <button id="clear-search-button" type="button" style="width: auto; padding: 10px 20px; margin: 0; background-color: #ffcccc; color: #000; border: none; cursor: pointer; border-radius: 6px; font-weight: bold;" 
+            onmouseover="this.style.backgroundColor='#ff0000'; this.style.color='#fff';" 
+            onmouseout="this.style.backgroundColor='#ffcccc'; this.style.color='#000';">Clear Search</button>
+        </div>
+        
         <table>
           <thead>
             <tr>
@@ -500,14 +1045,64 @@
         </div>
         
       </div>
+
+      <!-- Archived Documents Section -->
+      <div id="archived" class="card">
+        <h2>Archived Documents</h2>
+        
+        <!-- Search Bar -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+          <input 
+            type="text" 
+            id="archived-search" 
+            placeholder="Search archived documents..." 
+            style="flex: 1; margin: 0;"
+          />
+          <button id="clear-archived-search-button" type="button" style="width: auto; padding: 10px 20px; margin: 0; background-color: #ffcccc; color: #000; border: none; cursor: pointer; border-radius: 6px; font-weight: bold;" 
+            onmouseover="this.style.backgroundColor='#ff0000'; this.style.color='#fff';" 
+            onmouseout="this.style.backgroundColor='#ffcccc'; this.style.color='#000';">Clear</button>
+        </div>
+        
+        <table>
+          <thead>
+            <tr>
+              <th>Document Title</th>
+              <th>Category</th>
+              <th>Date Submitted</th>
+              <th>Submission Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="archived-table-body">
+            <!-- Archived submissions will be loaded dynamically -->
+            </tbody>
+        </table>
+        
+        <div id="view-all-archived-button-container"> 
+            <button id="view-all-archived-button" type="button">View All Archived</button>
+        </div>
+        
+      </div>
       
     </div>
   </div>
 
   <script>
 
+  // Helper function to update sidebar notification badges
+  function updateSidebarBadge(badgeId, count) {
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
-    // --- JAVASCRIPT FOR LOGIN CHECK AND USER INFO ---
     let loggedInUser = null;
     const userInfoText = document.getElementById('userInfoText');
     const portalTitle = document.getElementById('portalTitle');
@@ -539,24 +1134,24 @@
     (async () => {
       loggedInUser = await resolveUser();
       if (!loggedInUser) {
-        alert('Access Denied. Please login as Barangay Secretary.');
-        window.location.href = 'index.html';
+        showCustomAlert('Access Denied. Please login as Barangay Secretary.', 'error', function() {
+          window.location.href = 'index.html';
+        });
         return;
       }
 
-      // I-update ang header based sa user
+      // Update the header based on user
       userInfoText.textContent = `${loggedInUser.barangay} Secretary`;
       portalTitle.textContent = `${loggedInUser.barangay} Secretary Portal`;
       logoutLink.href = 'index.html'; 
             
-      // I-clear ang session storage pag nag-logout
+      // Clear session storage on logout
       logoutLink.addEventListener('click', async (e) => {
         // Best-effort logout on backend too
         try { await fetch('api/logout.php', { method: 'POST' }); } catch {}
         sessionStorage.removeItem('loggedInUser');
       });
 
-        // --- JAVASCRIPT FOR SIDEBAR NAVIGATION ---
         const sidebarLinks = document.querySelectorAll('.sidebar a.sidebar-link:not(#logout-link)');
         const contentCards = document.querySelectorAll('.content-area .card');
 
@@ -591,19 +1186,1248 @@
                 showContent(targetId);
             });
         });
+      
+      // Function to update Recent Notifications panel
+      function updateRecentNotifications(submissions) {
+        const notificationsContainer = document.getElementById('notifications-container');
+        
+        if (!submissions || submissions.length === 0) {
+          notificationsContainer.innerHTML = '<div class="notif">No new notifications <span class="notif-timestamp">--</span></div>';
+          return;
+        }
+        
+        // Filter submissions with status updates (not pending and not empty)
+        const notificationItems = submissions
+          .filter(s => {
+            const hasStatus = s.status && s.status.trim() !== '' && s.status !== 'pending';
+            if (hasStatus && s.status === 'review') {
+              console.log('Found review item:', s.title, s.status);
+            }
+            return hasStatus;
+          })
+          .sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at))
+          .slice(0, 5);
+        
+        console.log('Total notification items:', notificationItems.length, notificationItems);
+        
+        if (notificationItems.length === 0) {
+          notificationsContainer.innerHTML = '<div class="notif">No new notifications <span class="notif-timestamp">--</span></div>';
+          return;
+        }
+        
+        let html = '';
+        notificationItems.forEach(item => {
+          // Use status_changed_at if available, otherwise fall back to uploaded_at
+          const statusTimestamp = item.status_changed_at || item.uploaded_at;
+          let timeAgo = '';
+          let exactTime = '';
+          
+          if (item.status_changed_at) {
+            // If we have exact timestamp from status change, use it directly
+            exactTime = item.status_changed_at;
+            // Parse the formatted timestamp to calculate time ago
+            const statusChangeDate = new Date(item.status_changed_at);
+            timeAgo = getTimeAgo(statusChangeDate);
+          } else {
+            // Fall back to uploaded_at
+            const statusChangeDate = new Date(item.uploaded_at);
+            timeAgo = getTimeAgo(statusChangeDate);
+            exactTime = formatExactDateTime(statusChangeDate);
+          }
+          
+          // Get document title - use title if available, otherwise use filename
+          const documentTitle = item.title && item.title.trim() !== '' 
+            ? item.title 
+            : (item.original_name || item.filename || 'Untitled Document');
+          
+          let statusMessage = '';
+          let statusIcon = '';
+          let borderColor = '#0066cc';
+          const hasComments = item.remarks && item.remarks.trim() !== '';
+          
+          // Check status - handle all possible variations
+          const status = (item.status || '').trim();
+          
+          if (status === 'approved') {
+            statusIcon = '✅';
+            statusMessage = `Approved: ${documentTitle}`;
+            borderColor = '#28a745';
+          } else if (status === 'under review') {
+            statusIcon = '🔍';
+            statusMessage = `Under Review: ${documentTitle}`;
+            borderColor = '#ffc107';
+          } else if (status === 'review') {
+            statusIcon = '🔍';
+            statusMessage = `Under Review: ${documentTitle}`;
+            borderColor = '#ffc107';
+          } else if (status === 'rejected') {
+            statusIcon = '❌';
+            statusMessage = `Rejected: ${documentTitle}`;
+            borderColor = '#dc3545';
+          } else if (status === 'pending') {
+            statusIcon = '⏳';
+            statusMessage = `Pending: ${documentTitle}`;
+            borderColor = '#6c757d';
+          } else if (status === '') {
+            // Skip empty status items - should be filtered out already
+            return;
+          } else {
+            // Fallback for any other status
+            statusIcon = '📄';
+            statusMessage = `Status "${status}": ${documentTitle}`;
+            borderColor = '#6c757d';
+          }
+          
+          html += `
+            <div class="notif" style="border-left-color: ${borderColor};">
+              <strong style="font-size: 1.05em; color: #000; display: block; margin-bottom: 10px;">
+                ${statusIcon} ${statusMessage}
+              </strong>
+              ${hasComments ? `<div style="padding: 8px; background: #fffbea; border-left: 3px solid #ffc107; margin-bottom: 10px; font-size: 0.9em; color: #333;">💬 <strong>Remarks:</strong> ${item.remarks.substring(0, 100)}${item.remarks.length > 100 ? '...' : ''}</div>` : ''}
+              <span class="notif-timestamp">🕒 ${exactTime} (${timeAgo})</span>
+            </div>
+          `;
+        });
+        
+        notificationsContainer.innerHTML = html;
+      }
+      
+      // Function to update Recent Activity
+      function updateRecentActivity(total, pending, review) {
+        const activityText = document.getElementById('recent-activity-text');
+        
+        if (!activityText) return;
+        
+        if (total === 0) {
+          activityText.innerHTML = 'No submissions yet. Start by uploading your first report.';
+          return;
+        }
+        
+        let statusParts = [];
+        if (pending > 0) statusParts.push(`${pending} pending`);
+        if (review > 0) statusParts.push(`${review} under review`);
+        
+        if (statusParts.length > 0) {
+          activityText.innerHTML = `You have ${statusParts.join(' and ')} out of ${total} total submission${total > 1 ? 's' : ''}.`;
+        } else {
+          activityText.innerHTML = `All ${total} submission${total > 1 ? 's are' : ' is'} processed. Great work!`;
+        }
+      }
+      
+      // Helper function to calculate time ago
+      function getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+        
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+      
+      // Helper function to format exact date and time
+      function formatExactDateTime(date) {
+        return date.toLocaleString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        });
+      }
 
       const uploadForm = document.getElementById('upload-form');
       if (uploadForm) {
-        uploadForm.addEventListener('submit', (event) => {
+        uploadForm.addEventListener('submit', async (event) => {
           event.preventDefault();
-          alert(`Report submitted successfully by ${loggedInUser.barangay} Secretary!`);
-          uploadForm.reset();
+          
+          const formData = new FormData();
+          formData.append('title', document.getElementById('doc-title').value);
+          formData.append('category', document.getElementById('doc-category').value);
+          formData.append('period', document.getElementById('reporting-period').value);
+          formData.append('file', document.getElementById('doc-file').files[0]);
+          
+          try {
+            const response = await fetch('api/submissions.php', {
+              method: 'POST',
+              body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.ok) {
+              showCustomAlert('Report submitted successfully!', 'success');
+              uploadForm.reset();
+              // Refresh submissions list
+              await loadSubmissions();
+              // Switch to submissions view
+              showContent('submissions');
+            } else {
+              showCustomAlert('Error: ' + (result.error || 'Failed to submit report'), 'error');
+            }
+          } catch (error) {
+            showCustomAlert('Failed to submit report. Please try again.', 'error');
+          }
         });
       }
+      
+      // Load submissions function
+      async function loadSubmissions() {
+        try {
+          const response = await fetch('api/submissions.php');
+          const result = await response.json();
+          
+          if (result.ok) {
+            const tbody = document.getElementById('submissions-table-body');
+            tbody.innerHTML = '';
+            
+            // Store all submissions globally
+            allSubmissions = result.submissions || [];
+            
+            if (allSubmissions.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No submissions yet</td></tr>';
+              // Update sidebar badge
+              updateSidebarBadge('submissionsNotifBadge', 0);
+              return;
+            }
+            
+            // Update dashboard stats
+            const total = allSubmissions.length;
+            const approved = allSubmissions.filter(s => s.status === 'approved').length;
+            const review = allSubmissions.filter(s => s.status === 'review').length;
+            const pending = allSubmissions.filter(s => s.status === 'pending').length;
+            const rejected = allSubmissions.filter(s => s.status === 'rejected').length;
+            
+            document.getElementById('total-submissions').textContent = total;
+            document.getElementById('approved-count').textContent = approved;
+            document.getElementById('review-count').textContent = review;
+            document.getElementById('pending-count').textContent = pending;
+            document.getElementById('rejected-count').textContent = rejected;
+            
+            // Update filter counts
+            updateFilterCounts(total, pending, review, approved, rejected);
+            
+            // Update sidebar badge
+            // Submissions badge shows items with feedback/comments from ABC
+            const itemsWithComments = allSubmissions.filter(s => s.remarks && s.remarks.trim() !== '').length;
+            updateSidebarBadge('submissionsNotifBadge', itemsWithComments);
+            
+            // Update Recent Notifications
+            updateRecentNotifications(allSubmissions);
+            
+            // Update Recent Activity
+            updateRecentActivity(total, pending, review);
+            
+            // Reset view state and display
+            showingAllSubmissions = false;
+            const viewAllBtn = document.getElementById('view-all-button');
+            if (viewAllBtn) {
+              viewAllBtn.textContent = 'View All Submissions';
+            }
+            
+            // Clear search input
+            const searchInput = document.getElementById('submission-search');
+            if (searchInput) {
+              searchInput.value = '';
+            }
+            
+            // Show recent 5 submissions using the display function
+            displaySubmissions(allSubmissions.slice(0, 5));
+          }
+        } catch (error) {
+        }
+      }
+      
+      // Archive submission function
+      window.archiveSubmission = async function(id) {
+        const proceed = await showCustomConfirm('Are you sure you want to archive this submission?', 'warning');
+        if (!proceed) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`api/submissions.php?id=${id}&action=archive`, {
+            method: 'DELETE'
+          });
+          
+          const result = await response.json();
+          
+          if (result.ok) {
+            showCustomAlert('Submission archived successfully', 'success');
+            await loadSubmissions();
+            await loadArchivedSubmissions();
+          } else {
+            showCustomAlert('Error: ' + (result.error || 'Failed to archive submission'), 'error');
+          }
+        } catch (error) {
+          showCustomAlert('Failed to archive submission', 'error');
+        }
+      };
+
+      // Restore submission function
+      window.restoreSubmission = async function(id) {
+        const proceed = await showCustomConfirm('Are you sure you want to restore this submission?', 'info');
+        if (!proceed) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`api/submissions.php?id=${id}&action=restore`, {
+            method: 'DELETE'
+          });
+          
+          const result = await response.json();
+          
+          if (result.ok) {
+            showCustomAlert('Submission restored successfully', 'success');
+            await loadSubmissions();
+            await loadArchivedSubmissions();
+          } else {
+            showCustomAlert('Error: ' + (result.error || 'Failed to restore submission'), 'error');
+          }
+        } catch (error) {
+          showCustomAlert('Failed to restore submission', 'error');
+        }
+      };
+
+      // Delete submission function (permanent delete)
+      window.deleteSubmission = async function(id) {
+        const proceed = await showCustomConfirm('Are you sure you want to permanently delete this submission? This action cannot be undone.', 'error');
+        if (!proceed) {
+          return;
+        }
+        
+        try {
+          const response = await fetch(`api/submissions.php?id=${id}`, {
+            method: 'DELETE'
+          });
+          
+          const result = await response.json();
+          
+          if (result.ok) {
+            showCustomAlert('Submission deleted successfully', 'success');
+            await loadSubmissions();
+            await loadArchivedSubmissions();
+          } else {
+            showCustomAlert('Error: ' + (result.error || 'Failed to delete submission'), 'error');
+          }
+        } catch (error) {
+          showCustomAlert('Failed to delete submission', 'error');
+        }
+      };
+      
+      // Store all submissions globally for search/filter
+      let allSubmissions = [];
+      let showingAllSubmissions = false;
+      let currentStatusFilter = 'all';
+      
+      // Update filter counts function
+      function updateFilterCounts(total, pending, review, approved, rejected) {
+        document.getElementById('count-all').textContent = total;
+        document.getElementById('count-pending-filter').textContent = pending;
+        document.getElementById('count-review-filter').textContent = review;
+        document.getElementById('count-approved-filter').textContent = approved;
+        document.getElementById('count-rejected-filter').textContent = rejected;
+      }
+
+      // Filter submissions by status
+      window.filterSubmissionsByStatus = function(status) {
+        currentStatusFilter = status;
+        
+        // Update active button
+        document.querySelectorAll('.status-filter-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        document.getElementById('filter-' + status).classList.add('active');
+        
+        // Filter submissions
+        let filteredSubmissions = allSubmissions;
+        if (status !== 'all') {
+          filteredSubmissions = allSubmissions.filter(submission => submission.status === status);
+        }
+        
+        // Apply search if there's a search term
+        const searchTerm = document.getElementById('submission-search').value.toLowerCase().trim();
+        if (searchTerm !== '') {
+          filteredSubmissions = filteredSubmissions.filter(submission => {
+            const title = submission.title.toLowerCase();
+            const category = submission.category.toLowerCase();
+            const status = submission.status.toLowerCase();
+            const date = new Date(submission.created_at).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }).toLowerCase();
+            
+            return title.includes(searchTerm) || 
+                   category.includes(searchTerm) || 
+                   status.includes(searchTerm) ||
+                   date.includes(searchTerm);
+          });
+        }
+        
+        displaySubmissions(filteredSubmissions);
+        
+        // Update view all button
+        const viewAllBtn = document.getElementById('view-all-button');
+        if (viewAllBtn) {
+          showingAllSubmissions = true;
+          viewAllBtn.textContent = 'Show Recent Only';
+        }
+      };
+
+      // Open status page function
+      window.openStatusPage = function(status, submissionId = null) {
+        const statusPages = {
+          'pending': 'status/pending.html',
+          'review': 'status/review.html',
+          'approved': 'status/approved.html',
+          'rejected': 'status/rejected.html'
+        };
+        
+        if (statusPages[status]) {
+          const url = submissionId ? 
+            `${statusPages[status]}?id=${submissionId}` : 
+            statusPages[status];
+          window.open(url, '_blank');
+        }
+      };
+
+      // Function to display submissions in the table
+      function displaySubmissions(submissions) {
+        const tbody = document.getElementById('submissions-table-body');
+        tbody.innerHTML = '';
+        
+        if (submissions.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No submissions found</td></tr>';
+          return;
+        }
+        
+        submissions.forEach(submission => {
+          const row = document.createElement('tr');
+          
+          const statusClass = {
+            'pending': 'status-pending',
+            'review': 'status-review',
+            'approved': 'status-approved',
+            'rejected': 'status-rejected'
+          }[submission.status] || 'status-pending';
+          
+          const statusText = {
+            'pending': 'Pending',
+            'review': 'Under Review',
+            'approved': 'Approved',
+            'rejected': 'Rejected'
+          }[submission.status] || submission.status;
+          
+          const date = new Date(submission.created_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          });
+          
+          // Format status change timestamp if available
+          let statusChangedTime = '';
+          if (submission.status_changed_at) {
+            statusChangedTime = `<br><small style="color: #007bff; font-weight: bold; font-size: 0.75em;">🕒 ${submission.status_changed_at}</small>`;
+          }
+          
+          // Check if there are comments/remarks from ABC
+          const hasComments = submission.remarks && submission.remarks.trim() !== '';
+          const commentIndicator = hasComments ? ' 💬' : '';
+          let commentPreview = '';
+          
+          if (hasComments) {
+            // Get latest comment for preview
+            const entries = submission.remarks.split('\n\n').filter(entry => entry.trim() !== '');
+            if (entries.length > 0) {
+              const lastEntry = entries[entries.length - 1];
+              const match = lastEntry.match(/^\[([^\]]+)\]\s*(.*)$/s);
+              if (match) {
+                const commentText = match[2].substring(0, 60) + (match[2].length > 60 ? '...' : '');
+                commentPreview = `<div class="comment-preview">ABC Comment: "${commentText}"</div>`;
+              } else {
+                const commentText = lastEntry.substring(0, 60) + (lastEntry.length > 60 ? '...' : '');
+                commentPreview = `<div class="comment-preview">ABC Comment: "${commentText}"</div>`;
+              }
+            }
+          }
+          
+          // Only show archive button if status is still pending (not yet processed by ABC)
+          const archiveButton = submission.status === 'pending' 
+            ? `<a href="#" onclick="archiveSubmission(${submission.id}); return false;" 
+                 style="color: #ff9800; text-decoration: none; margin-left: 8px;" title="Archive submission">📦 Archive</a>`
+            : `<span style="color: #999; margin-left: 8px;" title="Documents processed by ABC cannot be archived">🔒 Archived</span>`;
+          
+          row.innerHTML = `
+            <td>
+              ${submission.title}${commentIndicator}
+              ${commentPreview}
+            </td>
+            <td>${submission.category}</td>
+            <td>${date}</td>
+            <td>
+              <span class="status-badge ${statusClass}" onclick="openStatusPage('${submission.status}', ${submission.id})" 
+                    style="cursor: pointer;" title="Click to view status details">${statusText}</span>${statusChangedTime}
+            </td>
+            <td>
+              <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}')" style="color: #0066cc; text-decoration: none; margin-right: 8px;">📄 View</a>
+              ${hasComments ? `<a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
+                 class="comment-button" title="View ABC comments">💬 View Comments</a>` : ''}
+              ${archiveButton}
+            </td>
+          `;
+          
+          tbody.appendChild(row);
+        });
+      }
+      
+      // Search functionality
+      const searchInput = document.getElementById('submission-search');
+      const clearSearchButton = document.getElementById('clear-search-button');
+      const viewAllButton = document.getElementById('view-all-button');
+      
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase().trim();
+          
+          // Start with current status filter
+          let filteredSubmissions = allSubmissions;
+          if (currentStatusFilter !== 'all') {
+            filteredSubmissions = allSubmissions.filter(submission => submission.status === currentStatusFilter);
+          }
+          
+          if (searchTerm === '') {
+            // If search is empty, show filtered results
+            if (showingAllSubmissions) {
+              displaySubmissions(filteredSubmissions);
+            } else {
+              displaySubmissions(filteredSubmissions.slice(0, 5));
+            }
+            return;
+          }
+          
+          // Apply search term to filtered submissions
+          const searchFiltered = filteredSubmissions.filter(submission => {
+            const title = submission.title.toLowerCase();
+            const category = submission.category.toLowerCase();
+            const status = submission.status.toLowerCase();
+            const date = new Date(submission.created_at).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            }).toLowerCase();
+            
+            return title.includes(searchTerm) || 
+                   category.includes(searchTerm) || 
+                   status.includes(searchTerm) ||
+                   date.includes(searchTerm);
+          });
+          
+          displaySubmissions(searchFiltered);
+        });
+      }
+      
+      // Clear search button
+      if (clearSearchButton) {
+        clearSearchButton.addEventListener('click', function() {
+          searchInput.value = '';
+          // Trigger filter with current status
+          filterSubmissionsByStatus(currentStatusFilter);
+        });
+      }
+      
+      // View All Submissions button
+      if (viewAllButton) {
+        viewAllButton.addEventListener('click', function() {
+          if (showingAllSubmissions) {
+            // Toggle back to showing only recent 5
+            showingAllSubmissions = false;
+            this.textContent = 'View All Submissions';
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm === '') {
+              displaySubmissions(allSubmissions.slice(0, 5));
+            } else {
+              // Keep filtered results but only show first 5
+              const filtered = allSubmissions.filter(submission => {
+                const title = submission.title.toLowerCase();
+                const category = submission.category.toLowerCase();
+                const status = submission.status.toLowerCase();
+                const date = new Date(submission.created_at).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                }).toLowerCase();
+                
+                return title.includes(searchTerm) || 
+                       category.includes(searchTerm) || 
+                       status.includes(searchTerm) ||
+                       date.includes(searchTerm);
+              });
+              displaySubmissions(filtered.slice(0, 5));
+            }
+          } else {
+            // Show all submissions
+            showingAllSubmissions = true;
+            this.textContent = 'Show Recent Only';
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm === '') {
+              displaySubmissions(allSubmissions);
+            } else {
+              // Trigger search with current term
+              searchInput.dispatchEvent(new Event('input'));
+            }
+          }
+        });
+      }
+      
+      // Load submissions on page load
+      await loadSubmissions();
+      await loadArchivedSubmissions();
             
       showContent('dashboard');
     })();
     });
+
+    // ===== ARCHIVED SUBMISSIONS SECTION =====
+    
+    // Store all archived submissions globally for search/filter
+    let allArchivedSubmissions = [];
+    let showingAllArchived = false;
+    
+    // Function to load archived submissions from the API
+    async function loadArchivedSubmissions() {
+      try {
+        const response = await fetch('api/submissions.php?archived=1');
+        const result = await response.json();
+        
+        if (result.ok) {
+          allArchivedSubmissions = result.submissions || [];
+          
+          // Reset view state and display
+          showingAllArchived = false;
+          const viewAllArchivedBtn = document.getElementById('view-all-archived-button');
+          if (viewAllArchivedBtn) {
+            viewAllArchivedBtn.textContent = 'View All Archived';
+          }
+          
+          // Clear search input
+          const archivedSearchInput = document.getElementById('archived-search');
+          if (archivedSearchInput) {
+            archivedSearchInput.value = '';
+          }
+          
+          // Show recent 5 archived submissions
+          displayArchivedSubmissions(allArchivedSubmissions.slice(0, 5));
+        }
+      } catch (error) {
+      }
+    }
+    
+    // Function to display archived submissions in the table
+    function displayArchivedSubmissions(submissions) {
+      const tbody = document.getElementById('archived-table-body');
+      tbody.innerHTML = '';
+      
+      if (submissions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No archived submissions found</td></tr>';
+        return;
+      }
+      
+      submissions.forEach(submission => {
+        const row = document.createElement('tr');
+        
+        const statusClass = {
+          'pending': 'status-pending',
+          'review': 'status-review',
+          'approved': 'status-approved',
+          'rejected': 'status-rejected'
+        }[submission.status] || 'status-pending';
+        
+        const statusText = {
+          'pending': 'Pending',
+          'review': 'Under Review',
+          'approved': 'Approved',
+          'rejected': 'Rejected'
+        }[submission.status] || submission.status;
+        
+        const date = new Date(submission.created_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
+        
+        // Format status change timestamp if available
+        let statusChangedTime = '';
+        if (submission.status_changed_at) {
+          statusChangedTime = `<br><small style="color: #007bff; font-weight: bold; font-size: 0.75em;">🕒 ${submission.status_changed_at}</small>`;
+        }
+        
+        // Check if there are comments/remarks from ABC
+        const hasComments = submission.remarks && submission.remarks.trim() !== '';
+        const commentIndicator = hasComments ? ' 💬' : '';
+        let commentPreview = '';
+        
+        if (hasComments) {
+          // Get latest comment for preview
+          const entries = submission.remarks.split('\n\n').filter(entry => entry.trim() !== '');
+          if (entries.length > 0) {
+            const lastEntry = entries[entries.length - 1];
+            const match = lastEntry.match(/^\[([^\]]+)\]\s*(.*)$/s);
+            if (match) {
+              const commentText = match[2].substring(0, 60) + (match[2].length > 60 ? '...' : '');
+              commentPreview = `<div class="comment-preview">ABC Comment: "${commentText}"</div>`;
+            } else {
+              const commentText = lastEntry.substring(0, 60) + (lastEntry.length > 60 ? '...' : '');
+              commentPreview = `<div class="comment-preview">ABC Comment: "${commentText}"</div>`;
+            }
+          }
+        }
+        
+        // Only show restore/delete buttons if status is still pending (not yet processed by ABC)
+        const actionButtons = submission.status === 'pending' 
+          ? `| <a href="#" onclick="restoreSubmission(${submission.id}); return false;" style="color: #28a745; text-decoration: none;">Restore</a>
+            | <a href="#" onclick="deleteSubmission(${submission.id}); return false;" style="color: #dc3545; text-decoration: none;">Delete</a>`
+          : `| <span style="color: #999;" title="Documents processed by ABC cannot be modified">🔒 Locked (Processed by ABC)</span>`;
+        
+        row.innerHTML = `
+          <td>
+            ${submission.title}${commentIndicator}
+            ${commentPreview}
+          </td>
+          <td>${submission.category}</td>
+          <td>${date}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}</td>
+          <td>
+            <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}')" style="color: #0066cc; text-decoration: none;">View</a>
+            ${hasComments ? ` | <a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
+               style="color: #17a2b8; text-decoration: none;">💬 Comments</a>` : ''}
+            ${actionButtons}
+          </td>
+        `;
+        
+        tbody.appendChild(row);
+      });
+    }
+    
+    // Search functionality for archived
+    const archivedSearchInput = document.getElementById('archived-search');
+    const clearArchivedSearchButton = document.getElementById('clear-archived-search-button');
+    const viewAllArchivedButton = document.getElementById('view-all-archived-button');
+    
+    if (archivedSearchInput) {
+      archivedSearchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase().trim();
+        
+        if (searchTerm === '') {
+          // If search is empty, show recent 5 or all depending on state
+          if (showingAllArchived) {
+            displayArchivedSubmissions(allArchivedSubmissions);
+          } else {
+            displayArchivedSubmissions(allArchivedSubmissions.slice(0, 5));
+          }
+          return;
+        }
+        
+        // Filter archived submissions based on search term
+        const filtered = allArchivedSubmissions.filter(submission => {
+          const title = submission.title.toLowerCase();
+          const category = submission.category.toLowerCase();
+          const status = submission.status.toLowerCase();
+          const date = new Date(submission.created_at).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          }).toLowerCase();
+          
+          return title.includes(searchTerm) || 
+                 category.includes(searchTerm) || 
+                 status.includes(searchTerm) ||
+                 date.includes(searchTerm);
+        });
+        
+        displayArchivedSubmissions(filtered);
+      });
+    }
+    
+    // Clear search button for archived
+    if (clearArchivedSearchButton) {
+      clearArchivedSearchButton.addEventListener('click', function() {
+        if (archivedSearchInput) {
+          archivedSearchInput.value = '';
+          if (showingAllArchived) {
+            displayArchivedSubmissions(allArchivedSubmissions);
+          } else {
+            displayArchivedSubmissions(allArchivedSubmissions.slice(0, 5));
+          }
+        }
+      });
+    }
+    
+    // View All Archived button
+    if (viewAllArchivedButton) {
+      viewAllArchivedButton.addEventListener('click', function() {
+        if (showingAllArchived) {
+          // Toggle back to showing only recent 5
+          showingAllArchived = false;
+          this.textContent = 'View All Archived';
+          const searchTerm = archivedSearchInput.value.toLowerCase().trim();
+          if (searchTerm === '') {
+            displayArchivedSubmissions(allArchivedSubmissions.slice(0, 5));
+          } else {
+            // Keep filtered results but only show first 5
+            const filtered = allArchivedSubmissions.filter(submission => {
+              const title = submission.title.toLowerCase();
+              const category = submission.category.toLowerCase();
+              const status = submission.status.toLowerCase();
+              const date = new Date(submission.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              }).toLowerCase();
+              
+              return title.includes(searchTerm) || 
+                     category.includes(searchTerm) || 
+                     status.includes(searchTerm) ||
+                     date.includes(searchTerm);
+            });
+            displayArchivedSubmissions(filtered.slice(0, 5));
+          }
+        } else {
+          // Show all archived submissions
+          showingAllArchived = true;
+          this.textContent = 'Show Recent Only';
+          const searchTerm = archivedSearchInput.value.toLowerCase().trim();
+          if (searchTerm === '') {
+            displayArchivedSubmissions(allArchivedSubmissions);
+          } else {
+            // Trigger search with current term
+            archivedSearchInput.dispatchEvent(new Event('input'));
+          }
+        }
+      });
+    }
+
+    // Function to view ABC comments for a submission
+    async function viewComments(submissionId, title) {
+      try {
+        // Get submission details with comments
+        const response = await fetch(`api/submissions.php?id=${submissionId}`);
+        const result = await response.json();
+        
+        if (!result.ok) {
+          showCustomAlert('Error loading comments: ' + (result.error || 'Unknown error'), 'error');
+          return;
+        }
+        
+        const submission = result.submission || {};
+        const remarks = submission.remarks || '';
+        
+        // Create modal HTML
+        const modalHtml = `
+          <div class="comment-modal" onclick="this.remove()">
+            <div class="comment-modal-content" onclick="event.stopPropagation()">
+              <h2 style="margin-top: 0; color: #004c99;">💬 ABC Comments</h2>
+              
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 4px solid #007bff;">
+                <strong>Document:</strong> ${title}<br>
+                <strong>Status:</strong> <span class="status-badge status-${submission.status || 'pending'}">${submission.status || 'Pending'}</span>${submission.status_changed_at ? `<br><small style="color: #007bff; font-weight: bold;">🕒 Status changed: ${submission.status_changed_at}</small>` : ''}<br>
+                <strong>Last Updated:</strong> ${submission.reviewed_at ? new Date(submission.reviewed_at).toLocaleString() : 'Not yet reviewed'}
+              </div>
+              
+              <div style="margin-bottom: 20px;">
+                <h3 style="color: #495057; font-size: 1.1em; margin-bottom: 10px;">📝 Comments from ABC:</h3>
+                <div style="max-height: 400px; overflow-y: auto;">
+                  ${formatCommentsForBarangay(remarks)}
+                </div>
+              </div>
+              
+              <div style="text-align: right;">
+                <button onclick="this.closest('.comment-modal').remove()" 
+                        style="padding: 10px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Add modal to page
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        
+      } catch (error) {
+        showCustomAlert('Error loading comments: ' + error.message, 'error');
+      }
+    }
+    
+    // Format comments for display in barangay portal
+    function formatCommentsForBarangay(remarksText) {
+      if (!remarksText || remarksText.trim() === '') {
+        return '<p style="color: #6c757d; font-style: italic; text-align: center;">No comments from ABC yet.</p>';
+      }
+      
+      // Split by double newlines to separate different comment entries
+      const entries = remarksText.split('\n\n').filter(entry => entry.trim() !== '');
+      
+      if (entries.length === 0) {
+        return '<p style="color: #6c757d; font-style: italic; text-align: center;">No comments from ABC yet.</p>';
+      }
+      
+      let formattedHtml = '';
+      entries.forEach((entry, index) => {
+        // Check if entry has timestamp format [datetime]
+        const timestampMatch = entry.match(/^\[([^\]]+)\]\s*(.*)$/s);
+        
+        if (timestampMatch) {
+          const timestamp = timestampMatch[1];
+          const content = timestampMatch[2].trim();
+          
+          formattedHtml += `
+            <div class="comment-entry">
+              <div class="comment-timestamp">
+                🕒 ${timestamp}
+              </div>
+              <div class="comment-text">
+                ${content.replace(/\n/g, '<br>')}
+              </div>
+            </div>
+          `;
+        } else {
+          // Entry without timestamp - legacy format
+          formattedHtml += `
+            <div class="comment-entry">
+              <div class="comment-text">
+                ${entry.replace(/\n/g, '<br>')}
+              </div>
+            </div>
+          `;
+        }
+      });
+      
+      return formattedHtml;
+    }
+    
+    // Function to show document viewer modal
+    function showDocumentViewer(filename, title) {
+        const modal = document.createElement('div');
+        modal.className = 'doc-viewer-modal';
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        };
+        
+        // Get file extension to determine how to display
+        const extension = filename.split('.').pop().toLowerCase();
+        const fileUrl = `api/view_file.php?file=${filename}`;
+        const downloadUrl = `api/view_file.php?file=${filename}&download=1`;
+        
+        modal.innerHTML = `
+            <div class="doc-viewer-container" onclick="event.stopPropagation()">
+                <div class="doc-viewer-header">
+                    <div class="doc-viewer-title">
+                        📄 ${title || filename}
+                    </div>
+                    <div class="doc-viewer-actions">
+                        <button class="doc-viewer-btn doc-viewer-download" onclick="downloadFile('${downloadUrl}', '${title || filename}')">
+                            ⬇️ Download
+                        </button>
+                        <button class="doc-viewer-btn doc-viewer-close" onclick="this.closest('.doc-viewer-modal').remove()">
+                            ✖ Close
+                        </button>
+                    </div>
+                </div>
+                <div class="doc-viewer-content">
+                    <div class="doc-viewer-loading">
+                        <div class="doc-viewer-spinner"></div>
+                        <p>Loading document...</p>
+                    </div>
+                    <iframe class="doc-viewer-iframe" src="" style="display: none;"></iframe>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Load the document
+        const iframe = modal.querySelector('.doc-viewer-iframe');
+        const loading = modal.querySelector('.doc-viewer-loading');
+        
+        // For PDF files, we can use Google Docs Viewer or display directly
+        if (extension === 'pdf') {
+            // Try to display PDF directly first, fallback to Google Docs Viewer
+            iframe.src = fileUrl;
+        } else if (['doc', 'docx', 'xls', 'xlsx'].includes(extension)) {
+            // Use Google Docs Viewer for Office documents
+            iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + '/' + fileUrl)}&embedded=true`;
+        } else {
+            // For other file types, just show download option
+            iframe.src = fileUrl;
+        }
+        
+        iframe.onload = function() {
+            loading.style.display = 'none';
+            iframe.style.display = 'block';
+        };
+        
+        iframe.onerror = function() {
+            loading.innerHTML = `
+                <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot preview this file type</p>
+                <p>Please use the download button above to view the document.</p>
+            `;
+        };
+    }
+    
+    // Function to download file without opening
+    async function downloadFile(url, filename) {
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('Download failed:', error);
+            showCustomAlert('Failed to download file. Please try again.', 'error');
+        }
+    }
+    
+    // Custom Alert Modal Function
+    function showCustomAlert(message, type = 'info', callback = null) {
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+
+        const titles = {
+            success: 'Success',
+            error: 'Error',
+            warning: 'Warning',
+            info: 'Information'
+        };
+
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-modal-overlay';
+
+        overlay.innerHTML = `
+            <div class="custom-modal-content">
+                <div class="custom-modal-header ${type}">
+                    <div class="custom-modal-icon">${icons[type]}</div>
+                    <h3 class="custom-modal-title">${titles[type]}</h3>
+                </div>
+                <div class="custom-modal-body">
+                    ${message}
+                </div>
+                <div class="custom-modal-footer">
+                    <button class="custom-modal-button ${type === 'success' ? 'success' : 'primary'}" onclick="this.closest('.custom-modal-overlay').remove(); ${callback ? '(' + callback.toString() + ')();' : ''}">OK</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Click outside to close
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                overlay.remove();
+                if (callback) callback();
+            }
+        });
+
+        // ESC key to close
+        const escHandler = function(e) {
+            if (e.key === 'Escape') {
+                overlay.remove();
+                if (callback) callback();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+
+    window.showCustomAlert = showCustomAlert;
+
+    // Custom Confirm Modal Function
+    function showCustomConfirm(message, type = 'warning') {
+        return new Promise((resolve) => {
+            const icons = {
+                success: '✓',
+                error: '✕',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+
+            const titles = {
+                success: 'Confirm',
+                error: 'Warning',
+                warning: 'Confirm Action',
+                info: 'Confirmation'
+            };
+
+            const overlay = document.createElement('div');
+            overlay.className = 'custom-modal-overlay';
+
+            overlay.innerHTML = `
+                <div class="custom-modal-content">
+                    <div class="custom-modal-header ${type}">
+                        <div class="custom-modal-icon">${icons[type]}</div>
+                        <h3 class="custom-modal-title">${titles[type]}</h3>
+                    </div>
+                    <div class="custom-modal-body">
+                        ${message}
+                    </div>
+                    <div class="custom-modal-footer">
+                        <button class="custom-modal-button" style="background: #dc3545; color: white;" onclick="this.closest('.custom-modal-overlay').remove(); this.closest('.custom-modal-overlay').userChoice = false;">Cancel</button>
+                        <button class="custom-modal-button ${type === 'success' ? 'success' : 'primary'}" onclick="this.closest('.custom-modal-overlay').remove(); this.closest('.custom-modal-overlay').userChoice = true;">Confirm</button>
+                    </div>
+                </div>
+            `;
+
+            overlay.userChoice = false;
+
+            document.body.appendChild(overlay);
+
+            // Click outside to cancel
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.userChoice = false;
+                    overlay.remove();
+                }
+            });
+
+            // ESC key to cancel
+            const escHandler = function(e) {
+                if (e.key === 'Escape') {
+                    overlay.userChoice = false;
+                    overlay.remove();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+
+            // Wait for modal to be removed, then resolve with user choice
+            const observer = new MutationObserver((mutations) => {
+                if (!document.body.contains(overlay)) {
+                    observer.disconnect();
+                    document.removeEventListener('keydown', escHandler);
+                    resolve(overlay.userChoice);
+                }
+            });
+            observer.observe(document.body, { childList: true });
+        });
+    }
+
+    window.showCustomConfirm = showCustomConfirm;
+
+    // Make viewComments function global
+    window.viewComments = viewComments;
+    window.showDocumentViewer = showDocumentViewer;
+    window.downloadFile = downloadFile;
+
+    // Password Notification Toggle and Fetch Functions
+    let passwordNotificationsLoaded = false;
+    
+    window.togglePasswordNotifications = async function() {
+        const content = document.getElementById('password-notif-content');
+        const button = document.querySelector('.toggle-password-notif-btn');
+        
+        if (content.classList.contains('show')) {
+            // Hide notifications
+            content.classList.remove('show');
+            button.textContent = 'Show';
+        } else {
+            // Show notifications
+            content.classList.add('show');
+            button.textContent = 'Hide';
+            
+            // Load notifications if not already loaded
+            if (!passwordNotificationsLoaded) {
+                await fetchPasswordNotifications();
+                passwordNotificationsLoaded = true;
+            }
+        }
+    };
+    
+    async function fetchPasswordNotifications() {
+        const content = document.getElementById('password-notif-content');
+        
+        try {
+            const response = await fetch('api/get_password_notifications.php', {
+                credentials: 'include'
+            });
+            
+            const data = await response.json();
+            
+            if (!data.ok) {
+                content.innerHTML = '<div style=\"text-align: center; color: #dc3545; padding: 20px;\">Error loading notifications</div>';
+                return;
+            }
+            
+            const notifications = data.notifications || [];
+            
+            if (notifications.length === 0) {
+                content.innerHTML = '<div style=\"text-align: center; color: #666; padding: 20px;\">No password change notifications</div>';
+                return;
+            }
+            
+            let html = '';
+            notifications.forEach(notif => {
+                const statusClass = notif.status || 'old';
+                const statusLabel = statusClass === 'new' ? 'New' : statusClass === 'recent' ? 'Recent' : 'Old';
+                const date = new Date(notif.changed_at);
+                const timeAgo = getTimeAgo(date);
+                
+                html += `
+                    <div class="password-notif-item ${statusClass}">
+                        <div>
+                            <strong>${notif.username || 'User'}</strong> changed their password
+                            <span class="password-notif-badge ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <div style="font-size: 0.85em; color: #666; margin-top: 5px;">
+                            ${timeAgo}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            content.innerHTML = html;
+            
+        } catch (error) {
+            console.error('Error fetching password notifications:', error);
+            content.innerHTML = '<div style=\"text-align: center; color: #dc3545; padding: 20px;\">Failed to load notifications</div>';
+        }
+    }
+    
+    // Helper function to calculate time ago (reuse existing if available)
+    function getTimeAgo(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+        
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        return date.toLocaleDateString();
+    }
+
   </script>
 </body>
 </html>

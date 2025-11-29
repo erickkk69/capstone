@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
     json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
 }
 
-// Require ABC Secretary role
+// Require ABC role
 require_abc_role();
 
 $notification_id = $_GET['id'] ?? '';

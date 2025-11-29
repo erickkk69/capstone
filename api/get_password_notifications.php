@@ -1,5 +1,5 @@
 <?php
-// api/get_password_notifications.php - Get password change notifications for ABC Secretary
+// api/get_password_notifications.php - Get password change notifications for ABC
 
 declare(strict_types=1);
 require __DIR__ . '/config.php';
@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
 }
 
-// Require ABC Secretary role
+// Require ABC role
 require_abc_role();
 
 $pdo = get_pdo();

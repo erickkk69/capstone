@@ -13,10 +13,7 @@
     }
 
     body {
-      background-image: url('images/background.jpg'); 
-      background-size: cover; 
-      background-position: center; 
-      background-repeat: no-repeat; 
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -24,52 +21,64 @@
       padding: 20px;
     }
 
-    .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 1200px;
+      height: 100%;
+      background-image: url('images/background.jpg'); 
+      background-size: cover; 
+      background-position: center; 
+      background-repeat: no-repeat; 
+      filter: blur(2px);
+      z-index: -1;
     }
 
-    .logo-container {
-      flex: 1;
+    .container {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
-    }
-
-    .logo {
-      width: 600px;
-      height: auto;
+      width: 100%;
     }
 
     .login-container {
-      flex: 1;
+      position: relative;
       background-color: white;
       border-radius: 12px;
-      padding: 50px 40px;
+      padding: 80px 40px 50px 40px;
       max-width: 500px;
+      width: 100%;
       min-height: 600px;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
     }
 
-    .tabs {
+    .logo {
+      position: absolute;
+      top: 30px;
+      left: 20px;
+      width: 150px;
+      height: auto;
+    }
+
+    .login-header {
       display: flex;
-      margin-bottom: 30px;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-top: 20px;
+      padding-left: 180px;
+      height: 60px;
     }
 
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 25px 0;
-      font-size: 26px;
+    .login-title {
+      font-size: 32px;
       font-weight: bold;
-      border-radius: 8px;
-      background-color: #0066cc;
-      color: white;
+      color: #000000;
+      margin: 0;
+      letter-spacing: 0.5px;
     }
 
     form {
@@ -178,23 +187,60 @@
         display: none;
     }
 
-    @media (max-width: 1200px) {
-      .container {
-        flex-direction: column;
-      }
+    .login-message.locked-account {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        color: #856404;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-top: 15px;
+    }
 
-      .logo-container {
-        margin-bottom: 30px;
-      }
-
-      .logo {
-        width: 500px;
-      }
+    .login-message.locked-account::before {
+        content: "🔒 ";
+        font-size: 18px;
     }
 
     @media (max-width: 768px) {
+      .login-container {
+        margin: 10px;
+        padding: 100px 30px 40px 30px;
+        min-height: 500px;
+      }
+
       .logo {
-        width: 400px;
+        width: 100px;
+        top: 25px;
+        left: 15px;
+      }
+
+      .login-header {
+        padding-left: 130px;
+        padding-top: 15px;
+        height: 50px;
+      }
+
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 90px 20px 30px 20px;
+      }
+
+      .logo {
+        width: 80px;
+        top: 20px;
+        left: 10px;
+      }
+
+      .login-header {
+        padding-left: 110px;
+        padding-top: 10px;
+        height: 40px;
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
 
@@ -202,12 +248,10 @@
 </head>
 <body>
   <div class="container">
-    <div class="logo-container">
-      <img src="images/Mbnlg.png" alt="Bayan ng Mabini, Lalawigan ng Batangas" class="logo">
-    </div>
     <div class="login-container">
-      <div class="tabs">
-        <div class="tab">Login</div>
+      <img src="images/Mbnlg.png" alt="Bayan ng Mabini, Lalawigan ng Batangas" class="logo">
+      <div class="login-header">
+        <h1 class="login-title">WBADSS Login</h1>
       </div>
       <form id="loginForm">
         <div class="form-group">
@@ -271,9 +315,6 @@
             const email = emailInput.value.trim().toLowerCase();
             const password = passwordInput.value.trim();
 
-            // Debug logging
-            console.log('Attempting login with:', { email, password: '***' });
-
             try {
                 const res = await fetch('api/login.php', {
                     method: 'POST',
@@ -281,40 +322,59 @@
                     body: JSON.stringify({ email, password })
                 });
                 
-                console.log('Response status:', res.status);
-                console.log('Response headers:', res.headers);
-                
                 const data = await res.json();
-                console.log('Response data:', data);
                 
                 if (!data.ok) {
                     throw new Error(data.error || 'Login failed');
                 }
 
                 const user = data.user;
-                console.log('User role:', user.role);
         // Persist user for client-side checks (barangay portal relies on this)
         try {
           sessionStorage.setItem('loggedInUser', JSON.stringify(user));
         } catch (e) {
-          console.warn('Unable to persist sessionStorage:', e);
         }
                 
-                if (user.role === 'ABC Secretary') {
-                    console.log('Redirecting to ABC portal');
+                if (user.role === 'ABC') {
                     window.location.href = 'abcportal.html';
                 } else if (user.role === 'Barangay Secretary') {
-                    console.log('Redirecting to Barangay portal');
                     window.location.href = 'barangayportal.html';
                 } else {
-                    console.log('Unknown role:', user.role);
                     loginMessage.textContent = 'User role not recognized.';
                     loginMessage.style.display = 'block';
+                    setTimeout(() => {
+                        loginMessage.style.display = 'none';
+                    }, 2000);
                 }
             } catch (err) {
-                console.error('Login error:', err);
-                loginMessage.textContent = 'Invalid Email or Password. Error: ' + err.message;
-                loginMessage.style.display = 'block';
+                // Check if error is from API response
+                if (err.message && err.message.includes('locked')) {
+                    // Account is locked due to pending password reset
+                    loginMessage.textContent = err.message;
+                    loginMessage.className = 'login-message locked-account';
+                    loginMessage.style.display = 'block';
+                    // Keep message visible longer for locked accounts
+                    setTimeout(() => {
+                        loginMessage.style.display = 'none';
+                        loginMessage.className = 'login-message'; // Reset class
+                    }, 5000);
+                } else if (err.message && err.message.includes('archived')) {
+                    // Account is archived
+                    loginMessage.textContent = err.message;
+                    loginMessage.className = 'login-message';
+                    loginMessage.style.display = 'block';
+                    setTimeout(() => {
+                        loginMessage.style.display = 'none';
+                    }, 4000);
+                } else {
+                    // Regular login error (wrong password/email)
+                    loginMessage.textContent = 'Invalid Email or Password';
+                    loginMessage.className = 'login-message';
+                    loginMessage.style.display = 'block';
+                    setTimeout(() => {
+                        loginMessage.style.display = 'none';
+                    }, 2000);
+                }
             }
         });
     });
