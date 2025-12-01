@@ -294,7 +294,6 @@
                     document.getElementById('content').innerHTML = '<div class="status-info"><h3>❌ Submission Not Found</h3><p>The requested submission could not be found.</p></div>';
                 }
             } catch (error) {
-                console.error('Error loading submission:', error);
                 document.getElementById('content').innerHTML = '<div class="status-info"><h3>❌ Error</h3><p>Failed to load submission details.</p></div>';
             }
             
@@ -313,7 +312,7 @@
                     displayAllRejectedSubmissions(rejectedSubmissions);
                 }
             } catch (error) {
-                console.error('Error loading submissions:', error);
+                // Silently fail
             }
         }
         

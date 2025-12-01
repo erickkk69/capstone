@@ -329,11 +329,8 @@
                 }
 
                 const user = data.user;
-        // Persist user for client-side checks (barangay portal relies on this)
-        try {
-          sessionStorage.setItem('loggedInUser', JSON.stringify(user));
-        } catch (e) {
-        }
+                // Persist user for client-side checks (barangay portal relies on this)
+                sessionStorage.setItem('loggedInUser', JSON.stringify(user));
                 
                 if (user.role === 'ABC') {
                     window.location.href = 'abcportal.html';

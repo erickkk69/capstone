@@ -158,8 +158,27 @@
         border-radius: 8px;
         background: white;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        max-height: 600px;
+        max-height: 500px;
         overflow-y: auto;
+        overflow-x: hidden;
+    }
+    
+    .notifications-card::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    .notifications-card::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+    
+    .notifications-card::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+    
+    .notifications-card::-webkit-scrollbar-thumb:hover {
+        background: #555;
     }
 
     label {
@@ -450,99 +469,6 @@
         color: #777;
         margin-top: 5px;
         text-align: right;
-    }
-    
-    /* Password Notification Styles */
-    .password-notif-section {
-        margin-top: 20px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-    }
-    
-    .password-notif-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    
-    .password-notif-header h3 {
-        margin: 0;
-        color: #333;
-        font-size: 1.1em;
-    }
-    
-    .toggle-password-notif-btn {
-        padding: 8px 16px;
-        background: #0066cc;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 0.9em;
-        font-weight: 600;
-        transition: background 0.3s;
-        margin: 0;
-    }
-    
-    .toggle-password-notif-btn:hover {
-        background: #004c99;
-    }
-    
-    .password-notif-content {
-        display: none;
-        margin-top: 15px;
-    }
-    
-    .password-notif-content.show {
-        display: block;
-    }
-    
-    .password-notif-item {
-        background: white;
-        padding: 12px;
-        margin-bottom: 10px;
-        border-left: 4px solid #ffc107;
-        border-radius: 4px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    
-    .password-notif-item.new {
-        border-left-color: #28a745;
-    }
-    
-    .password-notif-item.recent {
-        border-left-color: #ffc107;
-    }
-    
-    .password-notif-item.old {
-        border-left-color: #6c757d;
-    }
-    
-    .password-notif-badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-size: 0.75em;
-        font-weight: bold;
-        margin-left: 8px;
-    }
-    
-    .password-notif-badge.new {
-        background: #28a745;
-        color: white;
-    }
-    
-    .password-notif-badge.recent {
-        background: #ffc107;
-        color: #333;
-    }
-    
-    .password-notif-badge.old {
-        background: #6c757d;
-        color: white;
     }
     
     .form-row {
@@ -912,17 +838,17 @@
         <div class="dashboard-grid">
              <div>
                  <h2 style="margin-top: 20px;">Quick Access</h2>
-                <div class="card" style="padding: 15px; border-left: 5px solid #0066cc; margin-bottom: 10px; cursor: pointer;" onclick="showContent('upload')">
+                <div class="quick-access-card" style="padding: 15px; border-left: 5px solid #0066cc; margin-bottom: 10px; cursor: pointer; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" onclick="showContent('upload')">
                     <h3 style="margin-top: 0;">📤 Submit New Report</h3>
                     <p style="margin-bottom: 0;">Quick access to <a href="#" onclick="showContent('upload'); return false;">Upload Report</a> form to submit documents.</p>
                 </div>
-                 <div class="card" style="padding: 15px; border-left: 5px solid #28a745; margin-bottom: 10px; cursor: pointer;" onclick="showContent('submissions')">
+                 <div class="quick-access-card" style="padding: 15px; border-left: 5px solid #28a745; margin-bottom: 10px; cursor: pointer; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" onclick="showContent('submissions')">
                     <h3 style="margin-top: 0;">📋 View All Submissions</h3>
                     <p style="margin-bottom: 0;">View the complete list of submitted documents on the <a href="#" onclick="showContent('submissions'); return false;">Submissions</a> page.</p>
                 </div>
-                <div class="card" style="padding: 15px; border-left: 5px solid #ffc107;">
+                <div class="quick-access-card" style="padding: 15px; border-left: 5px solid #ffc107; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                     <h3 style="margin-top: 0;">📊 Recent Activity</h3>
-                    <p id="recent-activity-text" style="margin-bottom: 0; color: #666;">Loading...</p>
+                    <p id="recent-activity-text" style="margin-bottom: 0; color: #666;">No activity</p>
                 </div>
             </div>
 
@@ -930,19 +856,6 @@
               <h2>Recent Notifications</h2>
               <div id="notifications-container">
                 <div class="notif">No new notifications <span class="notif-timestamp">--</span></div>
-                </div>
-                
-                <!-- Password Change Notifications Section -->
-                <div class="password-notif-section">
-                    <div class="password-notif-header">
-                        <h3>🔐 Password Changes</h3>
-                        <button class="toggle-password-notif-btn" onclick="togglePasswordNotifications()">Show</button>
-                    </div>
-                    <div class="password-notif-content" id="password-notif-content">
-                        <div style="text-align: center; color: #666; padding: 20px;">
-                            Loading password notifications...
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -1141,8 +1054,8 @@
       }
 
       // Update the header based on user
-      userInfoText.textContent = `${loggedInUser.barangay} Secretary`;
-      portalTitle.textContent = `${loggedInUser.barangay} Secretary Portal`;
+      userInfoText.textContent = `${loggedInUser.barangay}`;
+      portalTitle.textContent = `${loggedInUser.barangay} Portal`;
       logoutLink.href = 'index.html'; 
             
       // Clear session storage on logout
@@ -1174,6 +1087,27 @@
             if (activeLink) {
                 activeLink.classList.add('active');
             }
+            
+            // When viewing submissions page, mark currently displayed submissions as viewed
+            if (targetId === 'submissions') {
+                setTimeout(() => {
+                    allSubmissions.forEach(sub => {
+                        const status = sub.status ? sub.status.toLowerCase().trim() : '';
+                        if (status === 'approved' || status === 'rejected' || status === 'review') {
+                            // Only mark as viewed with current status - if status changes later, it will show again
+                            markSubmissionAsViewed(sub.id, status);
+                        }
+                    });
+                    // Recalculate badge count after marking as viewed
+                    const unviewedCount = allSubmissions.filter(s => {
+                        const status = s.status ? s.status.toLowerCase().trim() : '';
+                        const hasStatusChange = status === 'approved' || status === 'rejected' || status === 'review';
+                        const notViewed = !isSubmissionViewed(s.id, status);
+                        return hasStatusChange && notViewed;
+                    }).length;
+                    updateSidebarBadge('submissionsNotifBadge', unviewedCount);
+                }, 500);
+            }
         }
 
         window.showContent = showContent;
@@ -1200,15 +1134,10 @@
         const notificationItems = submissions
           .filter(s => {
             const hasStatus = s.status && s.status.trim() !== '' && s.status !== 'pending';
-            if (hasStatus && s.status === 'review') {
-              console.log('Found review item:', s.title, s.status);
-            }
             return hasStatus;
           })
           .sort((a, b) => new Date(b.uploaded_at) - new Date(a.uploaded_at))
           .slice(0, 5);
-        
-        console.log('Total notification items:', notificationItems.length, notificationItems);
         
         if (notificationItems.length === 0) {
           notificationsContainer.innerHTML = '<div class="notif">No new notifications <span class="notif-timestamp">--</span></div>';
@@ -1278,6 +1207,9 @@
             borderColor = '#6c757d';
           }
           
+          // Mark this notification as viewed when displayed
+          markSubmissionAsViewed(item.id, status);
+          
           html += `
             <div class="notif" style="border-left-color: ${borderColor};">
               <strong style="font-size: 1.05em; color: #000; display: block; margin-bottom: 10px;">
@@ -1290,6 +1222,15 @@
         });
         
         notificationsContainer.innerHTML = html;
+        
+        // Update badge count after marking notifications as viewed
+        const unviewedCount = allSubmissions.filter(s => {
+          const status = s.status ? s.status.toLowerCase().trim() : '';
+          const hasStatusChange = status === 'approved' || status === 'rejected' || status === 'review';
+          const notViewed = !isSubmissionViewed(s.id, status);
+          return hasStatusChange && notViewed;
+        }).length;
+        updateSidebarBadge('submissionsNotifBadge', unviewedCount);
       }
       
       // Function to update Recent Activity
@@ -1415,9 +1356,14 @@
             updateFilterCounts(total, pending, review, approved, rejected);
             
             // Update sidebar badge
-            // Submissions badge shows items with feedback/comments from ABC
-            const itemsWithComments = allSubmissions.filter(s => s.remarks && s.remarks.trim() !== '').length;
-            updateSidebarBadge('submissionsNotifBadge', itemsWithComments);
+            // Submissions badge shows only UNVIEWED items with status changes (approved, rejected, review - not pending)
+            const itemsWithStatusChanges = allSubmissions.filter(s => {
+              const status = s.status ? s.status.toLowerCase().trim() : '';
+              const hasStatusChange = status === 'approved' || status === 'rejected' || status === 'review';
+              const notViewed = !isSubmissionViewed(s.id, status);
+              return hasStatusChange && notViewed;
+            }).length;
+            updateSidebarBadge('submissionsNotifBadge', itemsWithStatusChanges);
             
             // Update Recent Notifications
             updateRecentNotifications(allSubmissions);
@@ -1442,6 +1388,20 @@
             displaySubmissions(allSubmissions.slice(0, 5));
           }
         } catch (error) {
+          
+          // Update Recent Activity with error state
+          const activityText = document.getElementById('recent-activity-text');
+          if (activityText) {
+            activityText.innerHTML = 'Unable to load submissions. Please refresh the page or check your connection.';
+            activityText.style.color = '#d32f2f';
+          }
+          
+          // Update dashboard stats to show 0
+          document.getElementById('total-submissions').textContent = '0';
+          document.getElementById('approved-count').textContent = '0';
+          document.getElementById('review-count').textContent = '0';
+          document.getElementById('pending-count').textContent = '0';
+          document.getElementById('rejected-count').textContent = '0';
         }
       }
       
@@ -1527,6 +1487,32 @@
       let allSubmissions = [];
       let showingAllSubmissions = false;
       let currentStatusFilter = 'all';
+      
+      // Track viewed/seen submissions in localStorage
+      function getViewedSubmissions() {
+        try {
+          const viewed = localStorage.getItem('viewedSubmissions');
+          return viewed ? JSON.parse(viewed) : {};
+        } catch {
+          return {};
+        }
+      }
+      
+      function markSubmissionAsViewed(submissionId, status) {
+        try {
+          const viewed = getViewedSubmissions();
+          viewed[submissionId] = { status, viewedAt: new Date().toISOString() };
+          localStorage.setItem('viewedSubmissions', JSON.stringify(viewed));
+        } catch (e) {
+          // Silently fail if localStorage is not available
+        }
+      }
+      
+      function isSubmissionViewed(submissionId, currentStatus) {
+        const viewed = getViewedSubmissions();
+        // Consider viewed if submission ID is in viewed list and status hasn't changed
+        return viewed[submissionId] && viewed[submissionId].status === currentStatus;
+      }
       
       // Update filter counts function
       function updateFilterCounts(total, pending, review, approved, rejected) {
@@ -1664,7 +1650,7 @@
           const archiveButton = submission.status === 'pending' 
             ? `<a href="#" onclick="archiveSubmission(${submission.id}); return false;" 
                  style="color: #ff9800; text-decoration: none; margin-left: 8px;" title="Archive submission">📦 Archive</a>`
-            : `<span style="color: #999; margin-left: 8px;" title="Documents processed by ABC cannot be archived">🔒 Archived</span>`;
+            : `<span style="color: #999; margin-left: 8px;" title="Documents processed by ABC cannot be archived">🔒 Archive</span>`;
           
           row.innerHTML = `
             <td>
@@ -2200,7 +2186,6 @@
             document.body.removeChild(link);
             window.URL.revokeObjectURL(blobUrl);
         } catch (error) {
-            console.error('Download failed:', error);
             showCustomAlert('Failed to download file. Please try again.', 'error');
         }
     }
@@ -2338,95 +2323,6 @@
     window.viewComments = viewComments;
     window.showDocumentViewer = showDocumentViewer;
     window.downloadFile = downloadFile;
-
-    // Password Notification Toggle and Fetch Functions
-    let passwordNotificationsLoaded = false;
-    
-    window.togglePasswordNotifications = async function() {
-        const content = document.getElementById('password-notif-content');
-        const button = document.querySelector('.toggle-password-notif-btn');
-        
-        if (content.classList.contains('show')) {
-            // Hide notifications
-            content.classList.remove('show');
-            button.textContent = 'Show';
-        } else {
-            // Show notifications
-            content.classList.add('show');
-            button.textContent = 'Hide';
-            
-            // Load notifications if not already loaded
-            if (!passwordNotificationsLoaded) {
-                await fetchPasswordNotifications();
-                passwordNotificationsLoaded = true;
-            }
-        }
-    };
-    
-    async function fetchPasswordNotifications() {
-        const content = document.getElementById('password-notif-content');
-        
-        try {
-            const response = await fetch('api/get_password_notifications.php', {
-                credentials: 'include'
-            });
-            
-            const data = await response.json();
-            
-            if (!data.ok) {
-                content.innerHTML = '<div style=\"text-align: center; color: #dc3545; padding: 20px;\">Error loading notifications</div>';
-                return;
-            }
-            
-            const notifications = data.notifications || [];
-            
-            if (notifications.length === 0) {
-                content.innerHTML = '<div style=\"text-align: center; color: #666; padding: 20px;\">No password change notifications</div>';
-                return;
-            }
-            
-            let html = '';
-            notifications.forEach(notif => {
-                const statusClass = notif.status || 'old';
-                const statusLabel = statusClass === 'new' ? 'New' : statusClass === 'recent' ? 'Recent' : 'Old';
-                const date = new Date(notif.changed_at);
-                const timeAgo = getTimeAgo(date);
-                
-                html += `
-                    <div class="password-notif-item ${statusClass}">
-                        <div>
-                            <strong>${notif.username || 'User'}</strong> changed their password
-                            <span class="password-notif-badge ${statusClass}">${statusLabel}</span>
-                        </div>
-                        <div style="font-size: 0.85em; color: #666; margin-top: 5px;">
-                            ${timeAgo}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            content.innerHTML = html;
-            
-        } catch (error) {
-            console.error('Error fetching password notifications:', error);
-            content.innerHTML = '<div style=\"text-align: center; color: #dc3545; padding: 20px;\">Failed to load notifications</div>';
-        }
-    }
-    
-    // Helper function to calculate time ago (reuse existing if available)
-    function getTimeAgo(date) {
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-        
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
-        if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-        if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-        return date.toLocaleDateString();
-    }
 
   </script>
 </body>

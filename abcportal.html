@@ -120,7 +120,7 @@
       border-left: 5px solid transparent;
     }
 
-    /* Pero ibalik kung mismong active link ang tinutukan ng cursor */
+    /* Restore styling when hovering directly over active link */
     .sidebar:hover a.active:hover {
       background: #c0c0c0;
       border-left: 5px solid #0066cc;
@@ -238,6 +238,129 @@
         font-size: 1.8em;
         font-weight: bold;
         color: #0066cc;
+    }
+
+    /* Analytics Dashboard Professional Styling */
+    .analytics-section {
+        background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 4px 6px rgba(0, 76, 153, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 76, 153, 0.1);
+    }
+
+    .analytics-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e3e8ef;
+    }
+
+    .analytics-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: 25px;
+        padding: 18px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 76, 153, 0.06);
+        border: 1px solid #e3e8ef;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 0 1 auto;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: #004c99;
+        font-size: 0.95em;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .filter-select {
+        padding: 10px 35px 10px 15px;
+        border: 2px solid #004c99;
+        border-radius: 8px;
+        font-size: 0.95em;
+        font-weight: 500;
+        cursor: pointer;
+        background: white;
+        color: #333;
+        transition: all 0.3s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23004c99' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        min-width: 180px;
+    }
+
+    .filter-select:hover {
+        border-color: #0066cc;
+        box-shadow: 0 2px 8px rgba(0, 76, 153, 0.15);
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #0066cc;
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+
+    .filter-result {
+        flex: 1;
+        text-align: right;
+        color: #004c99;
+        font-weight: 600;
+        font-size: 0.95em;
+        padding: 10px 15px;
+        background: linear-gradient(135deg, #e8f4f8 0%, #f0f7fa 100%);
+        border-radius: 8px;
+        border-left: 4px solid #004c99;
+        min-width: 200px;
+    }
+
+    .chart-container {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 76, 153, 0.08);
+        border: 1px solid #e3e8ef;
+        position: relative;
+    }
+
+    .chart-container canvas {
+        max-height: 400px;
+    }
+
+    /* Responsive adjustments for analytics */
+    @media (max-width: 768px) {
+        .analytics-filters {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .filter-select {
+            width: 100%;
+        }
+        
+        .filter-result {
+            text-align: center;
+        }
     }
 
     /* Status Badge Styling (Copied from barangay portal) */
@@ -524,57 +647,116 @@
         background-color: #e6e6e6;
     }
 
-    /* Alert Box Styling */
+    /* Alert Box Styling - Professional Design */
     .alert-box {
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 16px;
+        border-radius: 10px;
         border-left: 5px solid;
         display: flex;
         align-items: flex-start;
-        gap: 12px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        animation: slideIn 0.3s ease-out;
+        gap: 15px;
+        box-shadow: 0 3px 8px rgba(0, 76, 153, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
+        animation: slideIn 0.4s ease-out;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .alert-box:hover {
+        box-shadow: 0 5px 15px rgba(0, 76, 153, 0.15), 0 2px 5px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
     }
 
     @keyframes slideIn {
         from {
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translateX(-20px);
         }
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
         }
     }
 
     .alert-critical {
-        background-color: #fee;
+        background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
         border-left-color: #dc3545;
+    }
+
+    .alert-critical .alert-icon {
+        color: #dc3545;
+    }
+
+    .alert-critical .alert-title {
+        color: #721c24;
+    }
+
+    .alert-critical .alert-message {
         color: #721c24;
     }
 
     .alert-warning {
-        background-color: #fff3cd;
+        background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%);
         border-left-color: #ffc107;
+    }
+
+    .alert-warning .alert-icon {
+        color: #ffc107;
+    }
+
+    .alert-warning .alert-title {
+        color: #856404;
+    }
+
+    .alert-warning .alert-message {
         color: #856404;
     }
 
     .alert-info {
-        background-color: #d1ecf1;
+        background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
         border-left-color: #17a2b8;
+    }
+
+    .alert-info .alert-icon {
+        color: #17a2b8;
+    }
+
+    .alert-info .alert-title {
+        color: #0c5460;
+    }
+
+    .alert-info .alert-message {
         color: #0c5460;
     }
 
     .alert-success {
-        background-color: #d4edda;
+        background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
         border-left-color: #28a745;
+    }
+
+    .alert-success .alert-icon {
+        color: #28a745;
+    }
+
+    .alert-success .alert-title {
+        color: #155724;
+    }
+
+    .alert-success .alert-message {
         color: #155724;
     }
 
     .alert-icon {
-        font-size: 1.5em;
+        font-size: 2em;
         flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .alert-content {
@@ -582,24 +764,267 @@
     }
 
     .alert-title {
-        font-weight: bold;
-        margin-bottom: 5px;
-        font-size: 1.05em;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+        letter-spacing: 0.3px;
     }
 
     .alert-message {
         font-size: 0.95em;
-        line-height: 1.5;
+        line-height: 1.6;
+        font-weight: 500;
     }
 
     .alert-list {
-        margin: 8px 0 0 0;
+        margin: 12px 0 0 0;
         padding-left: 20px;
         font-size: 0.9em;
+        line-height: 1.8;
     }
 
     .alert-list li {
-        margin-bottom: 4px;
+        margin-bottom: 6px;
+        padding-left: 5px;
+    }
+
+    .alert-list li em {
+        color: #666;
+        font-style: normal;
+        font-weight: 600;
+    }
+
+    /* Decision Support & Alerts Section Styling */
+    .alerts-section {
+        background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin: 20px 0;
+        box-shadow: 0 4px 6px rgba(0, 76, 153, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 76, 153, 0.1);
+    }
+
+    .alerts-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e3e8ef;
+    }
+
+    .alerts-container {
+        margin-top: 20px;
+    }
+
+    /* Analysis Cards Styling */
+    .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .analysis-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 76, 153, 0.08);
+        border: 1px solid rgba(0, 76, 153, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .analysis-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 76, 153, 0.15);
+        transform: translateY(-3px);
+    }
+
+    .analysis-card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e3e8ef;
+    }
+
+    .analysis-card-icon {
+        font-size: 1.5em;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #004c99 0%, #0066cc 100%);
+        color: white;
+    }
+
+    .analysis-card-title {
+        font-size: 1.1em;
+        font-weight: 700;
+        color: #004c99;
+    }
+
+    .analysis-metric {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .analysis-metric:last-child {
+        border-bottom: none;
+    }
+
+    .analysis-metric-label {
+        font-size: 0.9em;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .analysis-metric-value {
+        font-size: 1.2em;
+        font-weight: 700;
+        color: #004c99;
+    }
+
+    .analysis-metric-value.positive {
+        color: #28a745;
+    }
+
+    .analysis-metric-value.negative {
+        color: #dc3545;
+    }
+
+    .analysis-metric-value.neutral {
+        color: #ffc107;
+    }
+
+    .trend-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.85em;
+        padding: 4px 8px;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+
+    .trend-up {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .trend-down {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .trend-stable {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .ranking-list {
+        list-style: none;
+        padding: 0;
+        margin: 10px 0;
+    }
+
+    .ranking-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 8px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #004c99;
+        transition: all 0.2s ease;
+    }
+
+    .ranking-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+    }
+
+    .ranking-number {
+        font-size: 1.3em;
+        font-weight: 700;
+        color: #004c99;
+        width: 35px;
+        text-align: center;
+    }
+
+    .ranking-name {
+        flex-grow: 1;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .ranking-score {
+        font-weight: 700;
+        color: #666;
+        font-size: 0.95em;
+    }
+
+    .recommendation-box {
+        background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+    }
+
+    .recommendation-title {
+        font-weight: 700;
+        color: #1565c0;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .recommendation-content {
+        font-size: 0.95em;
+        color: #424242;
+        line-height: 1.6;
+    }
+
+    .kpi-gauge {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 15px 0;
+    }
+
+    .kpi-gauge-bar {
+        flex-grow: 1;
+        height: 20px;
+        background: #e9ecef;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .kpi-gauge-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 8px;
+        color: white;
+        font-weight: 600;
+        font-size: 0.85em;
+    }
+
+    .kpi-gauge-fill.warning {
+        background: linear-gradient(90deg, #ffc107 0%, #ffdd57 100%);
+    }
+
+    .kpi-gauge-fill.danger {
+        background: linear-gradient(90deg, #dc3545 0%, #ff6b6b 100%);
     }
 
     /* Document Viewer Modal */
@@ -951,17 +1376,84 @@
                 <p id="rejected-count">--</p>
             </div>
         </div>
-        <p style="font-style: italic; color: #666;">Summary of document submissions only (excludes password changes and other system activities).</p>
         
-        <hr style="border: 0; height: 1px; background-color: #ccc; margin: 20px 0;">
-        <h3>Analytics Dashboard</h3>
-        <p style="color: #555;">Visual representation of submissions across all barangays.</p>
-        <canvas id="chartSubmissions"></canvas>
+        <hr style="border: 0; height: 1px; background-color: #ccc; margin: 30px 0;">
         
-        <hr style="border: 0; height: 1px; background-color: #ccc; margin: 20px 0;">
-        <h3>Decision Support & Alerts</h3>
-        <div id="alerts-container" style="margin-top: 15px;">
-            <p style="text-align: center; color: #666; font-style: italic;">Loading alerts...</p>
+        <!-- Analytics Dashboard Section -->
+        <div class="analytics-section">
+          <div class="analytics-header">
+            <div>
+              <h3 style="margin: 0 0 5px 0; color: #004c99; font-size: 1.5em;">📊 Analytics Dashboard</h3>
+            </div>
+          </div>
+          
+          <!-- Filters Container -->
+          <div class="analytics-filters">
+            <div class="filter-group">
+              <label for="monthFilter" class="filter-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 5px;">
+                  <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M3 10h18M8 2v4M16 2v4" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Month:
+              </label>
+              <select id="monthFilter" class="filter-select">
+                <option value="all">All Months</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label for="statusFilter" class="filter-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 5px;">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Status:
+              </label>
+              <select id="statusFilter" class="filter-select">
+                <option value="all">All Status</option>
+                <option value="approved">✓ Approved</option>
+                <option value="review">⏳ Under Review</option>
+                <option value="pending">📝 Pending/Submitted</option>
+                <option value="rejected">✗ Rejected</option>
+              </select>
+            </div>
+            
+            <div class="filter-result">
+              <span id="filteredCount"></span>
+            </div>
+          </div>
+          
+          <!-- Chart Container -->
+          <div class="chart-container">
+            <canvas id="chartSubmissions"></canvas>
+          </div>
+        </div>
+        
+        <hr style="border: 0; height: 1px; background-color: #ccc; margin: 30px 0;">
+        
+        <!-- Decision Support & Alerts Section -->
+        <div class="alerts-section">
+          <div class="alerts-header">
+            <div>
+              <h3 style="margin: 0 0 5px 0; color: #004c99; font-size: 1.5em;">💡 Decision Support & Analytics</h3>
+            </div>
+          </div>
+          
+          <!-- Analysis Dashboard -->
+          <div id="analysis-dashboard" class="analysis-grid">
+              <p style="text-align: center; color: #666; font-style: italic; grid-column: 1 / -1;">Loading analysis...</p>
+          </div>
+          
+          <hr style="border: 0; height: 1px; background-color: #e3e8ef; margin: 30px 0;">
+          
+          <!-- Alerts Container -->
+          <div>
+              <h4 style="color: #004c99; margin-bottom: 15px; font-size: 1.2em;">🚨 Alerts & Notifications</h4>
+              <div id="alerts-container" class="alerts-container">
+                  <p style="text-align: center; color: #666; font-style: italic;">Loading alerts...</p>
+              </div>
+          </div>
         </div>
       </div>
       
@@ -1119,6 +1611,25 @@
             onmouseout="this.style.backgroundColor='#ffcccc'; this.style.color='#000';">Clear</button>
         </div>
         
+        <!-- Status Filter Buttons -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+          <button id="manage-filter-all" class="manage-status-filter active" onclick="filterManageSubmissions('all')" style="flex: 1;">
+            All Documents (<span id="manage-count-all">0</span>)
+          </button>
+          <button id="manage-filter-pending" class="manage-status-filter" onclick="filterManageSubmissions('pending')" style="flex: 1;">
+            ⏳ Pending (<span id="manage-count-pending">0</span>)
+          </button>
+          <button id="manage-filter-review" class="manage-status-filter" onclick="filterManageSubmissions('review')" style="flex: 1;">
+            🔍 Under Review (<span id="manage-count-review">0</span>)
+          </button>
+          <button id="manage-filter-approved" class="manage-status-filter" onclick="filterManageSubmissions('approved')" style="flex: 1;">
+            ✅ Approved (<span id="manage-count-approved">0</span>)
+          </button>
+          <button id="manage-filter-rejected" class="manage-status-filter" onclick="filterManageSubmissions('rejected')" style="flex: 1;">
+            ❌ Rejected (<span id="manage-count-rejected">0</span>)
+          </button>
+        </div>
+        
         <div class="barangay-folder-list" id="barangay-folders">
             </div>
       </div>
@@ -1233,6 +1744,59 @@
       background: #0066cc;
       color: white;
     }
+    /* Modal Status Filter Buttons */
+    .modal-status-filter {
+      padding: 8px 16px;
+      border: 2px solid #ddd;
+      background-color: #f8f9fa;
+      color: #495057;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .modal-status-filter:hover {
+      background-color: #e9ecef;
+      border-color: #007bff;
+    }
+    .modal-status-filter.active {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+    .modal-status-filter.active:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+    /* Manage Status Filter Buttons */
+    .manage-status-filter {
+      padding: 10px 20px;
+      border: 2px solid #e0e0e0;
+      background-color: #ffffff;
+      color: #666;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.95em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .manage-status-filter:hover {
+      background-color: #f5f5f5;
+      border-color: #0066cc;
+    }
+    .manage-status-filter.active {
+      background-color: #0066cc;
+      color: white;
+      border-color: #0066cc;
+    }
+    .manage-status-filter.active:hover {
+      background-color: #0052a3;
+      border-color: #0052a3;
+    }
     .status-badge {
       padding: 6px 12px;
       border-radius: 20px;
@@ -1243,6 +1807,10 @@
     .status-pending {
       background: #fff3cd;
       color: #856404;
+    }
+    .status-review {
+      background: #cce5ff;
+      color: #004085;
     }
     .status-approved {
       background: #d4edda;
@@ -1298,6 +1866,7 @@
     
     // Global submissions data
     let allSubmissions = [];
+    let currentManageStatusFilter = 'all'; // Track current filter for manage submissions
 
     // Helper function to update sidebar notification badges
     function updateSidebarBadge(badgeId, count) {
@@ -1354,20 +1923,15 @@
                 if (pendingEl) pendingEl.textContent = pending;
                 if (rejectedEl) rejectedEl.textContent = rejected;
                 
-                console.log('Dashboard Stats Updated:', {
-                    total: total,
-                    approved: approved,
-                    review: review,
-                    pending: pending,
-                    rejected: rejected
-                });
-                
                 // Update sidebar badge for Manage Submissions (show pending + review count)
                 const actionNeeded = pending + review;
                 updateSidebarBadge('manageNotifBadge', actionNeeded);
                 
-                // Update chart
-                updateChart();
+                // Populate month filter dropdown (this will also update the chart)
+                populateMonthFilter();
+                
+                // Generate analysis dashboard
+                generateAnalysisDashboard();
                 
                 // Generate alerts
                 generateAlerts();
@@ -1375,7 +1939,6 @@
                 // Render folders
                 renderBarangayFolders();
             } else {
-                console.error('Error in result:', result.error || 'Invalid data format');
                 // Set zero values if data is invalid
                 document.getElementById('total-submissions').textContent = '0';
                 document.getElementById('approved-count').textContent = '0';
@@ -1384,7 +1947,6 @@
                 document.getElementById('rejected-count').textContent = '0';
             }
         } catch (error) {
-            console.error('Error loading submissions:', error);
             // Set error state
             document.getElementById('total-submissions').textContent = 'Error';
             document.getElementById('approved-count').textContent = 'Error';
@@ -1398,11 +1960,70 @@
     }
     
     // Update chart with submission data
-    function updateChart() {
+    function updateChart(selectedMonth = 'all', selectedStatus = 'all') {
+        // Filter submissions by selected month and status
+        let filteredSubmissions = allSubmissions;
+        
+        // Apply month filter
+        if (selectedMonth !== 'all') {
+            filteredSubmissions = filteredSubmissions.filter(s => {
+                // Try multiple date fields: submission_date, uploaded_at, created_at
+                const dateValue = s.submission_date || s.uploaded_at || s.created_at;
+                if (!dateValue) return false;
+                const submissionDate = new Date(dateValue);
+                const monthYear = `${submissionDate.getFullYear()}-${String(submissionDate.getMonth() + 1).padStart(2, '0')}`;
+                return monthYear === selectedMonth;
+            });
+        }
+        
+        // Apply status filter
+        if (selectedStatus !== 'all') {
+            filteredSubmissions = filteredSubmissions.filter(s => {
+                if (!s.status) return false;
+                const statusLower = s.status.toLowerCase().trim();
+                
+                if (selectedStatus === 'pending') {
+                    return statusLower === 'pending' || statusLower === 'submitted';
+                }
+                return statusLower === selectedStatus;
+            });
+        }
+        
+        // Update filtered count display
+        const filteredCountEl = document.getElementById('filteredCount');
+        if (filteredCountEl) {
+            let filterDescription = '';
+            
+            if (selectedMonth === 'all' && selectedStatus === 'all') {
+                filterDescription = `Showing all ${allSubmissions.length} submissions`;
+            } else {
+                let parts = [];
+                
+                if (selectedMonth !== 'all') {
+                    const monthName = new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                    parts.push(monthName);
+                }
+                
+                if (selectedStatus !== 'all') {
+                    const statusNames = {
+                        'approved': 'Approved',
+                        'review': 'Under Review',
+                        'pending': 'Pending/Submitted',
+                        'rejected': 'Rejected'
+                    };
+                    parts.push(statusNames[selectedStatus]);
+                }
+                
+                filterDescription = `Showing ${filteredSubmissions.length} ${parts.join(' - ')} submissions`;
+            }
+            
+            filteredCountEl.textContent = filterDescription;
+        }
+        
         const submissionsByBarangay = {};
         
         barangays.forEach(barangay => {
-            submissionsByBarangay[barangay] = allSubmissions.filter(s => s.barangay === barangay).length;
+            submissionsByBarangay[barangay] = filteredSubmissions.filter(s => s.barangay === barangay).length;
         });
         
         const ctx = document.getElementById('chartSubmissions').getContext('2d');
@@ -1434,6 +2055,290 @@
                 }
             }
         });
+    }
+    
+    // Populate month filter dropdown with available months from submissions
+    function populateMonthFilter() {
+        const monthFilter = document.getElementById('monthFilter');
+        const statusFilter = document.getElementById('statusFilter');
+        
+        if (!monthFilter) {
+            return;
+        }
+        
+        // Extract unique months from submissions
+        const monthsSet = new Set();
+        allSubmissions.forEach(s => {
+            // Try multiple date fields: submission_date, uploaded_at, created_at
+            const dateValue = s.submission_date || s.uploaded_at || s.created_at;
+            if (dateValue) {
+                const date = new Date(dateValue);
+                const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                monthsSet.add(monthYear);
+            }
+        });
+        
+        // Convert to array and sort in descending order (newest first)
+        const months = Array.from(monthsSet).sort().reverse();
+        
+        // Clear existing options except "All Months"
+        monthFilter.innerHTML = '<option value="all">All Months</option>';
+        
+        // Add month options
+        months.forEach(monthYear => {
+            const date = new Date(monthYear + '-01');
+            const monthName = date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            const option = document.createElement('option');
+            option.value = monthYear;
+            option.textContent = monthName;
+            monthFilter.appendChild(option);
+        });
+        
+        // Add event listeners for filter changes
+        monthFilter.onchange = function() {
+            const selectedStatus = statusFilter ? statusFilter.value : 'all';
+            updateChart(this.value, selectedStatus);
+        };
+        
+        if (statusFilter) {
+            statusFilter.onchange = function() {
+                const selectedMonth = monthFilter.value;
+                updateChart(selectedMonth, this.value);
+            };
+        }
+        
+        // Auto-select the most recent month if available and update chart
+        if (months.length > 0) {
+            monthFilter.value = months[0]; // Select the latest month
+            // Trigger initial chart update with selected month
+            const selectedStatus = statusFilter ? statusFilter.value : 'all';
+            updateChart(months[0], selectedStatus);
+        } else {
+            // If no months available, still show chart with all data
+            updateChart('all', 'all');
+        }
+    }
+    
+    // Generate comprehensive analysis dashboard
+    function generateAnalysisDashboard() {
+        const analysisContainer = document.getElementById('analysis-dashboard');
+        if (!analysisContainer) return;
+        
+        const totalBarangays = barangays.length;
+        const activeBarangays = barangays.filter(b => allSubmissions.some(s => s.barangay === b)).length;
+        const totalSubmissions = allSubmissions.length;
+        
+        // Calculate key metrics
+        const approved = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+        const review = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length;
+        const pending = allSubmissions.filter(s => {
+            if (!s.status) return false;
+            const statusLower = s.status.toLowerCase().trim();
+            return statusLower === 'pending' || statusLower === 'submitted';
+        }).length;
+        const rejected = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'rejected').length;
+        
+        // Calculate rates
+        const approvalRate = totalSubmissions > 0 ? ((approved / totalSubmissions) * 100).toFixed(1) : 0;
+        const rejectionRate = totalSubmissions > 0 ? ((rejected / totalSubmissions) * 100).toFixed(1) : 0;
+        const participationRate = ((activeBarangays / totalBarangays) * 100).toFixed(1);
+        const avgSubmissionsPerBarangay = activeBarangays > 0 ? (totalSubmissions / activeBarangays).toFixed(1) : 0;
+        
+        // Time-based analysis
+        const now = new Date();
+        const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        const recentSubmissions = allSubmissions.filter(s => {
+            const dateValue = s.submission_date || s.uploaded_at || s.created_at;
+            if (!dateValue) return false;
+            return new Date(dateValue) >= last30Days;
+        }).length;
+        
+        // Performance rankings - prioritize by number of approved documents
+        const barangayPerformance = barangays.map(barangay => {
+            const submissions = allSubmissions.filter(s => s.barangay === barangay);
+            const approvedCount = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+            const totalCount = submissions.length;
+            return { barangay, totalCount, approvedCount };
+        }).filter(item => item.approvedCount > 0)
+          .sort((a, b) => b.approvedCount - a.approvedCount || b.totalCount - a.totalCount);
+        
+        const topPerformers = barangayPerformance.slice(0, 5);
+        const needsAttention = barangays.filter(b => 
+            !allSubmissions.some(s => s.barangay === b) ||
+            allSubmissions.filter(s => s.barangay === b).length < 2
+        ).slice(0, 5);
+        
+        // Generate HTML
+        let html = '';
+        
+        // Card 1: Key Performance Indicators
+        html += `
+            <div class="analysis-card">
+                <div class="analysis-card-header">
+                    <div class="analysis-card-icon">📊</div>
+                    <div class="analysis-card-title">Key Performance Indicators</div>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Participation Rate</span>
+                    <span class="analysis-metric-value ${participationRate >= 75 ? 'positive' : participationRate >= 50 ? 'neutral' : 'negative'}">${participationRate}%</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Approval Rate</span>
+                    <span class="analysis-metric-value ${approvalRate >= 70 ? 'positive' : approvalRate >= 50 ? 'neutral' : 'negative'}">${approvalRate}%</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Avg. Submissions per Barangay</span>
+                    <span class="analysis-metric-value">${avgSubmissionsPerBarangay}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Recent Activity (30 days)</span>
+                    <span class="analysis-metric-value">${recentSubmissions} submissions</span>
+                </div>
+            </div>
+        `;
+        
+        // Card 2: Statistical Summary
+        const inProgressCount = pending + review;
+        const completionRate = totalSubmissions > 0 ? (((approved + rejected) / totalSubmissions) * 100).toFixed(1) : 0;
+        
+        html += `
+            <div class="analysis-card">
+                <div class="analysis-card-header">
+                    <div class="analysis-card-icon">📈</div>
+                    <div class="analysis-card-title">Statistical Summary</div>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Total Submissions</span>
+                    <span class="analysis-metric-value">${totalSubmissions}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Completion Rate</span>
+                    <span class="analysis-metric-value ${completionRate >= 60 ? 'positive' : 'neutral'}">${completionRate}%</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">In Progress</span>
+                    <span class="analysis-metric-value neutral">${inProgressCount}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Rejection Rate</span>
+                    <span class="analysis-metric-value ${rejectionRate > 20 ? 'negative' : rejectionRate > 10 ? 'neutral' : 'positive'}">${rejectionRate}%</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Active Barangays</span>
+                    <span class="analysis-metric-value">${activeBarangays} / ${totalBarangays}</span>
+                </div>
+            </div>
+        `;
+        
+        // Card 3: Top Performers
+        html += `
+            <div class="analysis-card">
+                <div class="analysis-card-header">
+                    <div class="analysis-card-icon">🏆</div>
+                    <div class="analysis-card-title">Top Performing Barangays</div>
+                </div>
+                ${topPerformers.length > 0 ? `
+                    <ul class="ranking-list">
+                        ${topPerformers.map((item, index) => `
+                            <li class="ranking-item">
+                                <span class="ranking-number">#${index + 1}</span>
+                                <span class="ranking-name">${item.barangay}</span>
+                                <span class="ranking-score">${item.approvedCount}/${item.totalCount}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                ` : '<p style="text-align: center; color: #666; font-style: italic; padding: 20px 0;">No performance data available yet</p>'}
+            </div>
+        `;
+        
+        // Card 4: Needs Attention
+        html += `
+            <div class="analysis-card">
+                <div class="analysis-card-header">
+                    <div class="analysis-card-icon">⚠️</div>
+                    <div class="analysis-card-title">Requires Attention</div>
+                </div>
+                ${needsAttention.length > 0 ? `
+                    <ul class="ranking-list">
+                        ${needsAttention.map((barangay, index) => {
+                            const count = allSubmissions.filter(s => s.barangay === barangay).length;
+                            return `
+                                <li class="ranking-item" style="border-left-color: #dc3545;">
+                                    <span class="ranking-number" style="color: #dc3545;">${index + 1}</span>
+                                    <span class="ranking-name">${barangay}</span>
+                                    <span class="ranking-score" style="color: #dc3545;">${count} docs</span>
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                ` : '<p style="text-align: center; color: #666; font-style: italic; padding: 20px 0;">All barangays are performing well!</p>'}
+            </div>
+        `;
+        
+        // Card 5: Trend Analysis
+        const trendDirection = recentSubmissions > (totalSubmissions / 2) ? 'up' : recentSubmissions < (totalSubmissions / 4) ? 'down' : 'stable';
+        const trendText = trendDirection === 'up' ? 'Increasing' : trendDirection === 'down' ? 'Decreasing' : 'Stable';
+        const trendIcon = trendDirection === 'up' ? '↗' : trendDirection === 'down' ? '↘' : '→';
+        
+        html += `
+            <div class="analysis-card">
+                <div class="analysis-card-header">
+                    <div class="analysis-card-icon">📉</div>
+                    <div class="analysis-card-title">Trend Analysis</div>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Activity Trend</span>
+                    <span class="trend-indicator trend-${trendDirection}">${trendIcon} ${trendText}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Recent vs Total</span>
+                    <span class="analysis-metric-value">${recentSubmissions}/${totalSubmissions}</span>
+                </div>
+            </div>
+        `;
+        
+        // Card 6: Actionable Recommendations
+        const recommendations = [];
+        
+        if (participationRate < 60) {
+            recommendations.push('📢 Launch outreach campaign to inactive barangays');
+        }
+        if (rejectionRate > 15) {
+            recommendations.push('📋 Provide training on document requirements');
+        }
+        if (pending + review > totalSubmissions * 0.3) {
+            recommendations.push('⏱️ Prioritize review of pending submissions');
+        }
+        if (recentSubmissions < totalSubmissions * 0.2 && totalSubmissions > 0) {
+            recommendations.push('📣 Send reminder notifications to barangays');
+        }
+        if (approvalRate >= 70 && participationRate >= 75) {
+            recommendations.push('🎉 Recognize high-performing barangays publicly');
+        }
+        if (recommendations.length === 0) {
+            recommendations.push('✅ Continue monitoring submission patterns');
+        }
+        
+        html += `
+            <div class="analysis-card">
+                <div class="analysis-card-header">
+                    <div class="analysis-card-icon">💡</div>
+                    <div class="analysis-card-title">Strategic Recommendations</div>
+                </div>
+                ${recommendations.map(rec => `
+                    <div class="recommendation-box">
+                        <div class="recommendation-title">
+                            <span>${rec.split(' ')[0]}</span>
+                        </div>
+                        <div class="recommendation-content">
+                            ${rec.substring(rec.indexOf(' ') + 1)}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        
+        analysisContainer.innerHTML = html;
     }
     
     // Generate decision support and alerts based on submission data
@@ -1605,6 +2510,17 @@
                 
                 // Auto-update the modal if it's currently open
                 updateModalStatusIfOpen(id, status, currentDateTime);
+                
+                // Immediately update badge count when status changes to approved or rejected
+                if (status === 'approved' || status === 'rejected') {
+                    // Recalculate badge count (pending + review only)
+                    const actionNeeded = allSubmissions.filter(s => {
+                        if (!s.status) return false;
+                        const statusLower = s.status.toLowerCase().trim();
+                        return (statusLower === 'pending' || statusLower === 'submitted' || statusLower === 'review') && s.id !== id;
+                    }).length;
+                    updateSidebarBadge('manageNotifBadge', actionNeeded);
+                }
             } else {
                 showCustomAlert('Error: ' + (result.error || 'Failed to update status'), 'error');
             }
@@ -1625,6 +2541,9 @@
                 // Check if this row contains a select with the submission ID
                 const select = row.querySelector(`select[onchange*="updateSubmissionStatus(${submissionId}"]`);
                 if (select) {
+                    // Update the data-status attribute so filtering works correctly
+                    row.setAttribute('data-status', newStatus);
+                    
                     // Update the status badge in this row
                     const statusCell = row.querySelector('td:nth-child(4)');
                     if (statusCell) {
@@ -1663,9 +2582,59 @@
                     
                     // Reset the dropdown
                     select.value = '';
+                    
+                    // Update the modal filter counts
+                    updateModalFilterCounts(modal);
+                    
+                    // Re-apply current filter to show/hide the row properly
+                    const activeFilter = modal.querySelector('.modal-status-filter.active');
+                    if (activeFilter) {
+                        const currentFilter = activeFilter.getAttribute('data-status');
+                        if (currentFilter && currentFilter !== 'all') {
+                            // Hide the row if it doesn't match the current filter
+                            if (newStatus !== currentFilter) {
+                                row.style.display = 'none';
+                            } else {
+                                row.style.display = '';
+                            }
+                        }
+                    }
                 }
             });
         });
+    }
+    
+    // Function to update modal filter counts
+    function updateModalFilterCounts(modal) {
+        const rows = modal.querySelectorAll('.modal-submission-row');
+        const counts = {
+            all: 0,
+            pending: 0,
+            review: 0,
+            approved: 0,
+            rejected: 0
+        };
+        
+        rows.forEach(row => {
+            const status = row.getAttribute('data-status');
+            counts.all++;
+            if (counts.hasOwnProperty(status)) {
+                counts[status]++;
+            }
+        });
+        
+        // Update count displays
+        const countAllElement = modal.querySelector('.modal-count-all');
+        const countPendingElement = modal.querySelector('.modal-count-pending');
+        const countReviewElement = modal.querySelector('.modal-count-review');
+        const countApprovedElement = modal.querySelector('.modal-count-approved');
+        const countRejectedElement = modal.querySelector('.modal-count-rejected');
+        
+        if (countAllElement) countAllElement.textContent = counts.all;
+        if (countPendingElement) countPendingElement.textContent = counts.pending;
+        if (countReviewElement) countReviewElement.textContent = counts.review;
+        if (countApprovedElement) countApprovedElement.textContent = counts.approved;
+        if (countRejectedElement) countRejectedElement.textContent = counts.rejected;
     }
     
     // Make status update function global
@@ -1679,16 +2648,30 @@
         }
         
         folderContainer.innerHTML = '';
+        
+        // Update filter counts
+        updateManageFilterCounts();
+
+        // Get filtered submissions based on current status filter
+        let submissionsToDisplay = allSubmissions;
+        if (currentManageStatusFilter !== 'all') {
+            submissionsToDisplay = allSubmissions.filter(s => s.status === currentManageStatusFilter);
+        }
 
         // Sort barangays by submission count (descending) - barangays with submissions first
         const sortedBarangays = [...barangays].sort((a, b) => {
-            const aCount = allSubmissions.filter(s => s.barangay === a).length;
-            const bCount = allSubmissions.filter(s => s.barangay === b).length;
+            const aCount = submissionsToDisplay.filter(s => s.barangay === a).length;
+            const bCount = submissionsToDisplay.filter(s => s.barangay === b).length;
             return bCount - aCount; // Descending order
         });
 
         sortedBarangays.forEach(barangay => {
-            const barangaySubmissions = allSubmissions.filter(s => s.barangay === barangay);
+            const barangaySubmissions = submissionsToDisplay.filter(s => s.barangay === barangay);
+            
+            // Skip barangays with no submissions for current filter
+            if (barangaySubmissions.length === 0) {
+                return;
+            }
             
             const folder = document.createElement('div');
             folder.className = 'barangay-folder';
@@ -1739,7 +2722,47 @@
             folder.appendChild(subFolderList);
             folderContainer.appendChild(folder);
         });
+        
+        // Show message if no results
+        if (folderContainer.children.length === 0) {
+            folderContainer.innerHTML = `
+                <div style="padding: 40px; text-align: center; color: #666; background: #f8f9fa; border-radius: 8px; border: 2px dashed #ddd;">
+                    <div style="font-size: 3em; margin-bottom: 15px;">📁</div>
+                    <h3 style="margin: 0 0 10px 0; color: #495057;">No ${currentManageStatusFilter === 'all' ? '' : currentManageStatusFilter + ' '}submissions found</h3>
+                    <p style="margin: 0; font-size: 0.9em;">Try selecting a different filter or check back later.</p>
+                </div>
+            `;
+        }
     }
+    
+    // Update manage filter counts
+    function updateManageFilterCounts() {
+        document.getElementById('manage-count-all').textContent = allSubmissions.length;
+        document.getElementById('manage-count-pending').textContent = allSubmissions.filter(s => s.status === 'pending').length;
+        document.getElementById('manage-count-review').textContent = allSubmissions.filter(s => s.status === 'review').length;
+        document.getElementById('manage-count-approved').textContent = allSubmissions.filter(s => s.status === 'approved').length;
+        document.getElementById('manage-count-rejected').textContent = allSubmissions.filter(s => s.status === 'rejected').length;
+    }
+    
+    // Filter manage submissions by status
+    window.filterManageSubmissions = function(status) {
+        currentManageStatusFilter = status;
+        
+        // Update active button
+        document.querySelectorAll('.manage-status-filter').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById('manage-filter-' + status).classList.add('active');
+        
+        // Re-render folders with filtered data
+        renderBarangayFolders();
+        
+        // Reset search if active
+        const searchInput = document.getElementById('barangay-search');
+        if (searchInput && searchInput.value.trim() !== '') {
+            filterBarangayFolders(searchInput.value.toLowerCase().trim());
+        }
+    };
     
     // Search functionality for barangay folders
     function initializeBarangaySearch() {
@@ -1809,10 +2832,42 @@
             return;
         }
         
+        // Count submissions by status
+        const statusCounts = {
+            all: submissions.length,
+            pending: submissions.filter(s => s.status === 'pending').length,
+            review: submissions.filter(s => s.status === 'review').length,
+            approved: submissions.filter(s => s.status === 'approved').length,
+            rejected: submissions.filter(s => s.status === 'rejected').length
+        };
+        
+        // Determine which filter should be active based on the current main filter
+        const initialFilter = currentManageStatusFilter === 'all' ? 'all' : currentManageStatusFilter;
+        
         let html = `
-            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
+            <div id="submission-modal-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
                 <div style="background: white; padding: 30px; border-radius: 8px; max-width: 900px; width: 90%; max-height: 80vh; overflow-y: auto;" onclick="event.stopPropagation()">
                     <h2>${barangay} - ${period}</h2>
+                    
+                    <!-- Status Filter Buttons -->
+                    <div style="margin: 20px 0; display: flex; gap: 8px; flex-wrap: wrap; border-bottom: 2px solid #e0e0e0; padding-bottom: 15px;">
+                        <button class="modal-status-filter ${initialFilter === 'all' ? 'active' : ''}" data-status="all" onclick="filterModalSubmissions('all')">
+                            All (<span class="modal-count-all">${statusCounts.all}</span>)
+                        </button>
+                        <button class="modal-status-filter ${initialFilter === 'pending' ? 'active' : ''}" data-status="pending" onclick="filterModalSubmissions('pending')">
+                            ⏳ Pending (<span class="modal-count-pending">${statusCounts.pending}</span>)
+                        </button>
+                        <button class="modal-status-filter ${initialFilter === 'review' ? 'active' : ''}" data-status="review" onclick="filterModalSubmissions('review')">
+                            🔍 Review (<span class="modal-count-review">${statusCounts.review}</span>)
+                        </button>
+                        <button class="modal-status-filter ${initialFilter === 'approved' ? 'active' : ''}" data-status="approved" onclick="filterModalSubmissions('approved')">
+                            ✅ Approved (<span class="modal-count-approved">${statusCounts.approved}</span>)
+                        </button>
+                        <button class="modal-status-filter ${initialFilter === 'rejected' ? 'active' : ''}" data-status="rejected" onclick="filterModalSubmissions('rejected')">
+                            ❌ Rejected (<span class="modal-count-rejected">${statusCounts.rejected}</span>)
+                        </button>
+                    </div>
+                    
                     <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
                         <thead>
                             <tr>
@@ -1823,7 +2878,7 @@
                                 <th style="text-align: left; padding: 10px; background: #f0f0f0; border-bottom: 2px solid #ccc;">Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="modal-submissions-tbody">
         `;
         
         submissions.forEach(sub => {
@@ -1873,7 +2928,7 @@
             }
             
             html += `
-                <tr style="border-bottom: 1px solid #eee;">
+                <tr class="modal-submission-row" data-status="${sub.status}" style="border-bottom: 1px solid #eee;">
                     <td style="padding: 10px;">
                         ${sub.title}${commentIndicator}
                         ${hasComments ? `<br><small style="color: #6c757d; font-style: italic;">Latest: "${latestComment}"</small>` : ''}
@@ -1927,7 +2982,61 @@
         `;
         
         document.body.insertAdjacentHTML('beforeend', html);
+        
+        // Apply the initial filter after modal is inserted
+        if (initialFilter !== 'all') {
+            // Use setTimeout to ensure the DOM is ready
+            setTimeout(() => {
+                filterModalSubmissions(initialFilter);
+            }, 10);
+        }
     }
+    
+    // Filter submissions within modal by status
+    window.filterModalSubmissions = function(status) {
+        const modalRows = document.querySelectorAll('.modal-submission-row');
+        const filterButtons = document.querySelectorAll('.modal-status-filter');
+        
+        // Update active button
+        filterButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('data-status') === status) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Filter rows
+        let visibleCount = 0;
+        modalRows.forEach(row => {
+            const rowStatus = row.getAttribute('data-status');
+            if (status === 'all' || rowStatus === status) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Show message if no submissions for selected filter
+        const tbody = document.getElementById('modal-submissions-tbody');
+        if (tbody) {
+            const existingNoResults = tbody.querySelector('.no-results-row');
+            if (existingNoResults) {
+                existingNoResults.remove();
+            }
+            
+            if (visibleCount === 0) {
+                const noResultsRow = document.createElement('tr');
+                noResultsRow.className = 'no-results-row';
+                noResultsRow.innerHTML = `
+                    <td colspan="5" style="padding: 20px; text-align: center; color: #666; font-style: italic;">
+                        No ${status === 'all' ? '' : status} submissions found
+                    </td>
+                `;
+                tbody.appendChild(noResultsRow);
+            }
+        }
+    };
     
     window.showSubmissionModal = showSubmissionModal;
     
@@ -2189,7 +3298,6 @@
             document.body.removeChild(link);
             window.URL.revokeObjectURL(blobUrl);
         } catch (error) {
-            console.error('Download failed:', error);
             showCustomAlert('Failed to download file. Please try again.', 'error');
         }
     }
@@ -2850,6 +3958,11 @@
             const activeLink = document.querySelector(`.sidebar a[data-target="${targetId}"]`);
             if (activeLink) activeLink.classList.add('active');
             
+            // Refresh dashboard data when dashboard is clicked
+            if (targetId === 'dashboard') {
+                loadAllSubmissions();
+            }
+            
             // Load reset requests and notifications when showing reset-requests section
             if (targetId === 'reset-requests') {
                 loadResetRequests(currentResetFilter);
@@ -3064,17 +4177,6 @@
 
         // Auto-refresh password notifications every 5 seconds for real-time updates
         setInterval(loadPasswordNotifications, 5000);
-
-        // Auto-refresh dashboard data every 10 seconds
-        setInterval(async () => {
-            // Only refresh if dashboard is active and preserve scroll position
-            const dashboardCard = document.getElementById('dashboard');
-            if (dashboardCard && dashboardCard.classList.contains('active-card')) {
-                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                await loadAllSubmissions();
-                window.scrollTo(0, scrollTop);
-            }
-        }, 10000);
 
         // Auto-refresh user lists every 15 seconds
         setInterval(async () => {
