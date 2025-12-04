@@ -1,9 +1,6 @@
 <?php
-// api/setup.php - Database setup and reset script
-
 declare(strict_types=1);
 
-// Database connection parameters
 const DB_HOST = '127.0.0.1';
 const DB_PORT = '3306';
 const DB_NAME = 'capstone_db';
@@ -13,18 +10,15 @@ const DB_PASS = '';
 header('Content-Type: application/json');
 
 try {
-    // Connect to MySQL server (without database)
     $dsn = 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';charset=utf8mb4';
     $pdo = new PDO($dsn, DB_USER, DB_PASS, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 
-    // Create database if it doesn't exist
     $pdo->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
     $pdo->exec("USE `" . DB_NAME . "`");
 
-    // Drop existing tables to reset data
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
     $pdo->exec("DROP TABLE IF EXISTS login_attempts");
     $pdo->exec("DROP TABLE IF EXISTS password_change_logs");
@@ -33,27 +27,23 @@ try {
     $pdo->exec("DROP TABLE IF EXISTS users");
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
 
-    // Create users table
-    $pdo->exec("
-        CREATE TABLE users (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            email VARCHAR(255) NOT NULL UNIQUE,
-            password_hash VARCHAR(255) NOT NULL,
-            role ENUM('ABC', 'Barangay Secretary') NOT NULL DEFAULT 'Barangay Secretary',
-            barangay VARCHAR(255) NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            archived TINYINT(1) DEFAULT 0,
-            account_locked TINYINT(1) DEFAULT 0,
-            INDEX idx_email (email),
-            INDEX idx_role (role),
-            INDEX idx_barangay (barangay),
-            INDEX idx_archived (archived)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
+    $pdo->exec("CREATE TABLE users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        role ENUM('ABC', 'Barangay Secretary') NOT NULL DEFAULT 'Barangay Secretary',
+        barangay VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        last_activity DATETIME NULL DEFAULT NULL,
+        archived TINYINT(1) DEFAULT 0,
+        account_locked TINYINT(1) DEFAULT 0,
+        INDEX idx_email (email),
+        INDEX idx_role (role),
+        INDEX idx_barangay (barangay),
+        INDEX idx_archived (archived)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    // Create submissions table
-    $pdo->exec("
-        CREATE TABLE submissions (
+    $pdo->exec("CREATE TABLE submissions (
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) DEFAULT NULL,
             category VARCHAR(100) DEFAULT NULL,
@@ -75,12 +65,9 @@ try {
             INDEX idx_archived (archived),
             INDEX idx_user_id (user_id),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    // Create password_reset_requests table
-    $pdo->exec("
-        CREATE TABLE password_reset_requests (
+    $pdo->exec("CREATE TABLE password_reset_requests (
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
             user_email VARCHAR(255) NOT NULL,
@@ -98,12 +85,9 @@ try {
             INDEX idx_status (status),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
             FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    // Create password_change_logs table
-    $pdo->exec("
-        CREATE TABLE password_change_logs (
+    $pdo->exec("CREATE TABLE password_change_logs (
             id INT AUTO_INCREMENT PRIMARY KEY,
             user_id INT NOT NULL,
             user_email VARCHAR(255) NOT NULL,
@@ -116,12 +100,9 @@ try {
             INDEX idx_user_id (user_id),
             INDEX idx_changed_at (changed_at),
             FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    // Create login_attempts table
-    $pdo->exec("
-        CREATE TABLE login_attempts (
+    $pdo->exec("CREATE TABLE login_attempts (
             id INT AUTO_INCREMENT PRIMARY KEY,
             email VARCHAR(255) NOT NULL,
             failed_attempts INT NOT NULL DEFAULT 0,
@@ -130,18 +111,13 @@ try {
             last_attempt_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_email (email),
             INDEX idx_locked_until (locked_until)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    ");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    // Insert default ABC account
     $defaultEmail = 'abcportal@gmail.com';
     $defaultPassword = 'abcpassword';
     $passwordHash = password_hash($defaultPassword, PASSWORD_DEFAULT);
 
-    $stmt = $pdo->prepare("
-        INSERT INTO users (email, password_hash, role, barangay) 
-        VALUES (?, ?, 'ABC', 'Municipal Office')
-    ");
+    $stmt = $pdo->prepare("INSERT INTO users (email, password_hash, role, barangay) VALUES (?, ?, 'ABC', 'Municipal Office')");
     $stmt->execute([$defaultEmail, $passwordHash]);
 
     echo json_encode([

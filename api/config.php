@@ -1,19 +1,12 @@
 <?php
-// api/config.php
-// Database connection and session bootstrap for XAMPP (MySQL/MariaDB)
-
 declare(strict_types=1);
 
-// Start session early for all API endpoints
 if (session_status() === PHP_SESSION_NONE) {
-    // Tighten session cookie a bit (adjust as needed)
     ini_set('session.cookie_httponly', '1');
     ini_set('session.use_strict_mode', '1');
     session_start();
 }
 
-// XAMPP defaults: username 'root' with no password
-// If you set a password for root or use another user, update below.
 const DB_HOST = '127.0.0.1';
 const DB_PORT = '3306';
 const DB_NAME = 'capstone_db';
@@ -48,11 +41,10 @@ function current_user(): ?array {
     }
     try {
         $pdo = get_pdo();
-        $stmt = $pdo->prepare('SELECT id, email, role, barangay, created_at, archived FROM users WHERE id = ?');
+        $stmt = $pdo->prepare('SELECT id, email, role, barangay, created_at, archived, last_activity FROM users WHERE id = ?');
         $stmt->execute([$_SESSION['user_id']]);
         $user = $stmt->fetch();
         
-        // If user is archived, logout and return null
         if ($user && isset($user['archived']) && $user['archived'] == 1) {
             session_destroy();
             return null;

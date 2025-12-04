@@ -2324,6 +2324,30 @@
     window.showDocumentViewer = showDocumentViewer;
     window.downloadFile = downloadFile;
 
+    // Activity tracking for barangay secretaries
+    async function updateUserActivity() {
+        try {
+            await fetch('api/update_activity.php', {
+                method: 'POST',
+                credentials: 'same-origin'
+            });
+        } catch (error) {
+        }
+    }
+
+    // Update activity every 2 minutes
+    setInterval(updateUserActivity, 2 * 60 * 1000);
+
+    // Update activity on page visibility change (when user returns to tab)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            updateUserActivity();
+        }
+    });
+
+    // Update activity on initial load
+    updateUserActivity();
+
   </script>
 </body>
 </html>

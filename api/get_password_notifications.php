@@ -1,6 +1,4 @@
 <?php
-// api/get_password_notifications.php - Get password change notifications for ABC
-
 declare(strict_types=1);
 require __DIR__ . '/config.php';
 require __DIR__ . '/utils.php';
@@ -11,13 +9,11 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
 }
 
-// Require ABC role
 require_abc_role();
 
 $pdo = get_pdo();
 
 try {
-    // Get recent password changes (last 30 days)
     $stmt = $pdo->prepare('
         SELECT 
             pcl.*,
@@ -34,7 +30,6 @@ try {
     $stmt->execute();
     $logs = $stmt->fetchAll();
     
-    // Count unread notifications (last 24 hours)
     $stmt = $pdo->prepare('
         SELECT COUNT(*) as unread_count 
         FROM password_change_logs 

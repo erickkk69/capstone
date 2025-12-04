@@ -3572,15 +3572,46 @@
                 userTableBody.innerHTML = '';
                 data.users.forEach(user => {
                     const row = userTableBody.insertRow();
-                    const status = user.role === 'ABC'
-                        ? '<span class="status-badge status-approved">Active</span>'
-                        : '<span class="status-badge status-pending">Pending Use</span>';
+                    
+                    // Display activity status for all users
+                    let statusDisplay = '';
+                    if (user.role === 'ABC') {
+                        statusDisplay = '<span class="status-badge status-approved">ABC Admin</span>';
+                    } else {
+                        // Show activity status for Barangay Secretaries
+                        const activityStatus = user.activity_status || 'Never active';
+                        let statusClass = 'status-pending';
+                        
+                        // Color code based on activity recency - more precise ranges
+                        if (activityStatus.includes('now')) {
+                            statusClass = 'status-approved'; // Green - active right now
+                        } else if (activityStatus.includes('minute')) {
+                            // Extract minute number for more precise coloring
+                            const minuteMatch = activityStatus.match(/(\d+)\s+minute/);
+                            const minutes = minuteMatch ? parseInt(minuteMatch[1]) : 0;
+                            
+                            if (minutes <= 15) {
+                                statusClass = 'status-approved'; // Green - within 15 minutes
+                            } else if (minutes <= 30) {
+                                statusClass = 'status-review'; // Yellow - 16-30 minutes
+                            } else {
+                                statusClass = 'status-pending'; // Light - 31-59 minutes
+                            }
+                        } else if (activityStatus.includes('hour')) {
+                            statusClass = 'status-pending'; // Light - hours ago
+                        } else {
+                            statusClass = 'status-rejected'; // Gray - days or never
+                        }
+                        
+                        statusDisplay = `<span class="status-badge ${statusClass}">${activityStatus}</span>`;
+                    }
+                    
                     // include data-id to make delete/archive requests more reliable
                     row.innerHTML = `
                         <td>${user.email}</td>
                         <td>${user.barangay}</td>
                         <td>${user.role}</td>
-                        <td>${status}</td>
+                        <td>${statusDisplay}</td>
                         <td>${user.role !== 'ABC' ? '<button class="delete" data-id="' + user.id + '" data-email="' + user.email + '">Archive</button>' : ''}</td>
                     `;
                 });

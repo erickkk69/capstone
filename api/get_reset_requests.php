@@ -1,6 +1,4 @@
 <?php
-// api/get_reset_requests.php - Get all password reset requests (Admin only)
-
 declare(strict_types=1);
 date_default_timezone_set('Asia/Manila');
 require __DIR__ . '/config.php';
@@ -12,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
 }
 
-// Check if user is logged in and is ABC
 $current_user = current_user();
 if (!$current_user) {
     json_response(['ok' => false, 'error' => 'Not authenticated'], 401);
@@ -24,7 +21,6 @@ if ($current_user['role'] !== 'ABC') {
 
 $pdo = get_pdo();
 
-// Get filter from query parameter (default: pending)
 $status = $_GET['status'] ?? 'pending';
 $valid_statuses = ['pending', 'approved', 'rejected', 'all'];
 
@@ -84,7 +80,6 @@ try {
     
     $requests = $stmt->fetchAll();
     
-    // Get count of pending requests
     $count_stmt = $pdo->query('SELECT COUNT(*) as count FROM password_reset_requests WHERE status = "pending"');
     $pending_count = $count_stmt->fetch()['count'];
     
