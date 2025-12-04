@@ -1569,23 +1569,6 @@
         }
       };
 
-      // Open status page function
-      window.openStatusPage = function(status, submissionId = null) {
-        const statusPages = {
-          'pending': 'status/pending.html',
-          'review': 'status/review.html',
-          'approved': 'status/approved.html',
-          'rejected': 'status/rejected.html'
-        };
-        
-        if (statusPages[status]) {
-          const url = submissionId ? 
-            `${statusPages[status]}?id=${submissionId}` : 
-            statusPages[status];
-          window.open(url, '_blank');
-        }
-      };
-
       // Function to display submissions in the table
       function displaySubmissions(submissions) {
         const tbody = document.getElementById('submissions-table-body');
@@ -1660,8 +1643,7 @@
             <td>${submission.category}</td>
             <td>${date}</td>
             <td>
-              <span class="status-badge ${statusClass}" onclick="openStatusPage('${submission.status}', ${submission.id})" 
-                    style="cursor: pointer;" title="Click to view status details">${statusText}</span>${statusChangedTime}
+              <span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}
             </td>
             <td>
               <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}')" style="color: #0066cc; text-decoration: none; margin-right: 8px;">📄 View</a>
