@@ -1645,7 +1645,7 @@
               Password Change Notifications 
               <span id="passwordNotificationBadge" class="notification-badge" style="display: none;">0</span>
             </span>
-            <button id="toggleNotifications" class="toggle-notifications" style="padding: 6px 12px; font-size: 12px;">
+            <button id="toggleNotifications" class="approve" style="padding: 6px 12px; font-size: 12px;">
               Show
             </button>
           </h3>
@@ -3880,7 +3880,7 @@
                 // Show notifications
                 container.classList.remove('notifications-hidden');
                 toggleBtn.textContent = 'Hide';
-                toggleBtn.className = 'toggle-notifications';
+                toggleBtn.className = 'delete';
                 toggleBtn.style.padding = '6px 12px';
                 toggleBtn.style.fontSize = '12px';
             } else {
