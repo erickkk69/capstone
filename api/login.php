@@ -54,7 +54,7 @@ $stmt->execute([$email]);
 $user = $stmt->fetch();
 
 if (!$user) {
-    json_response(['ok' => false, 'error' => 'Invalid email or password'], 401);
+    json_response(['ok' => false, 'error' => 'This email is not registered in the system.', 'error_code' => 'EMAIL_NOT_REGISTERED'], 401);
 }
 
 if (isset($user['archived']) && $user['archived'] == 1) {

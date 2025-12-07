@@ -24,12 +24,17 @@ if (strlen($new_password) < 8) {
 
 $pdo = get_pdo();
 
-$stmt = $pdo->prepare('SELECT id, role, barangay FROM users WHERE email = ?');
+$stmt = $pdo->prepare('SELECT id, role, barangay, password_hash FROM users WHERE email = ?');
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
 if (!$user) {
     json_response(['ok' => false, 'error' => 'User not found'], 404);
+}
+
+// Check if new password is the same as current password
+if (!empty($user['password_hash']) && password_verify($new_password, $user['password_hash'])) {
+    json_response(['ok' => false, 'error' => 'New password cannot be the same as your current password'], 400);
 }
 
 if ($user['role'] === 'ABC') {

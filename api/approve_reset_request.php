@@ -22,7 +22,7 @@ if ($current_user['role'] !== 'ABC') {
 $body = read_json_body();
 $request_id = (int)($body['request_id'] ?? 0);
 $action = strtolower(trim($body['action'] ?? '')); // 'approve' or 'reject'
-$rejection_reason = trim($body['rejection_reason'] ?? '');
+$rejection_reason = trim($body['rejection_reason'] ?? 'Request rejected by admin');
 
 if ($request_id <= 0) {
     json_response(['ok' => false, 'error' => 'Invalid request ID'], 400);
@@ -30,10 +30,6 @@ if ($request_id <= 0) {
 
 if (!in_array($action, ['approve', 'reject'])) {
     json_response(['ok' => false, 'error' => 'Invalid action. Must be "approve" or "reject"'], 400);
-}
-
-if ($action === 'reject' && empty($rejection_reason)) {
-    json_response(['ok' => false, 'error' => 'Rejection reason is required when rejecting a request'], 400);
 }
 
 $pdo = get_pdo();

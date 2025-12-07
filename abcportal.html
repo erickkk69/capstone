@@ -1476,7 +1476,7 @@
       <div>
         <label for="userPassword">Password</label>
         <input type="password" id="userPassword" name="userPassword" minlength="8" required title="Password must be at least 8 characters long">
-        <label style="display: block; margin-top: 8px; font-size: 0.85em;">
+        <label style="display: block; margin-top: 8px; font-size: 14px;">
           <input type="checkbox" id="showPasswordCheckbox" style="width: auto; margin-right: 5px;">
           Show Password
         </label>
@@ -1619,13 +1619,9 @@
       <p style="margin-bottom: 20px; color: #666;">
         Email: <strong id="reject-modal-email">-</strong>
       </p>
-      <label style="display: block; margin-bottom: 8px; font-weight: bold;">Reason for rejection:</label>
-      <textarea 
-        id="rejection-reason" 
-        rows="4" 
-        style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: Arial, sans-serif; resize: vertical;"
-        placeholder="Enter reason for rejection..."
-      ></textarea>
+      <p style="margin-bottom: 20px; color: #666;">
+        Are you sure you want to reject this password reset request?
+      </p>
       <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
         <button onclick="closeRejectionModal()" style="padding: 10px 20px; background: #ccc; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">
           Cancel
@@ -4136,7 +4132,6 @@
         function openRejectionModal(requestId, email) {
             currentRequestToReject = requestId;
             document.getElementById('reject-modal-email').textContent = email;
-            document.getElementById('rejection-reason').value = '';
             document.getElementById('rejection-modal').style.display = 'flex';
         }
 
@@ -4146,21 +4141,13 @@
         }
 
         async function submitRejection() {
-            const reason = document.getElementById('rejection-reason').value.trim();
-            
-            if (!reason) {
-                showCustomAlert('Please provide a reason for rejection', 'warning');
-                return;
-            }
-            
             try {
                 const response = await fetch('api/approve_reset_request.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         request_id: currentRequestToReject,
-                        action: 'reject',
-                        rejection_reason: reason
+                        action: 'reject'
                     })
                 });
                 

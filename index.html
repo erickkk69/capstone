@@ -94,6 +94,25 @@
       flex-direction: column;
     }
 
+    .checkbox-group {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-top: 10px;
+      gap: 8px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .checkbox-group label {
+      font-weight: normal;
+      font-size: 14px;
+      margin: 0;
+    }
+
     label {
       font-weight: bold;
       font-size: 16px;
@@ -168,6 +187,22 @@
         font-size: 18px;
     }
 
+    .login-message.email-not-registered {
+        background: #ffe6e6;
+        border: 2px solid #ff4444;
+        color: #cc0000;
+        padding: 15px;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+        margin-top: 15px;
+    }
+
+    .login-message.email-not-registered::before {
+        content: "⚠️ ";
+        font-size: 18px;
+    }
+
     @media (max-width: 768px) {
       .login-container {
         margin: 10px;
@@ -226,17 +261,27 @@
         <div class="form-group">
           <label for="password">Password</label>
           <input type="password" id="password" required>
+          <div class="checkbox-group">
+            <input type="checkbox" id="showPassword" onclick="togglePassword()">
+            <label for="showPassword">Show Password</label>
+          </div>
         </div>
         <div class="forgot-password">
           <a href="forgot.html">Forgot password?</a>
         </div>
         <button type="submit" class="btn">Login</button>
-        <p id="loginMessage" class="login-message">Invalid Email or Password.</p>
+        <p id="loginMessage" class="login-message">Invalid Password.</p>
       </form>
     </div>
   </div>
 
   <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const showPasswordCheckbox = document.getElementById('showPassword');
+      passwordInput.type = showPasswordCheckbox.checked ? 'text' : 'password';
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
         const loginForm = document.getElementById('loginForm');
         const loginMessage = document.getElementById('loginMessage');
@@ -281,7 +326,17 @@
                 }
             } catch (err) {
                 // Check if error is from API response
-                if (err.message && err.message.includes('locked')) {
+                if (err.message && err.message.includes('not registered')) {
+                    // Email is not registered in the system
+                    loginMessage.textContent = err.message;
+                    loginMessage.className = 'login-message email-not-registered';
+                    loginMessage.style.display = 'block';
+                    // Keep message visible longer for unregistered emails
+                    setTimeout(() => {
+                        loginMessage.style.display = 'none';
+                        loginMessage.className = 'login-message'; // Reset class
+                    }, 5000);
+                } else if (err.message && err.message.includes('locked')) {
                     // Account is locked due to pending password reset
                     loginMessage.textContent = err.message;
                     loginMessage.className = 'login-message locked-account';
@@ -301,7 +356,7 @@
                     }, 4000);
                 } else {
                     // Regular login error (wrong password/email)
-                    loginMessage.textContent = 'Invalid Email or Password';
+                    loginMessage.textContent = 'Invalid Password';
                     loginMessage.className = 'login-message';
                     loginMessage.style.display = 'block';
                     setTimeout(() => {
