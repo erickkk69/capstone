@@ -6,17 +6,54 @@ require __DIR__ . '/utils.php';
 
 allow_cors();
 
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
-}
-
 $current_user = current_user();
 if (!$current_user) {
     json_response(['ok' => false, 'error' => 'Not authenticated'], 401);
 }
 
 if ($current_user['role'] !== 'ABC') {
-    json_response(['ok' => false, 'error' => 'Access denied. Only ABC can view password reset requests.'], 403);
+    json_response(['ok' => false, 'error' => 'Access denied. Only ABC can manage password reset requests.'], 403);
+}
+
+// Handle DELETE request
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    $request_id = $_GET['id'] ?? null;
+    
+    if (!$request_id) {
+        json_response(['ok' => false, 'error' => 'Request ID is required'], 400);
+    }
+    
+    $pdo = get_pdo();
+    
+    try {
+        // Get request details before deleting
+        $stmt = $pdo->prepare('SELECT user_email FROM password_reset_requests WHERE id = ?');
+        $stmt->execute([$request_id]);
+        $request = $stmt->fetch();
+        
+        if (!$request) {
+            json_response(['ok' => false, 'error' => 'Reset request not found'], 404);
+        }
+        
+        // Delete the request
+        $delete_stmt = $pdo->prepare('DELETE FROM password_reset_requests WHERE id = ?');
+        $delete_stmt->execute([$request_id]);
+        
+        json_response([
+            'ok' => true,
+            'message' => 'Password reset request deleted successfully',
+            'user_email' => $request['user_email']
+        ]);
+        
+    } catch (Exception $e) {
+        json_response(['ok' => false, 'error' => 'Failed to delete reset request: ' . $e->getMessage()], 500);
+    }
+    exit;
+}
+
+// Handle GET request
+if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+    json_response(['ok' => false, 'error' => 'Method not allowed'], 405);
 }
 
 $pdo = get_pdo();

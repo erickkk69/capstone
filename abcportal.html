@@ -1238,6 +1238,10 @@
     }
 
   </style>
+  
+  <!-- Add libraries for document viewing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
   <header>
@@ -1472,6 +1476,10 @@
       <div>
         <label for="userPassword">Password</label>
         <input type="password" id="userPassword" name="userPassword" minlength="8" required title="Password must be at least 8 characters long">
+        <label style="display: block; margin-top: 8px; font-size: 0.85em;">
+          <input type="checkbox" id="showPasswordCheckbox" style="width: auto; margin-right: 5px;">
+          Show Password
+        </label>
       </div>
       <div>
         <label for="userConfirmPassword">Confirm Password</label>
@@ -1559,27 +1567,7 @@
 
       <!-- Password Reset Requests Section -->
       <div id="reset-requests" class="card">
-        <h2>Password Reset & Change Management</h2>
-        
-        <!-- Password Change Notifications Section -->
-        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px; border: 1px solid #dee2e6;">
-          <h3 style="margin-top: 0; display: flex; justify-content: space-between; align-items: center;">
-            <span>
-              Password Change Notifications 
-              <span id="passwordNotificationBadge" class="notification-badge" style="display: none;">0</span>
-            </span>
-            <button id="toggleNotifications" class="approve" style="padding: 6px 12px; font-size: 12px;">
-              Show
-            </button>
-          </h3>
-          <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Recent password changes that have been approved</p>
-          <div id="passwordNotifications" class="notifications-hidden" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 10px; background: white;">
-            <p style="text-align: center; color: #666; font-style: italic;">Loading notifications...</p>
-          </div>
-        </div>
-
-        <!-- Reset Requests Section -->
-        <h3>Password Reset Requests</h3>
+        <h2>Password Reset Requests</h2>
         
         <!-- Filter Tabs -->
         <div style="margin-bottom: 20px; display: flex; gap: 10px;">
@@ -1607,7 +1595,7 @@
                 <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Barangay</th>
                 <th style="padding: 12px; border: 1px solid #ddd; text-align: left;">Requested</th>
                 <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Status</th>
-                <th style="padding: 12px; border: 1px solid #ddd; text-align: center;">Actions</th>
+                <th style="padding: 12px; border: 1px solid #ddd; text-align: center; min-width: 180px;">Actions</th>
               </tr>
             </thead>
             <tbody id="reset-requests-tbody">
@@ -3180,30 +3168,281 @@
         // Load the document
         const iframe = modal.querySelector('.doc-viewer-iframe');
         const loading = modal.querySelector('.doc-viewer-loading');
+        const content = modal.querySelector('.doc-viewer-content');
         
-        // For PDF files, we can use Google Docs Viewer or display directly
+        // Get full URL for external viewers
+        const fullFileUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + fileUrl;
+        
+        // Handle different file types
         if (extension === 'pdf') {
-            // Try to display PDF directly first, fallback to Google Docs Viewer
-            iframe.src = fileUrl;
-        } else if (['doc', 'docx', 'xls', 'xlsx'].includes(extension)) {
-            // Use Google Docs Viewer for Office documents
-            iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + '/' + fileUrl)}&embedded=true`;
-        } else {
-            // For other file types, just show download option
-            iframe.src = fileUrl;
-        }
-        
-        iframe.onload = function() {
-            loading.style.display = 'none';
-            iframe.style.display = 'block';
-        };
-        
-        iframe.onerror = function() {
+            // Display PDF directly in iframe with embed fallback
+            iframe.src = fileUrl + '#view=FitH';
+            
+            let loaded = false;
+            iframe.onload = function() {
+                if (!loaded) {
+                    loaded = true;
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                        iframe.style.display = 'block';
+                    }, 500);
+                }
+            };
+            
+            // Check if PDF loaded after 3 seconds
+            setTimeout(() => {
+                if (!loaded) {
+                    // Try embed method
+                    const embed = document.createElement('embed');
+                    embed.src = fileUrl;
+                    embed.type = 'application/pdf';
+                    embed.style.width = '100%';
+                    embed.style.height = '100%';
+                    content.innerHTML = '';
+                    content.appendChild(embed);
+                    setTimeout(() => {
+                        loading.style.display = 'none';
+                    }, 1000);
+                }
+            }, 3000);
+        } else if (extension === 'docx') {
+            // Render Word document using Mammoth.js
+            fetch(fileUrl)
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => mammoth.convertToHtml({arrayBuffer: arrayBuffer}))
+                .then(result => {
+                    const docContainer = document.createElement('div');
+                    docContainer.style.padding = '40px';
+                    docContainer.style.backgroundColor = 'white';
+                    docContainer.style.height = '100%';
+                    docContainer.style.overflow = 'auto';
+                    docContainer.innerHTML = result.value;
+                    loading.style.display = 'none';
+                    content.appendChild(docContainer);
+                })
+                .catch(error => {
+                    loading.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">📝</div>
+                            <h3 style="color: #dc3545; margin-bottom: 10px;">Cannot Preview Document</h3>
+                            <p style="color: #666; margin-bottom: 30px;">
+                                Unable to render the Word document. Please download to view.
+                            </p>
+                            <button onclick="window.open('${downloadUrl}', '_blank')" style="
+                                background: #28a745;
+                                color: white;
+                                border: none;
+                                padding: 12px 30px;
+                                border-radius: 6px;
+                                font-size: 16px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">
+                                📥 Download File
+                            </button>
+                        </div>
+                    `;
+                });
+        } else if (['xls', 'xlsx'].includes(extension)) {
+            // Render Excel document using SheetJS
+            fetch(fileUrl)
+                .then(response => response.arrayBuffer())
+                .then(arrayBuffer => {
+                    const workbook = XLSX.read(arrayBuffer, {type: 'array'});
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const html = XLSX.utils.sheet_to_html(worksheet);
+                    
+                    const excelContainer = document.createElement('div');
+                    excelContainer.style.padding = '20px';
+                    excelContainer.style.backgroundColor = 'white';
+                    excelContainer.style.height = '100%';
+                    excelContainer.style.overflow = 'auto';
+                    excelContainer.innerHTML = `
+                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                            <strong>Sheet:</strong> ${sheetName}
+                            ${workbook.SheetNames.length > 1 ? `<span style="color: #666; margin-left: 10px;">(${workbook.SheetNames.length} sheets total - showing first)</span>` : ''}
+                        </div>
+                        <div style="overflow-x: auto;">${html}</div>
+                    `;
+                    
+                    // Style the generated table
+                    const table = excelContainer.querySelector('table');
+                    if (table) {
+                        table.style.borderCollapse = 'collapse';
+                        table.style.width = '100%';
+                        const cells = table.querySelectorAll('td, th');
+                        cells.forEach(cell => {
+                            cell.style.border = '1px solid #ddd';
+                            cell.style.padding = '8px';
+                        });
+                        const headers = table.querySelectorAll('th');
+                        headers.forEach(th => {
+                            th.style.backgroundColor = '#f0f0f0';
+                            th.style.fontWeight = 'bold';
+                        });
+                    }
+                    
+                    loading.style.display = 'none';
+                    content.appendChild(excelContainer);
+                })
+                .catch(error => {
+                    loading.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
+                            <h3 style="color: #dc3545; margin-bottom: 10px;">Cannot Preview Spreadsheet</h3>
+                            <p style="color: #666; margin-bottom: 30px;">
+                                Unable to render the Excel file. Please download to view.
+                            </p>
+                            <button onclick="window.open('${downloadUrl}', '_blank')" style="
+                                background: #28a745;
+                                color: white;
+                                border: none;
+                                padding: 12px 30px;
+                                border-radius: 6px;
+                                font-size: 16px;
+                                cursor: pointer;
+                                font-weight: bold;
+                            ">
+                                📥 Download File
+                            </button>
+                        </div>
+                    `;
+                });
+        } else if (['doc', 'ppt', 'pptx'].includes(extension)) {
+            // For older formats or PowerPoint, show download option
             loading.innerHTML = `
-                <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot preview this file type</p>
-                <p>Please use the download button above to view the document.</p>
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">
+                        ${extension.includes('doc') ? '📝' : '📊'}
+                    </div>
+                    <h3 style="color: #004c99; margin-bottom: 10px;">Office Document Detected</h3>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        File type: <strong>.${extension}</strong>
+                    </p>
+                    <p style="color: #666; margin-bottom: 30px;">
+                        This document requires Microsoft Office to view. Click download to open.
+                    </p>
+                    <button onclick="window.open('${downloadUrl}', '_blank')" style="
+                        background: #28a745;
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 6px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        font-weight: bold;
+                    ">
+                        📥 Download & Open
+                    </button>
+                </div>
             `;
-        };
+        } else if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(extension)) {
+            // Display images directly
+            const img = document.createElement('img');
+            img.src = fileUrl;
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '100%';
+            img.style.objectFit = 'contain';
+            img.style.display = 'block';
+            img.style.margin = 'auto';
+            img.onload = function() {
+                loading.style.display = 'none';
+                content.appendChild(img);
+            };
+            img.onerror = function() {
+                loading.innerHTML = `
+                    <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot load image</p>
+                    <p>Please use the download button above to view the file.</p>
+                `;
+            };
+        } else if (['txt', 'csv', 'json', 'xml', 'log'].includes(extension)) {
+            // Display text files directly
+            fetch(fileUrl)
+                .then(response => response.text())
+                .then(text => {
+                    const pre = document.createElement('pre');
+                    pre.style.padding = '20px';
+                    pre.style.margin = '0';
+                    pre.style.overflow = 'auto';
+                    pre.style.height = '100%';
+                    pre.style.backgroundColor = '#f5f5f5';
+                    pre.style.whiteSpace = 'pre-wrap';
+                    pre.style.wordWrap = 'break-word';
+                    pre.textContent = text;
+                    loading.style.display = 'none';
+                    content.appendChild(pre);
+                })
+                .catch(() => {
+                    loading.innerHTML = `
+                        <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot preview this file</p>
+                        <p>Please use the download button above to view the document.</p>
+                    `;
+                });
+        } else if (['mp4', 'webm', 'ogg'].includes(extension)) {
+            // Display video files
+            const video = document.createElement('video');
+            video.src = fileUrl;
+            video.controls = true;
+            video.style.maxWidth = '100%';
+            video.style.maxHeight = '100%';
+            video.style.display = 'block';
+            video.style.margin = 'auto';
+            video.onloadedmetadata = function() {
+                loading.style.display = 'none';
+                content.appendChild(video);
+            };
+            video.onerror = function() {
+                loading.innerHTML = `
+                    <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot play video</p>
+                    <p>Please use the download button above to view the file.</p>
+                `;
+            };
+        } else if (['mp3', 'wav', 'ogg', 'm4a'].includes(extension)) {
+            // Display audio files
+            const audio = document.createElement('audio');
+            audio.src = fileUrl;
+            audio.controls = true;
+            audio.style.width = '100%';
+            audio.style.margin = '20px auto';
+            audio.style.display = 'block';
+            audio.onloadedmetadata = function() {
+                loading.style.display = 'none';
+                content.appendChild(audio);
+            };
+            audio.onerror = function() {
+                loading.innerHTML = `
+                    <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot play audio</p>
+                    <p>Please use the download button above to view the file.</p>
+                `;
+            };
+        } else {
+            // For unknown file types, show download prompt
+            loading.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
+                    <h3 style="color: #004c99; margin-bottom: 10px;">Document Preview Not Available</h3>
+                    <p style="color: #666; margin-bottom: 20px;">
+                        File type: <strong>.${extension}</strong>
+                    </p>
+                    <p style="color: #666; margin-bottom: 30px;">
+                        This file type cannot be previewed in the browser. Please download to view.
+                    </p>
+                    <button onclick="window.open('${downloadUrl}', '_blank')" style="
+                        background: #28a745;
+                        color: white;
+                        border: none;
+                        padding: 12px 30px;
+                        border-radius: 6px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        font-weight: bold;
+                    ">
+                        📥 Download File
+                    </button>
+                </div>
+            `;
+        }
     }
     
     // Function to download file without opening
@@ -3260,67 +3499,6 @@
     }
     
     window.openFileInNativeApp = openFileInNativeApp;
-    
-    // Make deleteNotification function global for easier access
-    window.deleteNotification = async function(notificationId) {
-        const proceed = await showCustomConfirm('Are you sure you want to delete this notification?', 'warning');
-        if (!proceed) {
-            return;
-        }
-        
-        try {
-            const res = await fetch(`api/delete_password_notification.php?id=${notificationId}`, {
-                method: 'DELETE'
-            });
-            
-            const data = await res.json();
-            
-            if (data.ok) {
-                // Remove the notification from the DOM immediately
-                const notificationElement = document.getElementById(`notification-${notificationId}`);
-                if (notificationElement) {
-                    notificationElement.style.transition = 'opacity 0.3s ease-out';
-                    notificationElement.style.opacity = '0';
-                    setTimeout(() => {
-                        notificationElement.remove();
-                    }, 300);
-                }
-                
-                // Update the badge count
-                const badge = document.getElementById('passwordNotificationBadge');
-                const currentCount = parseInt(badge.textContent) || 0;
-                const newCount = Math.max(0, currentCount - 1);
-                
-                if (newCount > 0) {
-                    badge.textContent = newCount;
-                    badge.style.display = 'inline-block';
-                } else {
-                    badge.style.display = 'none';
-                }
-                
-                // Show success message briefly
-                const container = document.getElementById('passwordNotifications');
-                const successMsg = document.createElement('div');
-                successMsg.style.cssText = 'background: #d4edda; color: #155724; padding: 8px; border-radius: 4px; margin-bottom: 10px; text-align: center; opacity: 1; transition: opacity 0.3s ease-out;';
-                successMsg.textContent = '✅ Notification deleted successfully';
-                container.insertBefore(successMsg, container.firstChild);
-                
-                // Remove success message after 1 second
-                setTimeout(() => {
-                    if (successMsg.parentNode) {
-                        successMsg.style.opacity = '0';
-                        setTimeout(() => successMsg.remove(), 300);
-                    }
-                }, 1000);
-                
-            } else {
-                showCustomAlert('Failed to delete notification: ' + (data.error || 'Unknown error'), 'error');
-            }
-            
-        } catch (error) {
-            showCustomAlert('Error deleting notification: ' + error.message, 'error');
-        }
-    };
 
     // Custom Alert Modal Function
     function showCustomAlert(message, type = 'info', callback = null) {
@@ -3535,10 +3713,10 @@
                         <td>${user.barangay}</td>
                         <td>${user.role}</td>
                         <td>${statusDisplay}</td>
-                        <td>${user.role !== 'ABC' ? '<button class="delete" data-id="' + user.id + '" data-email="' + user.email + '">Archive</button>' : ''}</td>
+                        <td>${user.role !== 'ABC' ? '<button class="delete archive-user-btn" data-id="' + user.id + '" data-email="' + user.email + '">Archive</button>' : ''}</td>
                     `;
                 });
-                document.querySelectorAll('.delete').forEach(btn => {
+                document.querySelectorAll('.archive-user-btn').forEach(btn => {
                     btn.addEventListener('click', async function() {
                         const email = this.getAttribute('data-email');
                         const id = this.getAttribute('data-id');
@@ -3678,141 +3856,28 @@
             }
         }
 
-        // Password change notifications
-        async function loadPasswordNotifications() {
-            try {
-                // Check if we're authenticated first
-                const authCheck = await checkAuth();
-                if (!authCheck) {
-                    return;
-                }
-                
-                const res = await fetch('api/get_password_notifications.php');
-                
-                if (!res.ok) {
-                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-                }
-                
-                const data = await res.json();
-                
-                if (!data.ok) {
-                    document.getElementById('passwordNotifications').innerHTML = 
-                        '<p style="text-align: center; color: red;">Failed to load notifications: ' + (data.error || 'Unknown error') + '</p>';
-                    return;
-                }
-                
-                const notifications = data.notifications || [];
-                const unreadCount = data.unread_count || 0;
-                const badge = document.getElementById('passwordNotificationBadge');
-                
-                // Update badge
-                if (unreadCount > 0) {
-                    badge.textContent = unreadCount;
-                    badge.style.display = 'inline-block';
-                } else {
-                    badge.style.display = 'none';
-                }
-                
-                // Display notifications
-                const container = document.getElementById('passwordNotifications');
-                if (notifications.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No recent password changes</p>';
-                    return;
-                }
-                
-                let html = '';
-                notifications.forEach(notification => {
-                    const statusClass = notification.status === 'new' ? 'status-rejected' : 
-                                      notification.status === 'recent' ? 'status-review' : 'status-approved';
-                    const timeAgo = formatTimeAgo(notification.changed_at);
-                    const exactTime = formatExactTime(notification.changed_at);
-                    const isVeryRecent = notification.status === 'new';
-                    
-                    html += `
-                        <div style="border-bottom: 1px solid #eee; padding: 8px 0; ${isVeryRecent ? 'background: #fff3cd; margin: -8px; padding: 16px; border-radius: 4px; margin-bottom: 8px;' : ''}" id="notification-${notification.id}">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    ${isVeryRecent ? '🔔 ' : ''}<strong>${notification.user_email}</strong>
-                                    <span class="status-badge ${statusClass}" style="margin-left: 10px;">${notification.status}</span>
-                                </div>
-                                <button class="delete delete-notification-btn" data-notification-id="${notification.id}" 
-                                        style="padding: 4px 8px; font-size: 12px;" title="Delete notification">
-                                    ✕
-                                </button>
-                            </div>
-                            <div style="font-size: 0.9em; color: #666; margin-top: 4px;">
-                                Barangay: ${notification.user_barangay}
-                            </div>
-                            <div style="font-size: 0.85em; color: #007bff; font-weight: bold; margin-top: 4px;">
-                                🕒 Changed: ${exactTime} (${timeAgo})
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                container.innerHTML = html;
-                
-                // Add event listeners to delete buttons
-                container.querySelectorAll('.delete-notification-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const notificationId = this.getAttribute('data-notification-id');
-                        window.deleteNotification(notificationId);
-                    });
-                });
-                
-            } catch (err) {
-                document.getElementById('passwordNotifications').innerHTML = 
-                    '<p style="text-align: center; color: red;">Error loading notifications: ' + err.message + '</p>';
+        // Delete reset request function
+        async function deleteResetRequest(requestId, email) {
+            const proceed = await showCustomConfirm(`Are you sure you want to delete the password reset request for ${email}?`, 'warning');
+            if (!proceed) {
+                return;
             }
-        }
-        
-        function formatTimeAgo(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffMs = now - date;
-            const diffMinutes = Math.floor(diffMs / (1000 * 60));
-            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-            const diffDays = Math.floor(diffHours / 24);
             
-            if (diffMinutes < 1) return 'Just now';
-            if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
-            if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-            if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-            return date.toLocaleDateString();
-        }
-        
-        function formatExactTime(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            });
-        }
-
-        // Toggle notifications visibility function
-        function toggleNotifications() {
-            const container = document.getElementById('passwordNotifications');
-            const toggleBtn = document.getElementById('toggleNotifications');
-            
-            if (container.classList.contains('notifications-hidden')) {
-                // Show notifications
-                container.classList.remove('notifications-hidden');
-                toggleBtn.textContent = 'Hide';
-                toggleBtn.className = 'delete';
-                toggleBtn.style.padding = '6px 12px';
-                toggleBtn.style.fontSize = '12px';
-            } else {
-                // Hide notifications
-                container.classList.add('notifications-hidden');
-                toggleBtn.textContent = 'Show';
-                toggleBtn.className = 'approve'; // Green color for show button
-                toggleBtn.style.padding = '6px 12px';
-                toggleBtn.style.fontSize = '12px';
+            try {
+                const response = await fetch(`api/get_reset_requests.php?id=${requestId}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert(`Password reset request deleted successfully for ${email}`, 'success');
+                    await loadResetRequests(currentResetFilter);
+                } else {
+                    showCustomAlert('Failed to delete request: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showCustomAlert('Error deleting request. Please try again.', 'error');
             }
         }
 
@@ -3917,10 +3982,9 @@
                 loadAllSubmissions();
             }
             
-            // Load reset requests and notifications when showing reset-requests section
+            // Load reset requests when showing reset-requests section
             if (targetId === 'reset-requests') {
                 loadResetRequests(currentResetFilter);
-                loadPasswordNotifications();
             }
         }
         sidebarLinks.forEach(link => link.addEventListener('click', (event) => {
@@ -3928,8 +3992,18 @@
             showContent(event.currentTarget.getAttribute('data-target'));
         }));
 
-        // Add event listener for toggle notifications button
-        document.getElementById('toggleNotifications').addEventListener('click', toggleNotifications);
+        // Show/Hide Password functionality
+        const showPasswordCheckbox = document.getElementById('showPasswordCheckbox');
+        const userPassword = document.getElementById('userPassword');
+        const userConfirmPassword = document.getElementById('userConfirmPassword');
+        
+        if (showPasswordCheckbox) {
+            showPasswordCheckbox.addEventListener('change', function() {
+                const type = this.checked ? 'text' : 'password';
+                userPassword.type = type;
+                userConfirmPassword.type = type;
+            });
+        }
 
         // Password Reset Requests Functions
         let currentResetFilter = 'pending';
@@ -3943,39 +4017,25 @@
                 if (result.ok) {
                     displayResetRequests(result.requests);
                     
-                    // Get password change notifications count
-                    const notifResponse = await fetch('api/get_password_notifications.php');
-                    const notifData = await notifResponse.json();
-                    const notifCount = notifData.ok ? (notifData.unread_count || 0) : 0;
+                    // Update sidebar badge with pending count only
+                    updateSidebarBadge('resetRequestsNotifBadge', result.pending_count || 0);
                     
-                    // Update sidebar badge with combined count (pending reset requests + notifications)
-                    const combinedCount = result.pending_count + notifCount;
-                    updateSidebarBadge('resetRequestsNotifBadge', combinedCount);
+                    // Always fetch all requests to get accurate counts for all tabs
+                    const allResponse = await fetch('api/get_reset_requests.php?status=all');
+                    const allResult = await allResponse.json();
                     
-                    // Update filter button counts
-                    const pendingCount = result.requests.filter(r => r.status === 'pending').length;
-                    const approvedCount = result.requests.filter(r => r.status === 'approved').length;
-                    const rejectedCount = result.requests.filter(r => r.status === 'rejected').length;
-                    
-                    if (filter === 'all') {
-                        document.getElementById('reset-pending-count').textContent = pendingCount;
-                        document.getElementById('reset-approved-count').textContent = approvedCount;
-                        document.getElementById('reset-rejected-count').textContent = rejectedCount;
-                    } else {
-                        // Fetch all to get accurate counts
-                        const allResponse = await fetch('api/get_reset_requests.php?status=all');
-                        const allResult = await allResponse.json();
-                        if (allResult.ok) {
-                            const pCount = allResult.requests.filter(r => r.status === 'pending').length;
-                            const aCount = allResult.requests.filter(r => r.status === 'approved').length;
-                            const rCount = allResult.requests.filter(r => r.status === 'rejected').length;
-                            document.getElementById('reset-pending-count').textContent = pCount;
-                            document.getElementById('reset-approved-count').textContent = aCount;
-                            document.getElementById('reset-rejected-count').textContent = rCount;
-                        }
+                    if (allResult.ok) {
+                        const pCount = allResult.requests.filter(r => r.status === 'pending').length;
+                        const aCount = allResult.requests.filter(r => r.status === 'approved').length;
+                        const rCount = allResult.requests.filter(r => r.status === 'rejected').length;
+                        
+                        document.getElementById('reset-pending-count').textContent = pCount;
+                        document.getElementById('reset-approved-count').textContent = aCount;
+                        document.getElementById('reset-rejected-count').textContent = rCount;
                     }
                 }
             } catch (error) {
+                console.error('Error loading reset requests:', error);
             }
         }
 
@@ -4016,10 +4076,15 @@
                             Reject
                         </button>
                     `;
-                } else if (req.status === 'approved') {
-                    actionsHtml = `<span style="color: #28a745;">✓ Approved</span>`;
                 } else {
-                    actionsHtml = `<span style="color: #dc3545;">✗ Rejected</span>`;
+                    actionsHtml = `
+                        <span style="color: ${req.status === 'approved' ? '#28a745' : '#dc3545'}; margin-right: 10px;">
+                            ${req.status === 'approved' ? '✓ Approved' : '✗ Rejected'}
+                        </span>
+                        <button class="action-btn delete" onclick="deleteResetRequest(${req.id}, '${req.user_email}')">
+                            Delete
+                        </button>
+                    `;
                 }
                 
                 return `
@@ -4118,6 +4183,7 @@
         window.openRejectionModal = openRejectionModal;
         window.closeRejectionModal = closeRejectionModal;
         window.submitRejection = submitRejection;
+        window.deleteResetRequest = deleteResetRequest;
 
         // Add event listeners for reset request filter buttons
         document.querySelectorAll('.reset-filter-btn').forEach(btn => {
@@ -4128,9 +4194,6 @@
                 loadResetRequests(currentResetFilter);
             });
         });
-
-        // Auto-refresh password notifications every 5 seconds for real-time updates
-        setInterval(loadPasswordNotifications, 5000);
 
         // Auto-refresh user lists every 15 seconds
         setInterval(async () => {
@@ -4152,7 +4215,6 @@
             userInfoSpan.textContent = 'ABC';
             await loadUsers();
             await loadArchivedUsers();
-            await loadPasswordNotifications();
             await loadAllSubmissions();
             await loadResetRequests('pending');
             initializeBarangaySearch(); // Initialize search functionality

@@ -196,6 +196,132 @@
       }
     }
 
+    /* Custom Alert Modal */
+    .custom-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideDown {
+        from { 
+            transform: translateY(-30px);
+            opacity: 0;
+        }
+        to { 
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .custom-modal-content {
+        background: white;
+        border-radius: 12px;
+        padding: 0;
+        max-width: 500px;
+        width: 90%;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideDown 0.3s ease-out;
+        overflow: hidden;
+    }
+
+    .custom-modal-header {
+        background: linear-gradient(135deg, #004c99 0%, #0066cc 100%);
+        color: white;
+        padding: 20px 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .custom-modal-header.success {
+        background: linear-gradient(135deg, #28a745 0%, #34ce57 100%);
+    }
+
+    .custom-modal-header.error {
+        background: linear-gradient(135deg, #dc3545 0%, #e74c5c 100%);
+    }
+
+    .custom-modal-header.warning {
+        background: linear-gradient(135deg, #ffc107 0%, #ffcd39 100%);
+    }
+
+    .custom-modal-icon {
+        font-size: 28px;
+        line-height: 1;
+    }
+
+    .custom-modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+    }
+
+    .custom-modal-body {
+        padding: 25px;
+        color: #333;
+        font-size: 15px;
+        line-height: 1.6;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .custom-modal-footer {
+        padding: 15px 25px;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .custom-modal-button {
+        padding: 10px 24px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        min-width: 80px;
+    }
+
+    .custom-modal-button.primary {
+        background: #004c99;
+        color: white;
+    }
+
+    .custom-modal-button.primary:hover {
+        background: #003d7a;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 76, 153, 0.3);
+    }
+
+    .custom-modal-button.success {
+        background: #28a745;
+        color: white;
+    }
+
+    .custom-modal-button.success:hover {
+        background: #218838;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+
   </style>
 </head>
 <body>
@@ -230,6 +356,60 @@
   </div>
 
   <script>
+    function showCustomAlert(message, type = 'info', callback = null) {
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+
+        const titles = {
+            success: 'Success',
+            error: 'Error',
+            warning: 'Warning',
+            info: 'Information'
+        };
+
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-modal-overlay';
+
+        overlay.innerHTML = `
+            <div class="custom-modal-content">
+                <div class="custom-modal-header ${type}">
+                    <div class="custom-modal-icon">${icons[type]}</div>
+                    <h3 class="custom-modal-title">${titles[type]}</h3>
+                </div>
+                <div class="custom-modal-body">
+                    ${message}
+                </div>
+                <div class="custom-modal-footer">
+                    <button class="custom-modal-button ${type === 'success' ? 'success' : 'primary'}" onclick="this.closest('.custom-modal-overlay').remove(); ${callback ? '(' + callback.toString() + ')();' : ''}">OK</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Click outside to close
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) {
+                overlay.remove();
+                if (callback) callback();
+            }
+        });
+
+        // ESC key to close
+        const escHandler = function(e) {
+            if (e.key === 'Escape') {
+                overlay.remove();
+                if (callback) callback();
+                document.removeEventListener('keydown', escHandler);
+            }
+        };
+        document.addEventListener('keydown', escHandler);
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       const resetForm = document.getElementById('resetForm');
       const messageDiv = document.getElementById('message');
@@ -288,11 +468,14 @@
           const data = await response.json();
 
           if (data.ok) {
-            showMessage('✅ Password reset request submitted successfully!\n\n⚠️ IMPORTANT: Your account is now temporarily LOCKED until an ABC approves your request.\n\nYou will NOT be able to login until approved. Please wait for confirmation.');
             resetForm.reset();
-            setTimeout(() => {
-              window.location.href = 'index.html';
-            }, 5000);
+            showCustomAlert(
+              '✅ Password reset request submitted successfully!<br><br>⚠️ <strong>IMPORTANT:</strong> Your account is now temporarily <strong>LOCKED</strong> until an ABC approves your request.<br><br>You will <strong>NOT</strong> be able to login until approved. Please wait for confirmation.',
+              'success',
+              function() {
+                window.location.href = 'index.html';
+              }
+            );
           } else {
             showMessage(data.error || 'Failed to submit password reset request', true);
           }
