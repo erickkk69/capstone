@@ -151,7 +151,6 @@ function handle_delete(): void {
 
             $uid = (int)($user['id'] ?? $id);
             $dependentDeletes = [
-                'password_reset_tokens' => 'DELETE FROM password_reset_tokens WHERE user_id = ?',
                 'password_change_logs' => 'DELETE FROM password_change_logs WHERE user_id = ?',
                 'submissions' => 'DELETE FROM submissions WHERE submitted_by = ?'
             ];
