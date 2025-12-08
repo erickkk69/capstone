@@ -1774,8 +1774,8 @@
           // Only show archive button if status is still pending (not yet processed by ABC)
           const archiveButton = submission.status === 'pending' 
             ? `<a href="#" onclick="archiveSubmission(${submission.id}); return false;" 
-                 style="color: #ff9800; text-decoration: none; margin-left: 8px;" title="Archive submission">📦 Archive</a>`
-            : `<span style="color: #999; margin-left: 8px;" title="Documents processed by ABC cannot be archived">🔒 Archive</span>`;
+                 style="color: #ff9800; text-decoration: none; margin-left: 8px;" title="Archive submission">📦Archive</a>`
+            : `<span style="color: #999; margin-left: 8px;" title="Documents processed by ABC cannot be archived">🔒Archive</span>`;
           
           row.innerHTML = `
             <td>
@@ -2007,7 +2007,7 @@
         const actionButtons = submission.status === 'pending' 
           ? `| <a href="#" onclick="restoreSubmission(${submission.id}); return false;" style="color: #28a745; text-decoration: none;">Restore</a>
             | <a href="#" onclick="deleteSubmission(${submission.id}); return false;" style="color: #dc3545; text-decoration: none;">Delete</a>`
-          : `| <span style="color: #999;" title="Documents processed by ABC cannot be modified">🔒 Locked (Processed by ABC)</span>`;
+          : `| <span style="color: #999;" title="Documents processed by ABC cannot be modified">🔒Locked (Processed by ABC)</span>`;
         
         row.innerHTML = `
           <td>
