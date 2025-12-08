@@ -894,8 +894,9 @@
             </div>
             
             <div class="form-column">
-              <label for="doc-file">Upload File (PDF/DOCX/Spreadsheet preferred):</label>
-              <input type="file" id="doc-file" required>
+              <label for="doc-file">Upload File (PDF/DOCX/Spreadsheet only):</label>
+              <input type="file" id="doc-file" accept=".pdf,.doc,.docx,.xls,.xlsx" required>
+              <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Allowed: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)</small>
             </div>
             
           </div>
@@ -1339,11 +1340,37 @@
           const originalText = submitButton.textContent;
           submitButton.textContent = 'Uploading...';
           
+          const fileInput = document.getElementById('doc-file');
+          const file = fileInput.files[0];
+          
+          // Validate file type
+          if (file) {
+            const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+            const fileName = file.name.toLowerCase();
+            const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+            
+            if (!allowedExtensions.includes(fileExtension)) {
+              showCustomAlert('Invalid file type. Please upload only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files.', 'error');
+              submitButton.textContent = originalText;
+              setButtonBusy(submitButton, false);
+              return;
+            }
+            
+            // Check file size (max 10MB)
+            const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+            if (file.size > maxSize) {
+              showCustomAlert('File is too large. Maximum file size is 10MB.', 'error');
+              submitButton.textContent = originalText;
+              setButtonBusy(submitButton, false);
+              return;
+            }
+          }
+          
           const formData = new FormData();
           formData.append('title', document.getElementById('doc-title').value);
           formData.append('category', document.getElementById('doc-category').value);
           formData.append('period', document.getElementById('reporting-period').value);
-          formData.append('file', document.getElementById('doc-file').files[0]);
+          formData.append('file', file);
           
           try {
             const response = await fetch('api/submissions.php', {
@@ -1354,8 +1381,7 @@
             // Check if response is OK (status 200-299)
             if (!response.ok) {
               const errorText = await response.text();
-              console.error('Server error:', response.status, errorText);
-              showCustomAlert(`Server error (${response.status}). Check console for details.`, 'error');
+              showCustomAlert(`Server error (${response.status}). Please try again or contact administrator.`, 'error');
               return;
             }
             
@@ -1369,15 +1395,11 @@
               // Switch to submissions view
               showContent('submissions');
             } else {
-              // Show debug info if available
               const errorMsg = result.error || 'Failed to submit report';
-              const debugInfo = result.debug ? '\n\nDebug Info:\n' + JSON.stringify(result.debug, null, 2) : '';
-              console.error('Upload error:', errorMsg, result.debug);
-              showCustomAlert('Error: ' + errorMsg + (result.debug ? ' (check console for details)' : ''), 'error');
+              showCustomAlert('Error: ' + errorMsg, 'error');
             }
           } catch (error) {
-            console.error('Upload exception:', error);
-            showCustomAlert('Failed to submit report. Error: ' + error.message, 'error');
+            showCustomAlert('Failed to submit report. Please try again.', 'error');
           } finally {
             submitButton.textContent = originalText;
             setButtonBusy(submitButton, false);
@@ -2265,83 +2287,35 @@
                 `;
             };
         } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
-            // Try to use Office Web Apps Viewer with better error handling
-            loading.innerHTML = '<div class="doc-viewer-spinner"></div><p>Loading document preview...</p>';
+            // Show download message for Office documents
+            let docType = 'Document';
+            let icon = '📄';
+            if (['xls', 'xlsx'].includes(extension)) {
+                docType = 'Excel Spreadsheet';
+                icon = '📊';
+            } else if (['ppt', 'pptx'].includes(extension)) {
+                docType = 'PowerPoint Presentation';
+                icon = '📊';
+            } else if (['doc', 'docx'].includes(extension)) {
+                docType = 'Word Document';
+                icon = '📝';
+            }
             
-            // Build the full URL - fileUrl is already absolute
-            const fullUrl = encodeURIComponent(fileUrl);
-            
-            // Try Office Web Apps first
-            iframe.src = `https://view.officeapps.live.com/op/embed.aspx?src=${fullUrl}`;
-            
-            let hasLoaded = false;
-            let loadTimer = setTimeout(() => {
-                if (!hasLoaded) {
-                    // If Office viewer fails, show download option
-                    loading.innerHTML = `
-                        <div style="text-align: center; padding: 50px 40px;">
-                            <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
-                            <p style="font-size: 20px; color: #333; margin-bottom: 15px; font-weight: 600;">
-                                ${extension.toUpperCase()} Document
-                            </p>
-                            <p style="font-size: 16px; color: #666; margin-bottom: 10px;">
-                                Online preview is not available
-                            </p>
-                            <p style="color: #888; margin-bottom: 30px;">
-                                Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
-                            </p>
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #0066cc;">
-                                <p style="font-size: 14px; color: #555; margin: 0;">
-                                    📎 <strong>${filename}</strong>
-                                </p>
-                            </div>
-                            <p style="font-size: 12px; color: #999; margin-top: 20px;">
-                                Note: Online preview requires the file to be publicly accessible on the internet.
-                            </p>
-                        </div>
-                    `;
-                    iframe.style.display = 'none';
-                }
-            }, 8000);
-            
-            iframe.onload = function() {
-                // Check if iframe actually loaded content
-                try {
-                    if (iframe.contentWindow && iframe.contentWindow.location.href.includes('view.officeapps.live.com')) {
-                        hasLoaded = true;
-                        clearTimeout(loadTimer);
-                        loading.style.display = 'none';
-                        iframe.style.display = 'block';
-                    }
-                } catch (e) {
-                    // Cross-origin, assume it loaded
-                    hasLoaded = true;
-                    clearTimeout(loadTimer);
-                    loading.style.display = 'none';
-                    iframe.style.display = 'block';
-                }
-            };
-            
-            iframe.onerror = function() {
-                clearTimeout(loadTimer);
-                loading.innerHTML = `
-                    <div style="text-align: center; padding: 50px 40px;">
-                        <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
-                        <p style="font-size: 20px; color: #dc3545; margin-bottom: 15px; font-weight: 600;">
-                            Cannot Load Preview
-                        </p>
-                        <p style="color: #888; margin-bottom: 30px;">
-                            Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
-                        </p>
-                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545;">
-                            <p style="font-size: 14px; color: #555; margin: 0;">
-                                📎 <strong>${filename}</strong>
-                            </p>
-                        </div>
-                    </div>
-                `;
-                iframe.style.display = 'none';
-            };
+            loading.innerHTML = `
+                <div style="text-align: center; padding: 50px 40px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">${icon}</div>
+                    <p style="font-size: 20px; color: #333; margin-bottom: 15px; font-weight: 600;">
+                        ${docType}
+                    </p>
+                    <p style="font-size: 16px; color: #666; margin-bottom: 10px;">
+                        Cannot view online
+                    </p>
+                    <p style="color: #888; margin-bottom: 30px;">
+                        Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
+                    </p>
+                </div>
+            `;
+            iframe.style.display = 'none';
         } else {
             // For other file types, try to display
             iframe.src = fileUrl;

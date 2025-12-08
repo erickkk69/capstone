@@ -2416,6 +2416,121 @@
         alertsContainer.innerHTML = html;
     }
     
+    // Function to show rejection reason prompt
+    function showRejectPrompt() {
+        return new Promise((resolve) => {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: white;
+                    padding: 30px;
+                    border-radius: 8px;
+                    max-width: 500px;
+                    width: 90%;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                ">
+                    <h3 style="margin: 0 0 15px 0; color: #dc3545; display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 24px;">❌</span>
+                        Rejection Reason Required
+                    </h3>
+                    <p style="margin: 0 0 20px 0; color: #555;">
+                        Please provide a reason for rejecting this submission. This will be automatically added as a comment.
+                    </p>
+                    <textarea id="reject-reason-input" 
+                        placeholder="Example: Missing required documents, Incomplete information, Does not meet requirements, etc."
+                        style="
+                            width: 100%;
+                            min-height: 100px;
+                            padding: 12px;
+                            border: 2px solid #ddd;
+                            border-radius: 6px;
+                            font-size: 14px;
+                            font-family: inherit;
+                            resize: vertical;
+                            box-sizing: border-box;
+                        "
+                    ></textarea>
+                    <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end;">
+                        <button id="reject-cancel-btn" style="
+                            padding: 10px 20px;
+                            background: #6c757d;
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 600;
+                        ">Cancel</button>
+                        <button id="reject-submit-btn" style="
+                            padding: 10px 20px;
+                            background: #dc3545;
+                            color: white;
+                            border: none;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 14px;
+                            font-weight: 600;
+                        ">Confirm Rejection</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            const textarea = modal.querySelector('#reject-reason-input');
+            const cancelBtn = modal.querySelector('#reject-cancel-btn');
+            const submitBtn = modal.querySelector('#reject-submit-btn');
+            
+            // Focus on textarea
+            textarea.focus();
+            
+            // Handle cancel
+            cancelBtn.onclick = () => {
+                modal.remove();
+                resolve(null);
+            };
+            
+            // Handle submit
+            submitBtn.onclick = () => {
+                const reason = textarea.value.trim();
+                if (!reason) {
+                    textarea.style.borderColor = '#dc3545';
+                    textarea.placeholder = 'Rejection reason is required!';
+                    return;
+                }
+                modal.remove();
+                resolve(reason);
+            };
+            
+            // Handle Enter key (Ctrl+Enter to submit)
+            textarea.onkeydown = (e) => {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    submitBtn.click();
+                }
+            };
+            
+            // Close on background click
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    cancelBtn.click();
+                }
+            };
+        });
+    }
+    
     // Update submission status with debouncing
     async function updateSubmissionStatus(id, status, remarks = '', event = null) {
         // Get button element if event is provided
@@ -2426,6 +2541,31 @@
                 return;
             }
             if (btn) setButtonBusy(btn, true);
+        }
+        
+        // If status is rejected, require a rejection reason
+        if (status === 'rejected' && !remarks) {
+            if (btn) setButtonBusy(btn, false);
+            
+            // Show prompt for rejection reason
+            const reason = await showRejectPrompt();
+            
+            if (!reason || reason.trim() === '') {
+                // User cancelled or provided empty reason
+                return;
+            }
+            
+            // Add rejection reason as a comment with timestamp
+            const currentUser = document.getElementById('userInfoSpan').textContent || 'ABC';
+            const timestamp = new Date().toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+            remarks = `[${currentUser} - ${timestamp}] ❌ REJECTED: ${reason.trim()}`;
         }
         
         try {
@@ -3272,136 +3412,52 @@
                     }, 1000);
                 }
             }, 3000);
-        } else if (extension === 'docx') {
-            // Render Word document using Mammoth.js
-            fetch(fileUrl)
-                .then(response => response.arrayBuffer())
-                .then(arrayBuffer => mammoth.convertToHtml({arrayBuffer: arrayBuffer}))
-                .then(result => {
-                    const docContainer = document.createElement('div');
-                    docContainer.style.padding = '40px';
-                    docContainer.style.backgroundColor = 'white';
-                    docContainer.style.height = '100%';
-                    docContainer.style.overflow = 'auto';
-                    docContainer.innerHTML = result.value;
-                    loading.style.display = 'none';
-                    content.appendChild(docContainer);
-                })
-                .catch(error => {
-                    loading.innerHTML = `
-                        <div style="text-align: center; padding: 40px;">
-                            <div style="font-size: 64px; margin-bottom: 20px;">📝</div>
-                            <h3 style="color: #dc3545; margin-bottom: 10px;">Cannot Preview Document</h3>
-                            <p style="color: #666; margin-bottom: 30px;">
-                                Unable to render the Word document. Please download to view.
-                            </p>
-                            <button onclick="window.open('${downloadUrl}', '_blank')" style="
-                                background: #28a745;
-                                color: white;
-                                border: none;
-                                padding: 12px 30px;
-                                border-radius: 6px;
-                                font-size: 16px;
-                                cursor: pointer;
-                                font-weight: bold;
-                            ">
-                                📥 Download File
-                            </button>
-                        </div>
-                    `;
-                });
-        } else if (['xls', 'xlsx'].includes(extension)) {
-            // Render Excel document using SheetJS
-            fetch(fileUrl)
-                .then(response => response.arrayBuffer())
-                .then(arrayBuffer => {
-                    const workbook = XLSX.read(arrayBuffer, {type: 'array'});
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    const html = XLSX.utils.sheet_to_html(worksheet);
-                    
-                    const excelContainer = document.createElement('div');
-                    excelContainer.style.padding = '20px';
-                    excelContainer.style.backgroundColor = 'white';
-                    excelContainer.style.height = '100%';
-                    excelContainer.style.overflow = 'auto';
-                    excelContainer.innerHTML = `
-                        <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 4px;">
-                            <strong>Sheet:</strong> ${sheetName}
-                            ${workbook.SheetNames.length > 1 ? `<span style="color: #666; margin-left: 10px;">(${workbook.SheetNames.length} sheets total - showing first)</span>` : ''}
-                        </div>
-                        <div style="overflow-x: auto;">${html}</div>
-                    `;
-                    
-                    // Style the generated table
-                    const table = excelContainer.querySelector('table');
-                    if (table) {
-                        table.style.borderCollapse = 'collapse';
-                        table.style.width = '100%';
-                        const cells = table.querySelectorAll('td, th');
-                        cells.forEach(cell => {
-                            cell.style.border = '1px solid #ddd';
-                            cell.style.padding = '8px';
-                        });
-                        const headers = table.querySelectorAll('th');
-                        headers.forEach(th => {
-                            th.style.backgroundColor = '#f0f0f0';
-                            th.style.fontWeight = 'bold';
-                        });
-                    }
-                    
-                    loading.style.display = 'none';
-                    content.appendChild(excelContainer);
-                })
-                .catch(error => {
-                    loading.innerHTML = `
-                        <div style="text-align: center; padding: 40px;">
-                            <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
-                            <h3 style="color: #dc3545; margin-bottom: 10px;">Cannot Preview Spreadsheet</h3>
-                            <p style="color: #666; margin-bottom: 30px;">
-                                Unable to render the Excel file. Please download to view.
-                            </p>
-                            <button onclick="window.open('${downloadUrl}', '_blank')" style="
-                                background: #28a745;
-                                color: white;
-                                border: none;
-                                padding: 12px 30px;
-                                border-radius: 6px;
-                                font-size: 16px;
-                                cursor: pointer;
-                                font-weight: bold;
-                            ">
-                                📥 Download File
-                            </button>
-                        </div>
-                    `;
-                });
-        } else if (['doc', 'ppt', 'pptx'].includes(extension)) {
-            // For older formats or PowerPoint, show download option
+        } else if (extension === 'docx' || extension === 'doc') {
+            // Show download message for Word documents
             loading.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div style="font-size: 64px; margin-bottom: 20px;">
-                        ${extension.includes('doc') ? '📝' : '📊'}
-                    </div>
-                    <h3 style="color: #004c99; margin-bottom: 10px;">Office Document Detected</h3>
-                    <p style="color: #666; margin-bottom: 20px;">
-                        File type: <strong>.${extension}</strong>
+                <div style="text-align: center; padding: 50px 40px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">📝</div>
+                    <p style="font-size: 20px; color: #333; margin-bottom: 15px; font-weight: 600;">
+                        Word Document
                     </p>
-                    <p style="color: #666; margin-bottom: 30px;">
-                        This document requires Microsoft Office to view. Click download to open.
+                    <p style="font-size: 16px; color: #666; margin-bottom: 10px;">
+                        Cannot view online
                     </p>
-                    <button onclick="window.open('${downloadUrl}', '_blank')" style="
-                        background: #28a745;
-                        color: white;
-                        border: none;
-                        padding: 12px 30px;
-                        border-radius: 6px;
-                        font-size: 16px;
-                        cursor: pointer;
-                        font-weight: bold;
-                    ">
-                        📥 Download & Open
-                    </button>
+                    <p style="color: #888; margin-bottom: 30px;">
+                        Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
+                    </p>
+                </div>
+            `;
+        } else if (['xls', 'xlsx'].includes(extension)) {
+            // Show download message for Excel documents
+            loading.innerHTML = `
+                <div style="text-align: center; padding: 50px 40px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
+                    <p style="font-size: 20px; color: #333; margin-bottom: 15px; font-weight: 600;">
+                        Excel Spreadsheet
+                    </p>
+                    <p style="font-size: 16px; color: #666; margin-bottom: 10px;">
+                        Cannot view online
+                    </p>
+                    <p style="color: #888; margin-bottom: 30px;">
+                        Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
+                    </p>
+                </div>
+            `;
+        } else if (['ppt', 'pptx'].includes(extension)) {
+            // Show download message for PowerPoint documents
+            loading.innerHTML = `
+                <div style="text-align: center; padding: 50px 40px;">
+                    <div style="font-size: 64px; margin-bottom: 20px;">📊</div>
+                    <p style="font-size: 20px; color: #333; margin-bottom: 15px; font-weight: 600;">
+                        PowerPoint Presentation
+                    </p>
+                    <p style="font-size: 16px; color: #666; margin-bottom: 10px;">
+                        Cannot view online
+                    </p>
+                    <p style="color: #888; margin-bottom: 30px;">
+                        Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
+                    </p>
                 </div>
             `;
         } else if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'].includes(extension)) {
