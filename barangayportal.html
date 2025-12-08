@@ -1351,6 +1351,14 @@
               body: formData
             });
             
+            // Check if response is OK (status 200-299)
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error('Server error:', response.status, errorText);
+              showCustomAlert(`Server error (${response.status}). Check console for details.`, 'error');
+              return;
+            }
+            
             const result = await response.json();
             
             if (result.ok) {
@@ -1361,10 +1369,15 @@
               // Switch to submissions view
               showContent('submissions');
             } else {
-              showCustomAlert('Error: ' + (result.error || 'Failed to submit report'), 'error');
+              // Show debug info if available
+              const errorMsg = result.error || 'Failed to submit report';
+              const debugInfo = result.debug ? '\n\nDebug Info:\n' + JSON.stringify(result.debug, null, 2) : '';
+              console.error('Upload error:', errorMsg, result.debug);
+              showCustomAlert('Error: ' + errorMsg + (result.debug ? ' (check console for details)' : ''), 'error');
             }
           } catch (error) {
-            showCustomAlert('Failed to submit report. Please try again.', 'error');
+            console.error('Upload exception:', error);
+            showCustomAlert('Failed to submit report. Error: ' + error.message, 'error');
           } finally {
             submitButton.textContent = originalText;
             setButtonBusy(submitButton, false);
