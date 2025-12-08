@@ -202,15 +202,40 @@ if ($method === 'POST') {
         
         // Generate unique filename with sanitization
         $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($file['name'], PATHINFO_FILENAME));
-        $filename = substr($filename, 0, 50) . '_' . uniqid() . '.' . $extension;
+        $filename = substr($filename, 0, 50) . '_' . time() . '.' . $extension;
         $filepath = $uploadsDir . $filename;
         
-        // Move uploaded file - let it fail naturally if there are permission issues
-        if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+        // Ensure directory exists and try to set permissions
+        if (!is_dir($uploadsDir)) {
+            @mkdir($uploadsDir, 0777, true);
+        }
+        @chmod($uploadsDir, 0777);
+        
+        // Try move_uploaded_file first
+        $uploadSuccess = @move_uploaded_file($file['tmp_name'], $filepath);
+        
+        // If that fails, try copy as fallback for some hosting environments
+        if (!$uploadSuccess && file_exists($file['tmp_name'])) {
+            $uploadSuccess = @copy($file['tmp_name'], $filepath);
+            if ($uploadSuccess) {
+                @unlink($file['tmp_name']);
+            }
+        }
+        
+        if (!$uploadSuccess) {
+            // Get detailed error info
+            $error_details = [];
+            $error_details['uploads_dir'] = $uploadsDir;
+            $error_details['uploads_dir_exists'] = is_dir($uploadsDir);
+            $error_details['uploads_dir_writable'] = is_writable($uploadsDir);
+            $error_details['temp_file_exists'] = file_exists($file['tmp_name']);
+            $error_details['temp_file_size'] = file_exists($file['tmp_name']) ? filesize($file['tmp_name']) : 0;
+            
             http_response_code(500);
             echo json_encode([
                 'ok' => false, 
-                'error' => 'Failed to upload file. Please contact administrator to check uploads folder permissions.'
+                'error' => 'Failed to upload file. Please contact administrator.',
+                'debug' => $error_details
             ]);
             exit;
         }
