@@ -1,0 +1,20 @@
+# Increase PHP limits for file uploads
+php_value upload_max_filesize 50M
+php_value post_max_size 55M
+php_value max_execution_time 300
+php_value max_input_time 300
+php_value memory_limit 256M
+
+# Security: Prevent execution of PHP files in uploads directory
+<Directory "uploads">
+    <FilesMatch "\.(php|php3|php4|php5|phtml)$">
+        Order Deny,Allow
+        Deny from all
+    </FilesMatch>
+    
+    # Allow downloading of document files
+    <FilesMatch "\.(pdf|doc|docx|xls|xlsx)$">
+        Order Allow,Deny
+        Allow from all
+    </FilesMatch>
+</Directory>

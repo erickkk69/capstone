@@ -156,11 +156,11 @@ if ($method === 'POST') {
             exit;
         }
         
-        // Check file size (max 10MB)
-        $maxSize = 10 * 1024 * 1024; // 10MB
+        // Check file size (max 50MB)
+        $maxSize = 50 * 1024 * 1024; // 50MB
         if ($file['size'] > $maxSize) {
             http_response_code(400);
-            echo json_encode(['ok' => false, 'error' => 'File too large. Maximum size is 10MB']);
+            echo json_encode(['ok' => false, 'error' => 'File too large. Maximum size is 50MB']);
             exit;
         }
         
