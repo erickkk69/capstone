@@ -1775,6 +1775,40 @@
     let allSubmissions = [];
     let currentManageStatusFilter = 'all'; // Track current filter for manage submissions
 
+    // Debounce utility for button clicks - prevents multiple rapid clicks
+    function debounce(func, wait = 300) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+    
+    // Button state management - prevents double-clicks
+    const buttonStates = new Map();
+    
+    function isButtonBusy(buttonElement) {
+      return buttonStates.get(buttonElement) === true;
+    }
+    
+    function setButtonBusy(buttonElement, isBusy) {
+      if (isBusy) {
+        buttonStates.set(buttonElement, true);
+        buttonElement.disabled = true;
+        buttonElement.style.opacity = '0.6';
+        buttonElement.style.cursor = 'wait';
+      } else {
+        buttonStates.delete(buttonElement);
+        buttonElement.disabled = false;
+        buttonElement.style.opacity = '1';
+        buttonElement.style.cursor = 'pointer';
+      }
+    }
+
     // Helper function to update sidebar notification badges
     function updateSidebarBadge(badgeId, count) {
         const badge = document.getElementById(badgeId);
@@ -2382,8 +2416,18 @@
         alertsContainer.innerHTML = html;
     }
     
-    // Update submission status
-    async function updateSubmissionStatus(id, status, remarks = '') {
+    // Update submission status with debouncing
+    async function updateSubmissionStatus(id, status, remarks = '', event = null) {
+        // Get button element if event is provided
+        let btn = null;
+        if (event && event.target) {
+            btn = event.target.closest('button, select, a');
+            if (btn && isButtonBusy(btn)) {
+                return;
+            }
+            if (btn) setButtonBusy(btn, true);
+        }
+        
         try {
             // Add timestamp to the status change
             const currentDateTime = new Date().toLocaleString('en-US', {
@@ -2433,6 +2477,8 @@
             }
         } catch (error) {
             showCustomAlert('Failed to update status', 'error');
+        } finally {
+            if (btn) setButtonBusy(btn, false);
         }
     }
     
@@ -2681,10 +2727,12 @@
         }
         
         // Search functionality
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase().trim();
+        const debouncedSearch = debounce(function() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
             filterBarangayFolders(searchTerm);
-        });
+        }, 300);
+        
+        searchInput.addEventListener('input', debouncedSearch);
         
         // Clear button functionality
         clearButton.addEventListener('click', function() {
@@ -3045,14 +3093,27 @@
         }
     }
     
-    // Add comment to submission
-    async function addComment(submissionId) {
+    // Add comment to submission with debouncing
+    async function addComment(submissionId, event = null) {
         const commentTextarea = document.getElementById('new-comment');
         const newComment = commentTextarea.value.trim();
         
         if (!newComment) {
             showCustomAlert('Please enter a comment before adding.', 'warning');
             return;
+        }
+        
+        // Get button and prevent double-click
+        let btn = null;
+        if (event && event.target) {
+            btn = event.target.closest('button');
+            if (btn && isButtonBusy(btn)) {
+                return;
+            }
+            if (btn) {
+                setButtonBusy(btn, true);
+                btn.textContent = 'Adding...';
+            }
         }
         
         try {
@@ -3116,6 +3177,14 @@
             }
         } catch (error) {
             showCustomAlert('Failed to add comment: ' + error.message, 'error');
+        } finally {
+            const addBtn = document.querySelector('button[onclick*="addComment"]');
+            if (addBtn) {
+                addBtn.textContent = 'Add Comment';
+                addBtn.disabled = false;
+                addBtn.style.opacity = '1';
+                addBtn.style.cursor = 'pointer';
+            }
         }
     }
     

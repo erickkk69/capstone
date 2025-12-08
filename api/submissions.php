@@ -181,12 +181,18 @@ if ($method === 'POST') {
             @chmod($uploadsDir, 0755);
         }
         
-        // Check if directory is writable
-        if (!is_writable($uploadsDir)) {
+        // Check if directory is writable by attempting to create a test file
+        $testFile = $uploadsDir . '/.write_test_' . uniqid();
+        $canWrite = @file_put_contents($testFile, 'test') !== false;
+        if ($canWrite) {
+            @unlink($testFile);
+        }
+        
+        if (!$canWrite) {
             http_response_code(500);
             echo json_encode([
                 'ok' => false, 
-                'error' => 'Uploads directory exists but is not writable. Please set permissions to 755 or 777.',
+                'error' => 'Uploads directory exists but is not writable. Please check folder permissions.',
                 'path' => $uploadsDir
             ]);
             exit;

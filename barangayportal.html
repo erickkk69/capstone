@@ -1001,6 +1001,40 @@
   </div>
 
   <script>
+  
+  // Debounce utility for button clicks - prevents multiple rapid clicks
+  function debounce(func, wait = 300) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+  
+  // Button state management - prevents double-clicks
+  const buttonStates = new Map();
+  
+  function isButtonBusy(buttonElement) {
+    return buttonStates.get(buttonElement) === true;
+  }
+  
+  function setButtonBusy(buttonElement, isBusy) {
+    if (isBusy) {
+      buttonStates.set(buttonElement, true);
+      buttonElement.disabled = true;
+      buttonElement.style.opacity = '0.6';
+      buttonElement.style.cursor = 'wait';
+    } else {
+      buttonStates.delete(buttonElement);
+      buttonElement.disabled = false;
+      buttonElement.style.opacity = '1';
+      buttonElement.style.cursor = 'pointer';
+    }
+  }
 
   // Helper function to update sidebar notification badges
   function updateSidebarBadge(badgeId, count) {
@@ -1067,6 +1101,11 @@
 
         const sidebarLinks = document.querySelectorAll('.sidebar a.sidebar-link:not(#logout-link)');
         const contentCards = document.querySelectorAll('.content-area .card');
+        
+        // Store all submissions globally for search/filter - MUST BE DECLARED BEFORE USE
+        let allSubmissions = [];
+        let showingAllSubmissions = false;
+        let currentStatusFilter = 'all';
 
         function showContent(targetId) {
 
@@ -1289,6 +1328,17 @@
         uploadForm.addEventListener('submit', async (event) => {
           event.preventDefault();
           
+          const submitButton = uploadForm.querySelector('button[type="submit"]');
+          
+          // Prevent double submission
+          if (isButtonBusy(submitButton)) {
+            return;
+          }
+          
+          setButtonBusy(submitButton, true);
+          const originalText = submitButton.textContent;
+          submitButton.textContent = 'Uploading...';
+          
           const formData = new FormData();
           formData.append('title', document.getElementById('doc-title').value);
           formData.append('category', document.getElementById('doc-category').value);
@@ -1315,6 +1365,9 @@
             }
           } catch (error) {
             showCustomAlert('Failed to submit report. Please try again.', 'error');
+          } finally {
+            submitButton.textContent = originalText;
+            setButtonBusy(submitButton, false);
           }
         });
       }
@@ -1405,10 +1458,25 @@
         }
       }
       
-      // Archive submission function
-      window.archiveSubmission = async function(id) {
+      // Archive submission function with debouncing
+      window.archiveSubmission = debounce(async function(id, event) {
+        // Prevent if already processing
+        if (event && event.target) {
+          const btn = event.target.closest('a');
+          if (btn && isButtonBusy(btn)) {
+            return;
+          }
+          if (btn) {
+            setButtonBusy(btn, true);
+          }
+        }
+        
         const proceed = await showCustomConfirm('Are you sure you want to archive this submission?', 'warning');
         if (!proceed) {
+          if (event && event.target) {
+            const btn = event.target.closest('a');
+            if (btn) setButtonBusy(btn, false);
+          }
           return;
         }
         
@@ -1428,13 +1496,30 @@
           }
         } catch (error) {
           showCustomAlert('Failed to archive submission', 'error');
+        } finally {
+          if (event && event.target) {
+            const btn = event.target.closest('a');
+            if (btn) setButtonBusy(btn, false);
+          }
         }
-      };
+      }, 500);
 
-      // Restore submission function
-      window.restoreSubmission = async function(id) {
+      // Restore submission function with debouncing
+      window.restoreSubmission = debounce(async function(id, event) {
+        if (event && event.target) {
+          const btn = event.target.closest('a');
+          if (btn && isButtonBusy(btn)) {
+            return;
+          }
+          if (btn) setButtonBusy(btn, true);
+        }
+        
         const proceed = await showCustomConfirm('Are you sure you want to restore this submission?', 'info');
         if (!proceed) {
+          if (event && event.target) {
+            const btn = event.target.closest('a');
+            if (btn) setButtonBusy(btn, false);
+          }
           return;
         }
         
@@ -1454,13 +1539,30 @@
           }
         } catch (error) {
           showCustomAlert('Failed to restore submission', 'error');
+        } finally {
+          if (event && event.target) {
+            const btn = event.target.closest('a');
+            if (btn) setButtonBusy(btn, false);
+          }
         }
-      };
+      }, 500);
 
-      // Delete submission function (permanent delete)
-      window.deleteSubmission = async function(id) {
+      // Delete submission function (permanent delete) with debouncing
+      window.deleteSubmission = debounce(async function(id, event) {
+        if (event && event.target) {
+          const btn = event.target.closest('a');
+          if (btn && isButtonBusy(btn)) {
+            return;
+          }
+          if (btn) setButtonBusy(btn, true);
+        }
+        
         const proceed = await showCustomConfirm('Are you sure you want to permanently delete this submission? This action cannot be undone.', 'error');
         if (!proceed) {
+          if (event && event.target) {
+            const btn = event.target.closest('a');
+            if (btn) setButtonBusy(btn, false);
+          }
           return;
         }
         
@@ -1480,13 +1582,13 @@
           }
         } catch (error) {
           showCustomAlert('Failed to delete submission', 'error');
+        } finally {
+          if (event && event.target) {
+            const btn = event.target.closest('a');
+            if (btn) setButtonBusy(btn, false);
+          }
         }
-      };
-      
-      // Store all submissions globally for search/filter
-      let allSubmissions = [];
-      let showingAllSubmissions = false;
-      let currentStatusFilter = 'all';
+      }, 500);
       
       // Track viewed/seen submissions in localStorage
       function getViewedSubmissions() {
@@ -1523,8 +1625,8 @@
         document.getElementById('count-rejected-filter').textContent = rejected;
       }
 
-      // Filter submissions by status
-      window.filterSubmissionsByStatus = function(status) {
+      // Filter submissions by status with debouncing
+      window.filterSubmissionsByStatus = debounce(function(status) {
         currentStatusFilter = status;
         
         // Update active button
@@ -1567,7 +1669,7 @@
           showingAllSubmissions = true;
           viewAllBtn.textContent = 'Show Recent Only';
         }
-      };
+      }, 200);
 
       // Function to display submissions in the table
       function displaySubmissions(submissions) {
@@ -1663,8 +1765,8 @@
       const viewAllButton = document.getElementById('view-all-button');
       
       if (searchInput) {
-        searchInput.addEventListener('input', function() {
-          const searchTerm = this.value.toLowerCase().trim();
+        const debouncedSearch = debounce(function() {
+          const searchTerm = searchInput.value.toLowerCase().trim();
           
           // Start with current status filter
           let filteredSubmissions = allSubmissions;
@@ -1700,7 +1802,9 @@
           });
           
           displaySubmissions(searchFiltered);
-        });
+        }, 300);
+        
+        searchInput.addEventListener('input', debouncedSearch);
       }
       
       // Clear search button
@@ -2128,28 +2232,118 @@
         const iframe = modal.querySelector('.doc-viewer-iframe');
         const loading = modal.querySelector('.doc-viewer-loading');
         
-        // For PDF files, we can use Google Docs Viewer or display directly
+        // For PDF files, display directly
         if (extension === 'pdf') {
-            // Try to display PDF directly first, fallback to Google Docs Viewer
             iframe.src = fileUrl;
-        } else if (['doc', 'docx', 'xls', 'xlsx'].includes(extension)) {
-            // Use Google Docs Viewer for Office documents
-            iframe.src = `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + '/' + fileUrl)}&embedded=true`;
+            
+            iframe.onload = function() {
+                loading.style.display = 'none';
+                iframe.style.display = 'block';
+            };
+            
+            iframe.onerror = function() {
+                loading.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: #dc3545; font-weight: bold; font-size: 18px; margin-bottom: 20px;">⚠️ Cannot preview PDF</p>
+                        <p style="color: #888;">Please use the download button above to view the document.</p>
+                    </div>
+                `;
+            };
+        } else if (['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'].includes(extension)) {
+            // Try to use Office Web Apps Viewer with better error handling
+            loading.innerHTML = '<div class="doc-viewer-spinner"></div><p>Loading document preview...</p>';
+            
+            // Build the full URL
+            const fullUrl = encodeURIComponent(window.location.origin + fileUrl);
+            
+            // Try Office Web Apps first
+            iframe.src = `https://view.officeapps.live.com/op/embed.aspx?src=${fullUrl}`;
+            
+            let hasLoaded = false;
+            let loadTimer = setTimeout(() => {
+                if (!hasLoaded) {
+                    // If Office viewer fails, show download option
+                    loading.innerHTML = `
+                        <div style="text-align: center; padding: 50px 40px;">
+                            <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
+                            <p style="font-size: 20px; color: #333; margin-bottom: 15px; font-weight: 600;">
+                                ${extension.toUpperCase()} Document
+                            </p>
+                            <p style="font-size: 16px; color: #666; margin-bottom: 10px;">
+                                Online preview is not available
+                            </p>
+                            <p style="color: #888; margin-bottom: 30px;">
+                                Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
+                            </p>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #0066cc;">
+                                <p style="font-size: 14px; color: #555; margin: 0;">
+                                    📎 <strong>${filename}</strong>
+                                </p>
+                            </div>
+                            <p style="font-size: 12px; color: #999; margin-top: 20px;">
+                                Note: Online preview requires the file to be publicly accessible on the internet.
+                            </p>
+                        </div>
+                    `;
+                    iframe.style.display = 'none';
+                }
+            }, 8000);
+            
+            iframe.onload = function() {
+                // Check if iframe actually loaded content
+                try {
+                    if (iframe.contentWindow && iframe.contentWindow.location.href.includes('view.officeapps.live.com')) {
+                        hasLoaded = true;
+                        clearTimeout(loadTimer);
+                        loading.style.display = 'none';
+                        iframe.style.display = 'block';
+                    }
+                } catch (e) {
+                    // Cross-origin, assume it loaded
+                    hasLoaded = true;
+                    clearTimeout(loadTimer);
+                    loading.style.display = 'none';
+                    iframe.style.display = 'block';
+                }
+            };
+            
+            iframe.onerror = function() {
+                clearTimeout(loadTimer);
+                loading.innerHTML = `
+                    <div style="text-align: center; padding: 50px 40px;">
+                        <div style="font-size: 64px; margin-bottom: 20px;">📄</div>
+                        <p style="font-size: 20px; color: #dc3545; margin-bottom: 15px; font-weight: 600;">
+                            Cannot Load Preview
+                        </p>
+                        <p style="color: #888; margin-bottom: 30px;">
+                            Please click the <strong style="color: #28a745;">Download</strong> button above to view this document
+                        </p>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 4px solid #dc3545;">
+                            <p style="font-size: 14px; color: #555; margin: 0;">
+                                📎 <strong>${filename}</strong>
+                            </p>
+                        </div>
+                    </div>
+                `;
+                iframe.style.display = 'none';
+            };
         } else {
-            // For other file types, just show download option
+            // For other file types, try to display
             iframe.src = fileUrl;
-        }
-        
-        iframe.onload = function() {
-            loading.style.display = 'none';
-            iframe.style.display = 'block';
-        };
-        
-        iframe.onerror = function() {
-            loading.innerHTML = `
-                <p style="color: #dc3545; font-weight: bold;">⚠️ Cannot preview this file type</p>
-                <p>Please use the download button above to view the document.</p>
-            `;
+            
+            iframe.onload = function() {
+                loading.style.display = 'none';
+                iframe.style.display = 'block';
+            };
+            
+            iframe.onerror = function() {
+                loading.innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <p style="color: #dc3545; font-weight: bold; font-size: 18px; margin-bottom: 20px;">⚠️ Cannot preview this file type</p>
+                        <p style="color: #888;">Please use the download button above to view the document.</p>
+                    </div>
+                `;
+            };
         };
     }
     
