@@ -109,13 +109,33 @@ if ($method === 'POST') {
             exit;
         }
         
-        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+        // Check if file was uploaded
+        if (!isset($_FILES['file'])) {
             http_response_code(400);
-            echo json_encode(['ok' => false, 'error' => 'File upload failed or no file provided']);
+            echo json_encode(['ok' => false, 'error' => 'No file provided']);
             exit;
         }
         
         $file = $_FILES['file'];
+        
+        // Better error handling for file upload
+        $uploadErrors = [
+            UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize directive in php.ini',
+            UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE directive in HTML form',
+            UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
+            UPLOAD_ERR_NO_FILE => 'No file was uploaded',
+            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder on server',
+            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
+            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload'
+        ];
+        
+        if ($file['error'] !== UPLOAD_ERR_OK) {
+            $errorMsg = $uploadErrors[$file['error']] ?? 'Unknown upload error';
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'File upload failed: ' . $errorMsg]);
+            exit;
+        }
+        
         $title = $_POST['title'] ?? '';
         $category = $_POST['category'] ?? '';
         $period = $_POST['period'] ?? '';
@@ -126,30 +146,89 @@ if ($method === 'POST') {
             exit;
         }
         
-        $allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
-                         'application/msword', 'application/vnd.ms-excel', 
-                         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+        // Validate file extension (more reliable than MIME type)
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
         
-        if (!in_array($file['type'], $allowedTypes)) {
+        if (!in_array($extension, $allowedExtensions)) {
             http_response_code(400);
             echo json_encode(['ok' => false, 'error' => 'Invalid file type. Only PDF, DOCX, DOC, XLS, XLSX allowed']);
             exit;
         }
         
-        $uploadsDir = __DIR__ . '/../uploads/';
-        if (!is_dir($uploadsDir)) {
-            mkdir($uploadsDir, 0755, true);
-        }
-        
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $filename = uniqid() . '_' . time() . '.' . $extension;
-        $filepath = $uploadsDir . $filename;
-        
-        if (!move_uploaded_file($file['tmp_name'], $filepath)) {
-            http_response_code(500);
-            echo json_encode(['ok' => false, 'error' => 'Failed to save file']);
+        // Check file size (max 10MB)
+        $maxSize = 10 * 1024 * 1024; // 10MB
+        if ($file['size'] > $maxSize) {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'File too large. Maximum size is 10MB']);
             exit;
         }
+        
+        // Create uploads directory with proper permissions
+        // Use realpath to ensure absolute path works on hosting
+        $uploadsDir = dirname(__DIR__) . '/uploads/';
+        
+        if (!is_dir($uploadsDir)) {
+            // Try to create directory - some hosts have restrictions
+            if (!@mkdir($uploadsDir, 0755, true)) {
+                http_response_code(500);
+                echo json_encode([
+                    'ok' => false, 
+                    'error' => 'Cannot create uploads directory. Please create it manually with write permissions.'
+                ]);
+                exit;
+            }
+            @chmod($uploadsDir, 0755);
+        }
+        
+        // Check if directory is writable
+        if (!is_writable($uploadsDir)) {
+            http_response_code(500);
+            echo json_encode([
+                'ok' => false, 
+                'error' => 'Uploads directory exists but is not writable. Please set permissions to 755 or 777.',
+                'path' => $uploadsDir
+            ]);
+            exit;
+        }
+        
+        // Validate that temp file exists and is uploaded file
+        if (!is_uploaded_file($file['tmp_name'])) {
+            http_response_code(400);
+            echo json_encode(['ok' => false, 'error' => 'Invalid file upload']);
+            exit;
+        }
+        
+        // Generate unique filename with sanitization
+        $filename = preg_replace('/[^a-zA-Z0-9_-]/', '_', pathinfo($file['name'], PATHINFO_FILENAME));
+        $filename = substr($filename, 0, 50) . '_' . uniqid() . '.' . $extension;
+        $filepath = $uploadsDir . $filename;
+        
+        // Move uploaded file with error suppression for hosting compatibility
+        if (!@move_uploaded_file($file['tmp_name'], $filepath)) {
+            // Try to get more specific error
+            $error = error_get_last();
+            $errorMsg = 'Failed to save file to server';
+            
+            if (!file_exists($uploadsDir)) {
+                $errorMsg = 'Uploads directory does not exist';
+            } elseif (!is_writable($uploadsDir)) {
+                $errorMsg = 'No write permission for uploads directory';
+            } elseif (disk_free_space($uploadsDir) < $file['size']) {
+                $errorMsg = 'Not enough disk space';
+            }
+            
+            http_response_code(500);
+            echo json_encode([
+                'ok' => false, 
+                'error' => $errorMsg,
+                'details' => $error ? $error['message'] : null
+            ]);
+            exit;
+        }
+        
+        // Set file permissions (ignore errors on restrictive hosts)
+        @chmod($filepath, 0644);
         
         $stmt = $pdo->prepare(
             'INSERT INTO submissions (title, category, period, reporting_period, filename, original_name, uploaded_by, status, uploaded_at) 
