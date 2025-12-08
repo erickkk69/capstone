@@ -1378,14 +1378,22 @@
               body: formData
             });
             
-            // Check if response is OK (status 200-299)
-            if (!response.ok) {
-              const errorText = await response.text();
+            // Try to get JSON response with error details
+            let result;
+            try {
+              result = await response.json();
+            } catch (e) {
+              // If JSON parsing fails, show generic error
               showCustomAlert(`Server error (${response.status}). Please try again or contact administrator.`, 'error');
               return;
             }
             
-            const result = await response.json();
+            // Check if response is OK (status 200-299)
+            if (!response.ok) {
+              const errorMsg = result.error || `Server error (${response.status}). Please try again.`;
+              showCustomAlert(errorMsg, 'error');
+              return;
+            }
             
             if (result.ok) {
               showCustomAlert('Report submitted successfully!', 'success');
@@ -1396,7 +1404,7 @@
               showContent('submissions');
             } else {
               const errorMsg = result.error || 'Failed to submit report';
-              showCustomAlert('Error: ' + errorMsg, 'error');
+              showCustomAlert(errorMsg, 'error');
             }
           } catch (error) {
             showCustomAlert('Failed to submit report. Please try again.', 'error');

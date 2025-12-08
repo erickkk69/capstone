@@ -110,29 +110,29 @@ if ($method === 'POST') {
         }
         
         // Check if file was uploaded
-        if (!isset($_FILES['file'])) {
+        if (!isset($_FILES['file']) || empty($_FILES['file']['name'])) {
             http_response_code(400);
-            echo json_encode(['ok' => false, 'error' => 'No file provided']);
+            echo json_encode(['ok' => false, 'error' => 'No file provided. Please select a file to upload.']);
             exit;
         }
         
         $file = $_FILES['file'];
         
-        // Better error handling for file upload
+        // Better error handling for file upload with user-friendly messages
         $uploadErrors = [
-            UPLOAD_ERR_INI_SIZE => 'File exceeds upload_max_filesize directive in php.ini',
-            UPLOAD_ERR_FORM_SIZE => 'File exceeds MAX_FILE_SIZE directive in HTML form',
-            UPLOAD_ERR_PARTIAL => 'File was only partially uploaded',
-            UPLOAD_ERR_NO_FILE => 'No file was uploaded',
-            UPLOAD_ERR_NO_TMP_DIR => 'Missing temporary folder on server',
-            UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
-            UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload'
+            UPLOAD_ERR_INI_SIZE => 'File is too large (exceeds server limit). Please contact administrator or use a smaller file.',
+            UPLOAD_ERR_FORM_SIZE => 'File is too large (exceeds 50MB limit). Please use a smaller file.',
+            UPLOAD_ERR_PARTIAL => 'File upload was interrupted. Please try again.',
+            UPLOAD_ERR_NO_FILE => 'No file was selected. Please choose a file to upload.',
+            UPLOAD_ERR_NO_TMP_DIR => 'Server configuration error (no temp folder). Please contact administrator.',
+            UPLOAD_ERR_CANT_WRITE => 'Server cannot save file to disk. Please contact administrator.',
+            UPLOAD_ERR_EXTENSION => 'File upload blocked by server. Please contact administrator.'
         ];
         
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            $errorMsg = $uploadErrors[$file['error']] ?? 'Unknown upload error';
+            $errorMsg = $uploadErrors[$file['error']] ?? 'Unknown upload error (code: ' . $file['error'] . ')';
             http_response_code(400);
-            echo json_encode(['ok' => false, 'error' => 'File upload failed: ' . $errorMsg]);
+            echo json_encode(['ok' => false, 'error' => $errorMsg]);
             exit;
         }
         
@@ -140,9 +140,18 @@ if ($method === 'POST') {
         $category = $_POST['category'] ?? '';
         $period = $_POST['period'] ?? '';
         
-        if (empty($title) || empty($category) || empty($period)) {
+        // Detailed validation
+        $missingFields = [];
+        if (empty($title)) $missingFields[] = 'Document Title';
+        if (empty($category)) $missingFields[] = 'Category';
+        if (empty($period)) $missingFields[] = 'Reporting Period';
+        
+        if (!empty($missingFields)) {
             http_response_code(400);
-            echo json_encode(['ok' => false, 'error' => 'Missing required fields']);
+            echo json_encode([
+                'ok' => false, 
+                'error' => 'Missing required fields: ' . implode(', ', $missingFields)
+            ]);
             exit;
         }
         
