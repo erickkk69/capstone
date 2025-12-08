@@ -3200,8 +3200,10 @@
         
         // Get file extension to determine how to display
         const extension = filename.split('.').pop().toLowerCase();
-        const fileUrl = `api/view_file.php?file=${filename}`;
-        const downloadUrl = `api/view_file.php?file=${filename}&download=1`;
+        // Use absolute path from root to ensure it works when hosted
+        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+        const fileUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}`;
+        const downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
         
         modal.innerHTML = `
             <div class="doc-viewer-container" onclick="event.stopPropagation()">
@@ -3235,8 +3237,8 @@
         const loading = modal.querySelector('.doc-viewer-loading');
         const content = modal.querySelector('.doc-viewer-content');
         
-        // Get full URL for external viewers
-        const fullFileUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1) + fileUrl;
+        // fileUrl is already an absolute URL
+        const fullFileUrl = fileUrl;
         
         // Handle different file types
         if (extension === 'pdf') {

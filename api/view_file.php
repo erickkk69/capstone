@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
 
+// Add CORS headers for better browser compatibility
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET');
+header('Access-Control-Allow-Headers: Content-Type');
+
 $user = current_user();
 if (!$user) {
     http_response_code(401);
@@ -17,7 +22,9 @@ if (empty($filename)) {
     die('No file specified');
 }
 
+// Clean filename - remove any directory traversal attempts
 $filename = basename($filename);
+$filename = str_replace(['..', '/', '\\'], '', $filename);
 
 $filepath = __DIR__ . '/../uploads/' . $filename;
 
@@ -72,18 +79,29 @@ $originalName = $submission['original_name'] ?? $filename;
 
 $isDownload = isset($_GET['download']);
 
+// Clear any previous output
+if (ob_get_level()) {
+    ob_end_clean();
+}
+
 if ($isDownload) {
     header('Content-Type: application/octet-stream');
-    header('Content-Disposition: attachment; filename="' . $originalName . '"');
+    header('Content-Disposition: attachment; filename="' . addslashes($originalName) . '"');
     header('Content-Transfer-Encoding: binary');
 } else {
     header('Content-Type: ' . $contentType);
-    header('Content-Disposition: inline; filename="' . $originalName . '"');
+    header('Content-Disposition: inline; filename="' . addslashes($originalName) . '"');
 }
 header('Content-Length: ' . filesize($filepath));
-header('Cache-Control: private, max-age=0, must-revalidate');
-header('Pragma: public');
-header('Expires: 0');
+header('Cache-Control: public, max-age=3600');
+header('Accept-Ranges: bytes');
 
-readfile($filepath);
+// Use fpassthru for better memory handling with large files
+$handle = fopen($filepath, 'rb');
+if ($handle) {
+    fpassthru($handle);
+    fclose($handle);
+} else {
+    readfile($filepath);
+}
 exit;

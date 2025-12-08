@@ -2211,8 +2211,10 @@
         
         // Get file extension to determine how to display
         const extension = filename.split('.').pop().toLowerCase();
-        const fileUrl = `api/view_file.php?file=${filename}`;
-        const downloadUrl = `api/view_file.php?file=${filename}&download=1`;
+        // Use absolute path from root to ensure it works when hosted
+        const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
+        const fileUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}`;
+        const downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
         
         modal.innerHTML = `
             <div class="doc-viewer-container" onclick="event.stopPropagation()">
@@ -2266,8 +2268,8 @@
             // Try to use Office Web Apps Viewer with better error handling
             loading.innerHTML = '<div class="doc-viewer-spinner"></div><p>Loading document preview...</p>';
             
-            // Build the full URL
-            const fullUrl = encodeURIComponent(window.location.origin + fileUrl);
+            // Build the full URL - fileUrl is already absolute
+            const fullUrl = encodeURIComponent(fileUrl);
             
             // Try Office Web Apps first
             iframe.src = `https://view.officeapps.live.com/op/embed.aspx?src=${fullUrl}`;
