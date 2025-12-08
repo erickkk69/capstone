@@ -894,8 +894,11 @@
             </div>
             
             <div class="form-column">
-              <label for="doc-file">Upload File (PDF/DOCX/Spreadsheet preferred):</label>
-              <input type="file" id="doc-file" required>
+              <label for="doc-file">Upload File (PDF/DOCX/Spreadsheet preferred, max 10MB):</label>
+              <!-- MAX_FILE_SIZE must precede the file input field -->
+              <input type="hidden" name="MAX_FILE_SIZE" value="10485760">
+              <input type="file" id="doc-file" accept=".pdf,.doc,.docx,.xls,.xlsx" required>
+              <small style="display: block; color: #666; margin-top: 5px;">Maximum file size: 10MB. Allowed formats: PDF, DOC, DOCX, XLS, XLSX</small>
             </div>
             
           </div>
@@ -1335,6 +1338,32 @@
             return;
           }
           
+          // Validate file before upload
+          const fileInput = document.getElementById('doc-file');
+          const file = fileInput.files[0];
+          
+          if (!file) {
+            showCustomAlert('Please select a file to upload.', 'error');
+            return;
+          }
+          
+          // Check file size (10MB = 10 * 1024 * 1024 bytes)
+          const maxSize = 10 * 1024 * 1024;
+          if (file.size > maxSize) {
+            showCustomAlert('File is too large! Maximum file size is 10MB. Your file is ' + (file.size / 1024 / 1024).toFixed(2) + 'MB.', 'error');
+            return;
+          }
+          
+          // Check file type
+          const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
+          const fileName = file.name.toLowerCase();
+          const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+          
+          if (!allowedExtensions.includes(fileExtension)) {
+            showCustomAlert('Invalid file type! Only PDF, DOC, DOCX, XLS, and XLSX files are allowed.', 'error');
+            return;
+          }
+          
           setButtonBusy(submitButton, true);
           const originalText = submitButton.textContent;
           submitButton.textContent = 'Uploading...';
@@ -1343,7 +1372,7 @@
           formData.append('title', document.getElementById('doc-title').value);
           formData.append('category', document.getElementById('doc-category').value);
           formData.append('period', document.getElementById('reporting-period').value);
-          formData.append('file', document.getElementById('doc-file').files[0]);
+          formData.append('file', file);
           
           try {
             const response = await fetch('api/submissions.php', {
@@ -1361,10 +1390,21 @@
               // Switch to submissions view
               showContent('submissions');
             } else {
-              showCustomAlert('Error: ' + (result.error || 'Failed to submit report'), 'error');
+              // Show detailed error message
+              let errorMsg = result.error || 'Failed to submit report';
+              
+              // Add helpful hints for common errors
+              if (errorMsg.includes('upload_max_filesize') || errorMsg.includes('exceeds')) {
+                errorMsg += '\\n\\nTip: The file may be too large for the server settings. Try a smaller file (under 10MB) or contact your administrator.';
+              } else if (errorMsg.includes('No file provided')) {
+                errorMsg = 'File upload failed. The file may be too large or there was a server error. Please try again with a smaller file.';
+              }
+              
+              showCustomAlert('Error: ' + errorMsg, 'error');
             }
           } catch (error) {
-            showCustomAlert('Failed to submit report. Please try again.', 'error');
+            console.error('Upload error:', error);
+            showCustomAlert('Failed to submit report. Network error or server timeout. Please check your connection and try again.', 'error');
           } finally {
             submitButton.textContent = originalText;
             setButtonBusy(submitButton, false);

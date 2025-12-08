@@ -1,0 +1,35 @@
+# PHP Upload Settings
+# These settings help handle file uploads on hosting servers
+
+# Increase maximum upload file size to 10MB
+php_value upload_max_filesize 10M
+
+# Increase maximum POST data size to 12MB (should be larger than upload_max_filesize)
+php_value post_max_size 12M
+
+# Increase maximum execution time for large uploads (in seconds)
+php_value max_execution_time 300
+
+# Increase memory limit
+php_value memory_limit 128M
+
+# Maximum number of files that can be uploaded at once
+php_value max_file_uploads 20
+
+# Enable error reporting for debugging (disable in production)
+# php_flag display_errors Off
+# php_flag log_errors On
+
+# Protect sensitive files
+<FilesMatch "(^\.ht|config\.php|\.sql|\.env)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Prevent directory listing
+Options -Indexes
+
+# Enable .htaccess file reading
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+</IfModule>
