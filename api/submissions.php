@@ -205,25 +205,12 @@ if ($method === 'POST') {
         $filename = substr($filename, 0, 50) . '_' . uniqid() . '.' . $extension;
         $filepath = $uploadsDir . $filename;
         
-        // Move uploaded file with error suppression for hosting compatibility
-        if (!@move_uploaded_file($file['tmp_name'], $filepath)) {
-            // Try to get more specific error
-            $error = error_get_last();
-            $errorMsg = 'Failed to save file to server';
-            
-            if (!file_exists($uploadsDir)) {
-                $errorMsg = 'Uploads directory does not exist';
-            } elseif (!is_writable($uploadsDir)) {
-                $errorMsg = 'No write permission for uploads directory';
-            } elseif (disk_free_space($uploadsDir) < $file['size']) {
-                $errorMsg = 'Not enough disk space';
-            }
-            
+        // Move uploaded file - let it fail naturally if there are permission issues
+        if (!move_uploaded_file($file['tmp_name'], $filepath)) {
             http_response_code(500);
             echo json_encode([
                 'ok' => false, 
-                'error' => $errorMsg,
-                'details' => $error ? $error['message'] : null
+                'error' => 'Failed to upload file. Please contact administrator to check uploads folder permissions.'
             ]);
             exit;
         }

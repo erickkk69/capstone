@@ -7,11 +7,13 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-const DB_HOST = '127.0.0.1';
+// Database configuration - update these for your hosting environment
+// For hosting: change these to your actual database credentials
+const DB_HOST = '127.0.0.1';  // Usually 'localhost' or provided by host
 const DB_PORT = '3306';
-const DB_NAME = 'capstone_db';
-const DB_USER = 'root';
-const DB_PASS = '';
+const DB_NAME = 'capstone_db';  // Your database name from hosting
+const DB_USER = 'root';  // Your database username from hosting
+const DB_PASS = '';  // Your database password from hosting
 
 function get_pdo(): PDO {
     static $pdo = null;
