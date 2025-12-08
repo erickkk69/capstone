@@ -10,8 +10,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 const DB_HOST = '127.0.0.1';  
 const DB_PORT = '3306';
-const DB_NAME = 'capstone_db';  
+const DB_NAME = 'capstone_db'; 
 const DB_USER = 'root'; 
+const DB_PASS = ''; 
+
 function get_pdo(): PDO {
     static $pdo = null;
     if ($pdo instanceof PDO) {
