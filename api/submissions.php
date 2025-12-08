@@ -165,33 +165,25 @@ if ($method === 'POST') {
         }
         
         // Create uploads directory with proper permissions
-        // Use realpath to ensure absolute path works on hosting
-        $uploadsDir = dirname(__DIR__) . '/uploads/';
+        $uploadsDir = __DIR__ . '/../uploads/';
         
-        if (!is_dir($uploadsDir)) {
-            // Try to create directory - some hosts have restrictions
+        // Normalize path for hosting compatibility
+        $uploadsDir = realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
+        
+        // Create directory if it doesn't exist
+        if (!file_exists($uploadsDir)) {
             if (!@mkdir($uploadsDir, 0777, true)) {
                 http_response_code(500);
                 echo json_encode([
                     'ok' => false, 
-                    'error' => 'Cannot create uploads directory. Please create it manually with write permissions.'
+                    'error' => 'Cannot create uploads directory. Please create "uploads" folder manually in the root directory with 777 permissions.'
                 ]);
                 exit;
             }
-            @chmod($uploadsDir, 0777);
         }
         
-        // More lenient check for hosting environments
-        // Just check if directory exists and is readable, skip write test that causes issues
-        if (!is_dir($uploadsDir) || !is_readable($uploadsDir)) {
-            http_response_code(500);
-            echo json_encode([
-                'ok' => false, 
-                'error' => 'Uploads directory is not accessible. Please check folder permissions.',
-                'path' => $uploadsDir
-            ]);
-            exit;
-        }
+        // Try to set permissions - ignore if it fails on restrictive hosts
+        @chmod($uploadsDir, 0777);
         
         // Validate that temp file exists and is uploaded file
         if (!is_uploaded_file($file['tmp_name'])) {
