@@ -2246,6 +2246,9 @@
         const fileUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}`;
         const downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
         
+        // Create proper download filename with extension
+        const downloadFilename = title && !title.includes('.') ? `${title}.${extension}` : (title || filename);
+        
         modal.innerHTML = `
             <div class="doc-viewer-container" onclick="event.stopPropagation()">
                 <div class="doc-viewer-header">
@@ -2253,7 +2256,7 @@
                         📄 ${title || filename}
                     </div>
                     <div class="doc-viewer-actions">
-                        <button class="doc-viewer-btn doc-viewer-download" onclick="downloadFile('${downloadUrl}', '${title || filename}')">
+                        <button class="doc-viewer-btn doc-viewer-download" onclick="downloadFile('${downloadUrl}', '${downloadFilename.replace(/'/g, "\\'")}')">
                             ⬇️ Download
                         </button>
                         <button class="doc-viewer-btn doc-viewer-close" onclick="this.closest('.doc-viewer-modal').remove()">
@@ -2347,8 +2350,25 @@
     // Function to download file without opening
     async function downloadFile(url, filename) {
         try {
-            const response = await fetch(url);
+            const response = await fetch(url, {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': '*/*'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const blob = await response.blob();
+            
+            // Check if blob is valid
+            if (blob.size === 0) {
+                throw new Error('Downloaded file is empty');
+            }
+            
             const blobUrl = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = blobUrl;
@@ -2356,10 +2376,15 @@
             link.style.display = 'none';
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(blobUrl);
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(blobUrl);
+            }, 100);
         } catch (error) {
-            showCustomAlert('Failed to download file. Please try again.', 'error');
+            console.error('Download error:', error);
+            showCustomAlert('Failed to download file: ' + error.message, 'error');
         }
     }
     

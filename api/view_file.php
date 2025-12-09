@@ -3,14 +3,10 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
 
-// Add CORS headers for better browser compatibility
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET');
-header('Access-Control-Allow-Headers: Content-Type');
-
 $user = current_user();
 if (!$user) {
     http_response_code(401);
+    header('Content-Type: application/json');
     echo json_encode(['ok' => false, 'error' => 'Unauthorized']);
     exit;
 }
@@ -19,6 +15,7 @@ $filename = $_GET['file'] ?? '';
 
 if (empty($filename)) {
     http_response_code(400);
+    header('Content-Type: text/plain');
     die('No file specified');
 }
 
@@ -30,11 +27,13 @@ $filepath = __DIR__ . '/../uploads/' . $filename;
 
 if (!file_exists($filepath)) {
     http_response_code(404);
+    header('Content-Type: text/plain');
     die('File not found: ' . htmlspecialchars($filename));
 }
 
 if (!is_file($filepath)) {
     http_response_code(403);
+    header('Content-Type: text/plain');
     die('Invalid file');
 }
 
@@ -79,27 +78,33 @@ $originalName = $submission['original_name'] ?? $filename;
 
 $isDownload = isset($_GET['download']);
 
-// Clear any previous output
-if (ob_get_level()) {
+// Clear any previous output buffers to prevent corruption
+while (ob_get_level()) {
     ob_end_clean();
 }
 
+// Set proper headers for file download/view
 if ($isDownload) {
     header('Content-Type: application/octet-stream');
-    header('Content-Disposition: attachment; filename="' . addslashes($originalName) . '"');
-    header('Content-Transfer-Encoding: binary');
+    header('Content-Disposition: attachment; filename="' . str_replace('"', '', $originalName) . '"');
 } else {
     header('Content-Type: ' . $contentType);
-    header('Content-Disposition: inline; filename="' . addslashes($originalName) . '"');
+    header('Content-Disposition: inline; filename="' . str_replace('"', '', $originalName) . '"');
 }
-header('Content-Length: ' . filesize($filepath));
-header('Cache-Control: public, max-age=3600');
-header('Accept-Ranges: bytes');
 
-// Use fpassthru for better memory handling with large files
+header('Content-Length: ' . filesize($filepath));
+header('Content-Transfer-Encoding: binary');
+header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+header('Pragma: public');
+header('Expires: 0');
+
+// Output the file
 $handle = fopen($filepath, 'rb');
-if ($handle) {
-    fpassthru($handle);
+if ($handle !== false) {
+    while (!feof($handle)) {
+        echo fread($handle, 8192);
+        flush();
+    }
     fclose($handle);
 } else {
     readfile($filepath);
