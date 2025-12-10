@@ -1320,7 +1320,7 @@
       <div id="dashboard" class="card active-card">
         <h2>Dashboard Overview</h2>
         
-        <h3>Document Submission Status Summary</h3>
+        <h3>Document Submission Status</h3>
         <div class="dashboard-stats">
             <div class="stat-box">
                 <h3>Total Documents</h3>
@@ -1366,6 +1366,41 @@
               </label>
               <select id="monthFilter" class="filter-select">
                 <option value="all">All Months</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label for="categoryFilter" class="filter-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 5px;">
+                  <path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                Category:
+              </label>
+              <select id="categoryFilter" class="filter-select">
+                <option value="all">All Categories</option>
+                <option value="administrative">Administrative Document</option>
+                <option value="resolutions">Barangay Resolutions/Ordinances</option>
+                <option value="plans-budget">Plans and Budget</option>
+                <option value="peace-order">Peace and Order</option>
+                <option value="social-welfare">Social Welfare</option>
+                <option value="sk-reports">SK Reports</option>
+                <option value="others">Others / General Document</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label for="periodFilter" class="filter-label">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align: middle; margin-right: 5px;">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Period:
+              </label>
+              <select id="periodFilter" class="filter-select">
+                <option value="all">All Periods</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="annual">Annual</option>
               </select>
             </div>
             
@@ -1900,9 +1935,34 @@
         }
     }
     
+    // Update document submission status stats
+    function updateDocumentStats(filteredSubmissions) {
+        const total = filteredSubmissions.length;
+        const approved = filteredSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+        const review = filteredSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length;
+        const pending = filteredSubmissions.filter(s => {
+            if (!s.status) return false;
+            const statusLower = s.status.toLowerCase().trim();
+            return statusLower === 'pending' || statusLower === 'submitted';
+        }).length;
+        const rejected = filteredSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'rejected').length;
+        
+        const totalEl = document.getElementById('total-submissions');
+        const approvedEl = document.getElementById('approved-count');
+        const reviewEl = document.getElementById('review-count');
+        const pendingEl = document.getElementById('pending-count');
+        const rejectedEl = document.getElementById('rejected-count');
+        
+        if (totalEl) totalEl.textContent = total;
+        if (approvedEl) approvedEl.textContent = approved;
+        if (reviewEl) reviewEl.textContent = review;
+        if (pendingEl) pendingEl.textContent = pending;
+        if (rejectedEl) rejectedEl.textContent = rejected;
+    }
+    
     // Update chart with submission data
-    function updateChart(selectedMonth = 'all', selectedStatus = 'all') {
-        // Filter submissions by selected month and status
+    function updateChart(selectedMonth = 'all', selectedStatus = 'all', selectedCategory = 'all', selectedPeriod = 'all') {
+        // Filter submissions by selected month, status, category, and period
         let filteredSubmissions = allSubmissions;
         
         // Apply month filter
@@ -1914,6 +1974,23 @@
                 const submissionDate = new Date(dateValue);
                 const monthYear = `${submissionDate.getFullYear()}-${String(submissionDate.getMonth() + 1).padStart(2, '0')}`;
                 return monthYear === selectedMonth;
+            });
+        }
+        
+        // Apply category filter
+        if (selectedCategory !== 'all') {
+            filteredSubmissions = filteredSubmissions.filter(s => {
+                if (!s.category) return false;
+                return s.category.toLowerCase().trim() === selectedCategory.toLowerCase().trim();
+            });
+        }
+        
+        // Apply period filter
+        if (selectedPeriod !== 'all') {
+            filteredSubmissions = filteredSubmissions.filter(s => {
+                if (!s.period && !s.reporting_period) return false;
+                const period = (s.period || s.reporting_period).toLowerCase().trim();
+                return period === selectedPeriod.toLowerCase().trim();
             });
         }
         
@@ -1935,7 +2012,7 @@
         if (filteredCountEl) {
             let filterDescription = '';
             
-            if (selectedMonth === 'all' && selectedStatus === 'all') {
+            if (selectedMonth === 'all' && selectedStatus === 'all' && selectedCategory === 'all' && selectedPeriod === 'all') {
                 filterDescription = `Showing all ${allSubmissions.length} submissions`;
             } else {
                 let parts = [];
@@ -1943,6 +2020,28 @@
                 if (selectedMonth !== 'all') {
                     const monthName = new Date(selectedMonth + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
                     parts.push(monthName);
+                }
+                
+                if (selectedCategory !== 'all') {
+                    const categoryNames = {
+                        'administrative': 'Administrative',
+                        'resolutions': 'Resolutions/Ordinances',
+                        'plans-budget': 'Plans & Budget',
+                        'peace-order': 'Peace & Order',
+                        'social-welfare': 'Social Welfare',
+                        'sk-reports': 'SK Reports',
+                        'others': 'Others'
+                    };
+                    parts.push(categoryNames[selectedCategory] || selectedCategory);
+                }
+                
+                if (selectedPeriod !== 'all') {
+                    const periodNames = {
+                        'monthly': 'Monthly',
+                        'quarterly': 'Quarterly',
+                        'annual': 'Annual'
+                    };
+                    parts.push(periodNames[selectedPeriod] || selectedPeriod);
                 }
                 
                 if (selectedStatus !== 'all') {
@@ -1996,12 +2095,19 @@
                 }
             }
         });
+        
+        // Update document submission status, analysis dashboard and alerts with filtered data
+        updateDocumentStats(filteredSubmissions);
+        generateAnalysisDashboard(filteredSubmissions);
+        generateAlerts(filteredSubmissions);
     }
     
     // Populate month filter dropdown with available months from submissions
     function populateMonthFilter() {
         const monthFilter = document.getElementById('monthFilter');
         const statusFilter = document.getElementById('statusFilter');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const periodFilter = document.getElementById('periodFilter');
         
         if (!monthFilter) {
             return;
@@ -2036,48 +2142,60 @@
         });
         
         // Add event listeners for filter changes
-        monthFilter.onchange = function() {
+        const updateFilters = function() {
+            const selectedMonth = monthFilter ? monthFilter.value : 'all';
             const selectedStatus = statusFilter ? statusFilter.value : 'all';
-            updateChart(this.value, selectedStatus);
+            const selectedCategory = categoryFilter ? categoryFilter.value : 'all';
+            const selectedPeriod = periodFilter ? periodFilter.value : 'all';
+            updateChart(selectedMonth, selectedStatus, selectedCategory, selectedPeriod);
         };
         
+        monthFilter.onchange = updateFilters;
+        
         if (statusFilter) {
-            statusFilter.onchange = function() {
-                const selectedMonth = monthFilter.value;
-                updateChart(selectedMonth, this.value);
-            };
+            statusFilter.onchange = updateFilters;
+        }
+        
+        if (categoryFilter) {
+            categoryFilter.onchange = updateFilters;
+        }
+        
+        if (periodFilter) {
+            periodFilter.onchange = updateFilters;
         }
         
         // Auto-select the most recent month if available and update chart
         if (months.length > 0) {
             monthFilter.value = months[0]; // Select the latest month
             // Trigger initial chart update with selected month
-            const selectedStatus = statusFilter ? statusFilter.value : 'all';
-            updateChart(months[0], selectedStatus);
+            updateFilters();
         } else {
             // If no months available, still show chart with all data
-            updateChart('all', 'all');
+            updateChart('all', 'all', 'all', 'all');
         }
     }
     
     // Generate comprehensive analysis dashboard
-    function generateAnalysisDashboard() {
+    function generateAnalysisDashboard(filteredSubmissions = null) {
         const analysisContainer = document.getElementById('analysis-dashboard');
         if (!analysisContainer) return;
         
+        // Use filtered submissions if provided, otherwise use all submissions
+        const submissions = filteredSubmissions || allSubmissions;
+        
         const totalBarangays = barangays.length;
-        const activeBarangays = barangays.filter(b => allSubmissions.some(s => s.barangay === b)).length;
-        const totalSubmissions = allSubmissions.length;
+        const activeBarangays = barangays.filter(b => submissions.some(s => s.barangay === b)).length;
+        const totalSubmissions = submissions.length;
         
         // Calculate key metrics
-        const approved = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
-        const review = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length;
-        const pending = allSubmissions.filter(s => {
+        const approved = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+        const review = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length;
+        const pending = submissions.filter(s => {
             if (!s.status) return false;
             const statusLower = s.status.toLowerCase().trim();
             return statusLower === 'pending' || statusLower === 'submitted';
         }).length;
-        const rejected = allSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'rejected').length;
+        const rejected = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'rejected').length;
         
         // Calculate rates
         const approvalRate = totalSubmissions > 0 ? ((approved / totalSubmissions) * 100).toFixed(1) : 0;
@@ -2088,7 +2206,7 @@
         // Time-based analysis
         const now = new Date();
         const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        const recentSubmissions = allSubmissions.filter(s => {
+        const recentSubmissions = submissions.filter(s => {
             const dateValue = s.submission_date || s.uploaded_at || s.created_at;
             if (!dateValue) return false;
             return new Date(dateValue) >= last30Days;
@@ -2096,17 +2214,17 @@
         
         // Performance rankings - prioritize by number of approved documents
         const barangayPerformance = barangays.map(barangay => {
-            const submissions = allSubmissions.filter(s => s.barangay === barangay);
-            const approvedCount = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
-            const totalCount = submissions.length;
+            const barangaySubmissions = submissions.filter(s => s.barangay === barangay);
+            const approvedCount = barangaySubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+            const totalCount = barangaySubmissions.length;
             return { barangay, totalCount, approvedCount };
         }).filter(item => item.approvedCount > 0)
           .sort((a, b) => b.approvedCount - a.approvedCount || b.totalCount - a.totalCount);
         
         const topPerformers = barangayPerformance.slice(0, 5);
         const needsAttention = barangays.filter(b => 
-            !allSubmissions.some(s => s.barangay === b) ||
-            allSubmissions.filter(s => s.barangay === b).length < 2
+            !submissions.some(s => s.barangay === b) ||
+            submissions.filter(s => s.barangay === b).length < 2
         ).slice(0, 5);
         
         // Generate HTML
@@ -2283,15 +2401,18 @@
     }
     
     // Generate decision support and alerts based on submission data
-    function generateAlerts() {
+    function generateAlerts(filteredSubmissions = null) {
         const alertsContainer = document.getElementById('alerts-container');
         if (!alertsContainer) return;
+        
+        // Use filtered submissions if provided, otherwise use all submissions
+        const submissions = filteredSubmissions || allSubmissions;
         
         const alerts = [];
         
         // 1. Check for barangays with no submissions
         const barangaysWithNoSubmissions = barangays.filter(barangay => 
-            !allSubmissions.some(s => s.barangay === barangay)
+            !submissions.some(s => s.barangay === barangay)
         );
         
         if (barangaysWithNoSubmissions.length > 0) {
@@ -2299,14 +2420,14 @@
                 type: 'critical',
                 icon: '🚨',
                 title: 'Barangays with Zero Submissions',
-                message: `${barangaysWithNoSubmissions.length} barangay(s) have not submitted any documents yet.`,
+                message: `${barangaysWithNoSubmissions.length} barangay(s) have not submitted any documents yet (in filtered results).`,
                 list: barangaysWithNoSubmissions.slice(0, 5),
                 extra: barangaysWithNoSubmissions.length > 5 ? `and ${barangaysWithNoSubmissions.length - 5} more...` : null
             });
         }
         
         // 2. Check for pending/submitted status that needs review
-        const pendingSubmissions = allSubmissions.filter(s => 
+        const pendingSubmissions = submissions.filter(s => 
             s.status && (s.status.toLowerCase() === 'pending' || s.status.toLowerCase() === 'submitted')
         );
         
@@ -2325,7 +2446,7 @@
         // 3. Check for barangays with low submission counts
         const submissionCounts = barangays.map(barangay => ({
             barangay,
-            count: allSubmissions.filter(s => s.barangay === barangay).length
+            count: submissions.filter(s => s.barangay === barangay).length
         })).filter(item => item.count > 0 && item.count < 3);
         
         if (submissionCounts.length > 0) {
@@ -2340,7 +2461,7 @@
         }
         
         // 4. Check for rejected submissions
-        const rejectedSubmissions = allSubmissions.filter(s => 
+        const rejectedSubmissions = submissions.filter(s => 
             s.status && s.status.toLowerCase() === 'rejected'
         );
         
@@ -2358,9 +2479,9 @@
         
         // 5. Check for high-performing barangays
         const highPerformers = barangays.map(barangay => {
-            const submissions = allSubmissions.filter(s => s.barangay === barangay);
-            const approved = submissions.filter(s => s.status && s.status.toLowerCase() === 'approved').length;
-            return { barangay, count: submissions.length, approved };
+            const barangaySubmissions = submissions.filter(s => s.barangay === barangay);
+            const approved = barangaySubmissions.filter(s => s.status && s.status.toLowerCase() === 'approved').length;
+            return { barangay, count: barangaySubmissions.length, approved };
         }).filter(item => item.count >= 5 && item.approved >= 3);
         
         if (highPerformers.length > 0) {
@@ -2376,7 +2497,7 @@
         
         // 6. Overall status summary
         const totalBarangays = barangays.length;
-        const activeBarangays = barangays.filter(b => allSubmissions.some(s => s.barangay === b)).length;
+        const activeBarangays = barangays.filter(b => submissions.some(s => s.barangay === b)).length;
         const completionRate = ((activeBarangays / totalBarangays) * 100).toFixed(1);
         
         alerts.push({
