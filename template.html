@@ -1,0 +1,1901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barangay Document Submission System - ABC</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f4f6f9;
+            color: #000;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .official-header {
+            text-align: center;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .republic {
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        
+        .city {
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .office {
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-decoration: underline;
+        }
+        
+        .memorandum-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .memorandum-number {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .to-section, .subject-section, .date-section {
+            margin: 20px 0;
+            padding-left: 50px;
+        }
+        
+        .section-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 80px;
+        }
+        
+        .content-box {
+            border: 1px solid #e0e0e0;
+            padding: 30px;
+            margin: 25px 0;
+            min-height: 300px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .signature-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            flex-wrap: wrap;
+        }
+        
+        .signature-section {
+            flex: 1;
+            min-width: 300px;
+            margin-bottom: 30px;
+        }
+        
+        .signature-section.left {
+            text-align: left;
+            padding-right: 50px;
+        }
+        
+        .signature-section.right {
+            text-align: right;
+            padding-left: 50px;
+        }
+        
+        .signature-line {
+            border-top: 1px solid #000;
+            width: 250px;
+            margin: 5px 0;
+        }
+        
+        .signature-section.left .signature-line {
+            margin-left: 0;
+            margin-right: auto;
+        }
+        
+        .signature-section.right .signature-line {
+            margin-left: auto;
+            margin-right: 0;
+        }
+        
+        .signature-name {
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .signature-title {
+            font-style: italic;
+            font-size: 14px;
+        }
+        
+        .signature-input {
+            width: 250px;
+            text-align: center;
+            border: none;
+            border-bottom: 1px dotted #000;
+            background: transparent;
+            font-size: 14px;
+            padding: 2px 0;
+            margin-top: 5px;
+        }
+        
+        .cc-section {
+            margin-top: 40px;
+            padding-left: 50px;
+            font-size: 14px;
+        }
+        
+        .form-container {
+            display: none;
+        }
+        
+        .form-container.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .form-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #004c99;
+            font-size: 14px;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #d0d0d0;
+            font-size: 14px;
+            background-color: #fff;
+            font-family: Arial, sans-serif;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #004c99;
+            box-shadow: 0 0 0 3px rgba(0,76,153,0.1);
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .category-selector {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            background-color: #fff;
+            border: 2px solid #004c99;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #004c99;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .category-btn:hover {
+            background-color: #e6f2ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,76,153,0.2);
+        }
+        
+        .category-btn.active {
+            background-color: #004c99;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,76,153,0.3);
+        }
+        
+        .instructions-box {
+            border-left: 4px solid #004c99;
+            padding: 15px 20px;
+            margin: 20px 0;
+            background-color: #e6f2ff;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: 2px solid #004c99;
+            background-color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: all 0.3s;
+            color: #004c99;
+        }
+        
+        .btn-submit {
+            background-color: #004c99;
+            color: #fff;
+            border-color: #004c99;
+        }
+        
+        .btn-submit:hover {
+            background-color: #003a80;
+            border-color: #003a80;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,76,153,0.3);
+        }
+        
+        .btn-clear:hover {
+            background-color: #e6f2ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,76,153,0.2);
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: #004c99;
+            color: white;
+            border: 2px solid #003a80;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,76,153,0.3);
+        }
+        
+        .back-button:hover {
+            background: #003a80;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,76,153,0.4);
+        }
+        
+        .system-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: #004c99;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .system-title {
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        
+        .system-subtitle {
+            font-size: 16px;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+        
+        @media print {
+            .category-selector, .button-group, .instructions-box {
+                display: none;
+            }
+            
+            .content-box {
+                border: none;
+                box-shadow: none;
+            }
+            
+            .signature-input {
+                border-bottom: 1px solid #000;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .to-section, .subject-section, .date-section, .cc-section {
+                padding-left: 20px;
+            }
+            
+            .signature-container {
+                flex-direction: column;
+            }
+            
+            .signature-section {
+                min-width: 100%;
+                padding: 0;
+                margin-bottom: 40px;
+            }
+            
+            .signature-section.left,
+            .signature-section.right {
+                text-align: center;
+                padding: 0;
+            }
+            
+            .signature-line {
+                margin: 5px auto;
+            }
+            
+            .category-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .category-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* Custom Alert Modal Styles */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.2s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .custom-modal-content {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            min-width: 400px;
+            max-width: 500px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { 
+                transform: translateY(20px); 
+                opacity: 0;
+            }
+            to { 
+                transform: translateY(0); 
+                opacity: 1;
+            }
+        }
+
+        .custom-modal-header {
+            padding: 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .custom-modal-header.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .custom-modal-header.error {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        .custom-modal-header.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+        }
+
+        .custom-modal-header.info {
+            background: linear-gradient(135deg, #0066cc 0%, #004499 100%);
+            color: white;
+        }
+
+        .custom-modal-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .custom-modal-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .custom-modal-body {
+            padding: 20px 30px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+            white-space: pre-line;
+        }
+
+        .custom-modal-footer {
+            padding: 15px 20px;
+            text-align: right;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .custom-modal-button {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .custom-modal-button.success {
+            background: #28a745;
+            color: white;
+        }
+
+        .custom-modal-button.success:hover {
+            background: #218838;
+        }
+
+        .custom-modal-button.primary {
+            background: #0066cc;
+            color: white;
+        }
+
+        .custom-modal-button.primary:hover {
+            background: #0052a3;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.history.back()">← Back to Portal</button>
+    
+    <div class="system-header">
+        <div class="system-title">Barangay Document Submission System</div>
+        <div class="system-subtitle">Official Portal to the Association of Barangay Captains (ABC)</div>
+    </div>
+    
+    <div class="category-selector" id="categorySelector">
+        <button class="category-btn active" data-category="administrative">Administrative</button>
+        <button class="category-btn" data-category="resolutions">Resolutions/Ordinances</button>
+        <button class="category-btn" data-category="plans">Plans & Budget</button>
+        <button class="category-btn" data-category="peace">Peace & Order</button>
+        <button class="category-btn" data-category="welfare">Social Welfare</button>
+        <button class="category-btn" data-category="sk">SK Reports</button>
+        <button class="category-btn" data-category="others">Other Documents</button>
+    </div>
+    
+    <!-- Administrative Document Form -->
+    <div id="administrative" class="form-container active">
+        <div class="official-header">
+            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <div class="republic">Republic of the Philippines</div>
+            <div class="city">Municipality of Mabini, Batangas</div>
+            <div class="office">Office of the Barangay</div>
+        </div>
+        
+        <div class="memorandum-title">Administrative Report Form</div>
+        <div class="memorandum-number">For: Association of Barangay Captains (ABC)</div>
+        
+        <div class="to-section">
+            <span class="section-label">TO:</span>
+            <span>Honorable Chairman and Members, Association of Barangay Captains</span>
+        </div>
+        
+        <div class="subject-section">
+            <span class="section-label">SUBJECT:</span>
+            <span>Submission of Administrative Document from Barangay <input type="text" id="admin-barangay-name" placeholder="[Enter Barangay Name]" style="width: 250px; display: inline;"></span>
+        </div>
+        
+        <div class="date-section">
+            <span class="section-label">DATE:</span>
+            <input type="date" id="admin-date" style="width: 150px; display: inline;">
+        </div>
+        
+        <div class="instructions-box">
+            <strong>INSTRUCTIONS:</strong> Please fill out all required information below. This document will be submitted to the ABC for official records and appropriate action.
+        </div>
+        
+        <div class="content-box">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="admin-period">Reporting Period:</label>
+                    <select id="admin-period" style="width: 200px;">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual">Annual</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="admin-doc-type">Type of Administrative Document:</label>
+                <select id="admin-doc-type">
+                    <option value="">-- Select Document Type --</option>
+                    <option value="certification">Certification</option>
+                    <option value="clearance">Clearance</option>
+                    <option value="permit">Permit</option>
+                    <option value="license">License</option>
+                    <option value="endorsement">Endorsement</option>
+                    <option value="other">Other Administrative Document</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="admin-doc-number">Document Number:</label>
+                    <input type="text" id="admin-doc-number" placeholder="e.g., 2023-001">
+                </div>
+                <div class="form-col">
+                    <label for="admin-issued-date">Date Issued:</label>
+                    <input type="date" id="admin-issued-date">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="admin-purpose">Purpose of Document:</label>
+                <textarea id="admin-purpose" placeholder="State the purpose of this administrative document..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="admin-recipient">Recipient/Concerned Party:</label>
+                <input type="text" id="admin-recipient" placeholder="Name of person, agency, or organization">
+            </div>
+            
+            <div class="form-group">
+                <label for="admin-remarks">Additional Remarks/Notes:</label>
+                <textarea id="admin-remarks" placeholder="Any additional information or remarks..."></textarea>
+            </div>
+        </div>
+        
+        <div class="signature-container">
+            <div class="signature-section left">
+                <div>Noted by:</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="admin-secretary-name" placeholder="[Barangay Secretary's Name]">
+                </div>
+                <div class="signature-title">Barangay Secretary</div>
+            </div>
+            
+            <div class="signature-section right">
+                <div>Respectfully submitted,</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="admin-captain-name" placeholder="[Barangay Captain's Name]">
+                </div>
+                <div class="signature-title">Punong Barangay</div>
+                <div>Barangay <input type="text" class="signature-input" id="admin-barangay-signature" placeholder="[Barangay Name]" style="width: 180px;"></div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-submit" onclick="submitDocument('administrative')">Submit Report for Review</button>
+            <button class="btn btn-clear" onclick="clearForm('administrative')">CLEAR FORM</button>
+        </div>
+    </div>
+    
+    <!-- Barangay Resolutions/Ordinances Form -->
+    <div id="resolutions" class="form-container">
+        <div class="official-header">
+            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <div class="republic">Republic of the Philippines</div>
+            <div class="city">Municipality of Mabini, Batangas</div>
+            <div class="office">Office of the Barangay</div>
+        </div>
+        
+        <div class="memorandum-title">Resolutions/Ordinances Submission Form</div>
+        <div class="memorandum-number">For: Association of Barangay Captains (ABC)</div>
+        
+        <div class="to-section">
+            <span class="section-label">TO:</span>
+            <span>Honorable Chairman and Members, Association of Barangay Captains</span>
+        </div>
+        
+        <div class="subject-section">
+            <span class="section-label">SUBJECT:</span>
+            <span>Submission of Barangay <select id="res-doc-type" style="width: 150px; display: inline;">
+                <option value="resolution">Resolution</option>
+                <option value="ordinance">Ordinance</option>
+            </select> from Barangay <input type="text" id="res-barangay-name" placeholder="[Enter Barangay Name]" style="width: 200px; display: inline;"></span>
+        </div>
+        
+        <div class="date-section">
+            <span class="section-label">DATE:</span>
+            <input type="date" id="res-date" style="width: 150px; display: inline;">
+        </div>
+        
+        <div class="instructions-box">
+            <strong>INSTRUCTIONS:</strong> Please provide complete details of the resolution/ordinance for ABC review and records.
+        </div>
+        
+        <div class="content-box">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="res-period">Reporting Period:</label>
+                    <select id="res-period" style="width: 200px;">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual">Annual</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="res-number">Resolution/Ordinance Number:</label>
+                    <input type="text" id="res-number" placeholder="e.g., Resolution No. 2023-001">
+                </div>
+                <div class="form-col">
+                    <label for="res-date-passed">Date Passed/Approved:</label>
+                    <input type="date" id="res-date-passed">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="res-title">Title/Subject:</label>
+                <input type="text" id="res-title" placeholder="Complete title of the resolution/ordinance">
+            </div>
+            
+            <div class="form-group">
+                <label for="res-author">Author/Proponent:</label>
+                <input type="text" id="res-author" placeholder="Name of barangay official who authored">
+            </div>
+            
+            <div class="form-group">
+                <label for="res-background">Background/Explanation:</label>
+                <textarea id="res-background" placeholder="Provide background information and explanation..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="res-resolved">Resolved/Ordaired Clauses:</label>
+                <textarea id="res-resolved" placeholder="State the resolved or ordained clauses..."></textarea>
+            </div>
+        </div>
+        
+        <div class="signature-container">
+            <div class="signature-section left">
+                <div>Noted by:</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="res-secretary-name" placeholder="[Barangay Secretary's Name]">
+                </div>
+                <div class="signature-title">Barangay Secretary</div>
+            </div>
+            
+            <div class="signature-section right">
+                <div>Respectfully submitted,</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="res-captain-name" placeholder="[Barangay Captain's Name]">
+                </div>
+                <div class="signature-title">Punong Barangay</div>
+                <div>Barangay <input type="text" class="signature-input" id="res-barangay-signature" placeholder="[Barangay Name]" style="width: 180px;"></div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-submit" onclick="submitDocument('resolutions')">Submit Report for Review</button>
+            <button class="btn btn-clear" onclick="clearForm('resolutions')">CLEAR FORM</button>
+        </div>
+    </div>
+    
+    <!-- Plans and Budget Form -->
+    <div id="plans" class="form-container">
+        <div class="official-header">
+            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <div class="republic">Republic of the Philippines</div>
+            <div class="city">Municipality of Mabini, Batangas</div>
+            <div class="office">Office of the Barangay</div>
+        </div>
+        
+        <div class="memorandum-title">Plans & Budget Submission Form</div>
+        <div class="memorandum-number">For: Association of Barangay Captains (ABC)</div>
+        
+        <div class="to-section">
+            <span class="section-label">TO:</span>
+            <span>Honorable Chairman and Members, Association of Barangay Captains</span>
+        </div>
+        
+        <div class="subject-section">
+            <span class="section-label">SUBJECT:</span>
+            <span>Submission of <select id="plan-type" style="width: 200px; display: inline;">
+                <option value="development">Development Plan</option>
+                <option value="budget">Annual Budget</option>
+                <option value="investment">Investment Plan</option>
+            </select> from Barangay <input type="text" id="plan-barangay-name" placeholder="[Enter Barangay Name]" style="width: 200px; display: inline;"></span>
+        </div>
+        
+        <div class="date-section">
+            <span class="section-label">DATE:</span>
+            <input type="date" id="plan-date" style="width: 150px; display: inline;">
+        </div>
+        
+        <div class="instructions-box">
+            <strong>INSTRUCTIONS:</strong> Provide details of your barangay's plans and budget for ABC review and coordination with city/municipal planning.
+        </div>
+        
+        <div class="content-box">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="plan-period">Reporting Period:</label>
+                    <select id="plan-period" style="width: 200px;">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual">Annual</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="plan-title">Plan/Budget Title:</label>
+                    <input type="text" id="plan-title" placeholder="e.g., Annual Barangay Development Plan 2023">
+                </div>
+                <div class="form-col">
+                    <label for="plan-fiscal-year">Fiscal Year:</label>
+                    <select id="plan-fiscal-year">
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="plan-total-budget">Total Budget (PHP):</label>
+                    <input type="number" id="plan-total-budget" placeholder="0.00">
+                </div>
+                <div class="form-col">
+                    <label for="plan-source-funds">Source of Funds:</label>
+                    <select id="plan-source-funds">
+                        <option value="IRA">Internal Revenue Allotment (IRA)</option>
+                        <option value="local">Local Funds</option>
+                        <option value="donation">Donations</option>
+                        <option value="national">National Government</option>
+                        <option value="other">Other Sources</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="plan-programs">Major Programs/Projects:</label>
+                <textarea id="plan-programs" placeholder="List and describe major programs and projects included in this plan..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="plan-objectives">Objectives/Goals:</label>
+                <textarea id="plan-objectives" placeholder="State the objectives and goals of this plan..."></textarea>
+            </div>
+        </div>
+        
+        <div class="signature-container">
+            <div class="signature-section left">
+                <div>Noted by:</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="plan-secretary-name" placeholder="[Barangay Secretary's Name]">
+                </div>
+                <div class="signature-title">Barangay Secretary</div>
+            </div>
+            
+            <div class="signature-section right">
+                <div>Respectfully submitted,</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="plan-captain-name" placeholder="[Barangay Captain's Name]">
+                </div>
+                <div class="signature-title">Punong Barangay</div>
+                <div>Barangay <input type="text" class="signature-input" id="plan-barangay-signature" placeholder="[Barangay Name]" style="width: 180px;"></div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-submit" onclick="submitDocument('plans')">Submit Report for Review</button>
+            <button class="btn btn-clear" onclick="clearForm('plans')">CLEAR FORM</button>
+        </div>
+    </div>
+    
+    <!-- Peace & Order Form -->
+    <div id="peace" class="form-container">
+        <div class="official-header">
+            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <div class="republic">Republic of the Philippines</div>
+            <div class="city">Municipality of Mabini, Batangas</div>
+            <div class="office">Office of the Barangay</div>
+        </div>
+        
+        <div class="memorandum-title">Peace & Order Submission Form</div>
+        <div class="memorandum-number">For: Association of Barangay Captains (ABC)</div>
+        
+        <div class="to-section">
+            <span class="section-label">TO:</span>
+            <span>Honorable Chairman and Members, Association of Barangay Captains</span>
+        </div>
+        
+        <div class="subject-section">
+            <span class="section-label">SUBJECT:</span>
+            <span>Peace and Order Report from Barangay <input type="text" id="peace-barangay-name" placeholder="[Enter Barangay Name]" style="width: 200px; display: inline;"></span>
+        </div>
+        
+        <div class="date-section">
+            <span class="section-label">DATE:</span>
+            <input type="date" id="peace-date" style="width: 150px; display: inline;">
+        </div>
+        
+        <div class="instructions-box">
+            <strong>INSTRUCTIONS:</strong> Provide comprehensive information about peace and order situation in your barangay.
+        </div>
+        
+        <div class="content-box">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="peace-period">Reporting Period:</label>
+                    <select id="peace-period" style="width: 200px;">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual">Annual</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="peace-incidents">Summary of Incidents:</label>
+                <textarea id="peace-incidents" placeholder="Describe peace and order incidents during the period..."></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="peace-crime-count">Number of Reported Crimes:</label>
+                    <input type="number" id="peace-crime-count" placeholder="0">
+                </div>
+                <div class="form-col">
+                    <label for="peace-resolved">Cases Resolved:</label>
+                    <input type="number" id="peace-resolved" placeholder="0">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="peace-programs">Programs Implemented:</label>
+                <textarea id="peace-programs" placeholder="List peace and order programs and activities..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="peace-recommendations">Recommendations:</label>
+                <textarea id="peace-recommendations" placeholder="Recommendations for improvement..."></textarea>
+            </div>
+        </div>
+        
+        <div class="signature-container">
+            <div class="signature-section left">
+                <div>Noted by:</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="peace-secretary-name" placeholder="[Barangay Secretary's Name]">
+                </div>
+                <div class="signature-title">Barangay Secretary</div>
+            </div>
+            
+            <div class="signature-section right">
+                <div>Respectfully submitted,</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="peace-captain-name" placeholder="[Barangay Captain's Name]">
+                </div>
+                <div class="signature-title">Punong Barangay</div>
+                <div>Barangay <input type="text" class="signature-input" id="peace-barangay-signature" placeholder="[Barangay Name]" style="width: 180px;"></div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-submit" onclick="submitDocument('peace')">Submit Report for Review</button>
+            <button class="btn btn-clear" onclick="clearForm('peace')">CLEAR FORM</button>
+        </div>
+    </div>
+    
+    <!-- Social Welfare Form -->
+    <div id="welfare" class="form-container">
+        <div class="official-header">
+            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <div class="republic">Republic of the Philippines</div>
+            <div class="city">Municipality of Mabini, Batangas</div>
+            <div class="office">Office of the Barangay</div>
+        </div>
+        
+        <div class="memorandum-title">Social Welfare Submission Form</div>
+        <div class="memorandum-number">For: Association of Barangay Captains (ABC)</div>
+        
+        <div class="to-section">
+            <span class="section-label">TO:</span>
+            <span>Honorable Chairman and Members, Association of Barangay Captains</span>
+        </div>
+        
+        <div class="subject-section">
+            <span class="section-label">SUBJECT:</span>
+            <span>Social Welfare Report from Barangay <input type="text" id="welfare-barangay-name" placeholder="[Enter Barangay Name]" style="width: 200px; display: inline;"></span>
+        </div>
+        
+        <div class="date-section">
+            <span class="section-label">DATE:</span>
+            <input type="date" id="welfare-date" style="width: 150px; display: inline;">
+        </div>
+        
+        <div class="instructions-box">
+            <strong>INSTRUCTIONS:</strong> Provide details of social welfare programs and services in your barangay.
+        </div>
+        
+        <div class="content-box">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="welfare-period">Reporting Period:</label>
+                    <select id="welfare-period" style="width: 200px;">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual">Annual</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="welfare-programs">Programs and Services:</label>
+                <textarea id="welfare-programs" placeholder="List social welfare programs and services provided..."></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="welfare-beneficiaries">Number of Beneficiaries:</label>
+                    <input type="number" id="welfare-beneficiaries" placeholder="0">
+                </div>
+                <div class="form-col">
+                    <label for="welfare-budget">Budget Utilized (PHP):</label>
+                    <input type="number" id="welfare-budget" placeholder="0.00">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="welfare-activities">Activities Conducted:</label>
+                <textarea id="welfare-activities" placeholder="Describe activities and events conducted..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="welfare-challenges">Challenges and Issues:</label>
+                <textarea id="welfare-challenges" placeholder="Identify challenges faced in implementation..."></textarea>
+            </div>
+        </div>
+        
+        <div class="signature-container">
+            <div class="signature-section left">
+                <div>Noted by:</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="welfare-secretary-name" placeholder="[Barangay Secretary's Name]">
+                </div>
+                <div class="signature-title">Barangay Secretary</div>
+            </div>
+            
+            <div class="signature-section right">
+                <div>Respectfully submitted,</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="welfare-captain-name" placeholder="[Barangay Captain's Name]">
+                </div>
+                <div class="signature-title">Punong Barangay</div>
+                <div>Barangay <input type="text" class="signature-input" id="welfare-barangay-signature" placeholder="[Barangay Name]" style="width: 180px;"></div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-submit" onclick="submitDocument('welfare')">Submit Report for Review</button>
+            <button class="btn btn-clear" onclick="clearForm('welfare')">CLEAR FORM</button>
+        </div>
+    </div>
+    
+    <!-- SK Reports Form -->
+    <div id="sk" class="form-container">
+        <div class="official-header">
+            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <div class="republic">Republic of the Philippines</div>
+            <div class="city">Municipality of Mabini, Batangas</div>
+            <div class="office">Office of the Barangay</div>
+        </div>
+        
+        <div class="memorandum-title">SK Reports Submission Form</div>
+        <div class="memorandum-number">For: Association of Barangay Captains (ABC)</div>
+        
+        <div class="to-section">
+            <span class="section-label">TO:</span>
+            <span>Honorable Chairman and Members, Association of Barangay Captains</span>
+        </div>
+        
+        <div class="subject-section">
+            <span class="section-label">SUBJECT:</span>
+            <span>SK Report from Barangay <input type="text" id="sk-barangay-name" placeholder="[Enter Barangay Name]" style="width: 200px; display: inline;"></span>
+        </div>
+        
+        <div class="date-section">
+            <span class="section-label">DATE:</span>
+            <input type="date" id="sk-date" style="width: 150px; display: inline;">
+        </div>
+        
+        <div class="instructions-box">
+            <strong>INSTRUCTIONS:</strong> Provide comprehensive information about SK programs, activities, and achievements.
+        </div>
+        
+        <div class="content-box">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="sk-chairperson">SK Chairperson:</label>
+                    <input type="text" id="sk-chairperson" placeholder="Name of SK Chairperson">
+                </div>
+                <div class="form-col">
+                    <label for="sk-period">Reporting Period:</label>
+                    <input type="text" id="sk-period" placeholder="e.g., January 2024">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="sk-programs">Youth Programs and Projects:</label>
+                <textarea id="sk-programs" placeholder="List SK programs and projects implemented..."></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="sk-participants">Number of Youth Participants:</label>
+                    <input type="number" id="sk-participants" placeholder="0">
+                </div>
+                <div class="form-col">
+                    <label for="sk-budget">Budget Utilized (PHP):</label>
+                    <input type="number" id="sk-budget" placeholder="0.00">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="sk-achievements">Achievements and Awards:</label>
+                <textarea id="sk-achievements" placeholder="List achievements and recognitions received..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="sk-plans">Future Plans and Programs:</label>
+                <textarea id="sk-plans" placeholder="Outline upcoming SK programs and activities..."></textarea>
+            </div>
+        </div>
+        
+        <div class="signature-container">
+            <div class="signature-section left">
+                <div>Noted by:</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="sk-secretary-name" placeholder="[Barangay Secretary's Name]">
+                </div>
+                <div class="signature-title">Barangay Secretary</div>
+            </div>
+            
+            <div class="signature-section right">
+                <div>Respectfully submitted,</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="sk-captain-name" placeholder="[Barangay Captain's Name]">
+                </div>
+                <div class="signature-title">Punong Barangay</div>
+                <div>Barangay <input type="text" class="signature-input" id="sk-barangay-signature" placeholder="[Barangay Name]" style="width: 180px;"></div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-submit" onclick="submitDocument('sk')">Submit Report for Review</button>
+            <button class="btn btn-clear" onclick="clearForm('sk')">CLEAR FORM</button>
+        </div>
+    </div>
+    
+    <!-- Other Documents Form -->
+    <div id="others" class="form-container">
+        <div class="official-header">
+            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <div class="republic">Republic of the Philippines</div>
+            <div class="city">Municipality of Mabini, Batangas</div>
+            <div class="office">Office of the Barangay</div>
+        </div>
+        
+        <div class="memorandum-title">Other Documents Submission Form</div>
+        <div class="memorandum-number">For: Association of Barangay Captains (ABC)</div>
+        
+        <div class="to-section">
+            <span class="section-label">TO:</span>
+            <span>Honorable Chairman and Members, Association of Barangay Captains</span>
+        </div>
+        
+        <div class="subject-section">
+            <span class="section-label">SUBJECT:</span>
+            <span>Document Submission from Barangay <input type="text" id="others-barangay-name" placeholder="[Enter Barangay Name]" style="width: 200px; display: inline;"></span>
+        </div>
+        
+        <div class="date-section">
+            <span class="section-label">DATE:</span>
+            <input type="date" id="others-date" style="width: 150px; display: inline;">
+        </div>
+        
+        <div class="instructions-box">
+            <strong>INSTRUCTIONS:</strong> For documents not covered by other categories, please provide details below.
+        </div>
+        
+        <div class="content-box">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="others-period">Reporting Period:</label>
+                    <select id="others-period" style="width: 200px;">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual">Annual</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="others-doc-type">Type of Document:</label>
+                <input type="text" id="others-doc-type" placeholder="Specify type of document">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="others-doc-number">Document Number:</label>
+                    <input type="text" id="others-doc-number" placeholder="e.g., 2024-001">
+                </div>
+                <div class="form-col">
+                    <label for="others-doc-date">Document Date:</label>
+                    <input type="date" id="others-doc-date">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="others-title">Document Title/Subject:</label>
+                <input type="text" id="others-title" placeholder="Enter document title or subject">
+            </div>
+            
+            <div class="form-group">
+                <label for="others-purpose">Purpose/Reason for Submission:</label>
+                <textarea id="others-purpose" placeholder="Explain the purpose of this document submission..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="others-content">Document Content/Summary:</label>
+                <textarea id="others-content" placeholder="Provide summary or key points of the document..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="others-remarks">Additional Remarks:</label>
+                <textarea id="others-remarks" placeholder="Any additional information or notes..."></textarea>
+            </div>
+        </div>
+        
+        <div class="signature-container">
+            <div class="signature-section left">
+                <div>Noted by:</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="others-secretary-name" placeholder="[Barangay Secretary's Name]">
+                </div>
+                <div class="signature-title">Barangay Secretary</div>
+            </div>
+            
+            <div class="signature-section right">
+                <div>Respectfully submitted,</div>
+                <div class="signature-line"></div>
+                <div class="signature-name">
+                    <input type="text" class="signature-input" id="others-captain-name" placeholder="[Barangay Captain's Name]">
+                </div>
+                <div class="signature-title">Punong Barangay</div>
+                <div>Barangay <input type="text" class="signature-input" id="others-barangay-signature" placeholder="[Barangay Name]" style="width: 180px;"></div>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-submit" onclick="submitDocument('others')">Submit Report for Review</button>
+            <button class="btn btn-clear" onclick="clearForm('others')">CLEAR FORM</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const response = await fetch('../api/me.php');
+                const data = await response.json();
+                
+                if (!data.ok || !data.user) {
+                    showCustomAlert('You must be logged in to submit documents.', 'error', function() {
+                        window.location.href = '../index.html';
+                    });
+                    return null;
+                }
+                
+                if (data.user.role !== 'Barangay Secretary') {
+                    showCustomAlert('Only Barangay Secretaries can submit documents.', 'error', function() {
+                        window.location.href = '../barangayportal.html';
+                    });
+                    return null;
+                }
+                
+                return data.user;
+            } catch (error) {
+                showCustomAlert('Session error. Please login again.', 'error', function() {
+                    window.location.href = '../index.html';
+                });
+                return null;
+            }
+        }
+
+        // Category switching
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Show selected form
+                const category = this.getAttribute('data-category');
+                document.querySelectorAll('.form-container').forEach(form => {
+                    form.classList.remove('active');
+                });
+                document.getElementById(category).classList.add('active');
+            });
+        });
+        
+        // Update barangay display names when input changes
+        document.querySelectorAll('input[id$="barangay-name"]').forEach(input => {
+            input.addEventListener('input', function() {
+                const barangayValue = this.value;
+                const category = this.id.split('-')[0];
+                
+                // Update all barangay-related fields in the same form
+                const barangaySignatureField = document.getElementById(`${category}-barangay-signature`);
+                if (barangaySignatureField) {
+                    barangaySignatureField.value = barangayValue;
+                }
+                
+                // Update display element if exists
+                const displayElement = document.getElementById(`${category}-barangay-display`);
+                if (displayElement) {
+                    displayElement.textContent = barangayValue || '[Barangay Name]';
+                }
+            });
+        });
+        
+        // Get form data based on category
+        function getFormData(category) {
+            // Map category to field prefix
+            const fieldPrefixMap = {
+                'administrative': 'admin',
+                'resolutions': 'res',
+                'plans': 'plan',
+                'peace': 'peace',
+                'welfare': 'welfare',
+                'sk': 'sk',
+                'others': 'others'
+            };
+            
+            const fieldPrefix = fieldPrefixMap[category] || category;
+            const data = {};
+            const form = document.getElementById(category);
+            
+            // Common fields using correct prefix
+            data.barangay = document.getElementById(`${fieldPrefix}-barangay-name`)?.value || '';
+            data.date = document.getElementById(`${fieldPrefix}-date`)?.value || '';
+            data.period = document.getElementById(`${fieldPrefix}-period`)?.value || '';
+            data.captainName = document.getElementById(`${fieldPrefix}-captain-name`)?.value || '';
+            data.secretaryName = document.getElementById(`${fieldPrefix}-secretary-name`)?.value || '';
+            data.barangaySignature = document.getElementById(`${fieldPrefix}-barangay-signature`)?.value || '';
+            
+            // Category-specific fields
+            if (category === 'administrative') {
+                data.docType = document.getElementById('admin-doc-type')?.value || '';
+                data.docNumber = document.getElementById('admin-doc-number')?.value || '';
+                data.issuedDate = document.getElementById('admin-issued-date')?.value || '';
+                data.purpose = document.getElementById('admin-purpose')?.value || '';
+                data.recipient = document.getElementById('admin-recipient')?.value || '';
+                data.remarks = document.getElementById('admin-remarks')?.value || '';
+                data.title = `Administrative Document - ${data.docType} (${data.docNumber})`;
+            } else if (category === 'resolutions') {
+                data.docType = document.getElementById('res-doc-type')?.value || '';
+                data.number = document.getElementById('res-number')?.value || '';
+                data.datePassed = document.getElementById('res-date-passed')?.value || '';
+                data.title = document.getElementById('res-title')?.value || '';
+                data.author = document.getElementById('res-author')?.value || '';
+                data.background = document.getElementById('res-background')?.value || '';
+                data.resolved = document.getElementById('res-resolved')?.value || '';
+            } else if (category === 'plans') {
+                data.planType = document.getElementById('plan-type')?.value || '';
+                data.title = document.getElementById('plan-title')?.value || '';
+                data.fiscalYear = document.getElementById('plan-fiscal-year')?.value || '';
+                data.totalBudget = document.getElementById('plan-total-budget')?.value || '';
+                data.sourceFunds = document.getElementById('plan-source-funds')?.value || '';
+                data.programs = document.getElementById('plan-programs')?.value || '';
+                data.objectives = document.getElementById('plan-objectives')?.value || '';
+            } else if (category === 'peace') {
+                data.incidents = document.getElementById('peace-incidents')?.value || '';
+                data.crimeCount = document.getElementById('peace-crime-count')?.value || '';
+                data.resolved = document.getElementById('peace-resolved')?.value || '';
+                data.programs = document.getElementById('peace-programs')?.value || '';
+                data.recommendations = document.getElementById('peace-recommendations')?.value || '';
+                data.title = `Peace & Order Report - ${data.barangay}`;
+            } else if (category === 'welfare') {
+                data.programs = document.getElementById('welfare-programs')?.value || '';
+                data.beneficiaries = document.getElementById('welfare-beneficiaries')?.value || '';
+                data.budget = document.getElementById('welfare-budget')?.value || '';
+                data.activities = document.getElementById('welfare-activities')?.value || '';
+                data.impact = document.getElementById('welfare-impact')?.value || '';
+                data.title = `Social Welfare Report - ${data.barangay}`;
+            } else if (category === 'sk') {
+                data.programs = document.getElementById('sk-programs')?.value || '';
+                data.participants = document.getElementById('sk-participants')?.value || '';
+                data.budget = document.getElementById('sk-budget')?.value || '';
+                data.activities = document.getElementById('sk-activities')?.value || '';
+                data.achievements = document.getElementById('sk-achievements')?.value || '';
+                data.title = `SK Report - ${data.barangay}`;
+            } else if (category === 'others') {
+                data.docTitle = document.getElementById('others-doc-title')?.value || '';
+                data.docType = document.getElementById('others-doc-type')?.value || '';
+                data.content = document.getElementById('others-content')?.value || '';
+                data.remarks = document.getElementById('others-remarks')?.value || '';
+                data.title = data.docTitle || 'Other Document';
+            }
+            
+            return data;
+        }
+        
+        // Generate PDF document from form data
+        async function generatePDFDocument(category, formData) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            let yPos = 20;
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const margin = 20;
+            const maxWidth = pageWidth - (margin * 2);
+            
+            // Helper function to add text with word wrap
+            function addText(text, x, y, options = {}) {
+                const fontSize = options.fontSize || 12;
+                const isBold = options.bold || false;
+                const align = options.align || 'left';
+                
+                doc.setFontSize(fontSize);
+                doc.setFont('helvetica', isBold ? 'bold' : 'normal');
+                
+                const lines = doc.splitTextToSize(text, maxWidth);
+                
+                lines.forEach((line, index) => {
+                    let xPos = x;
+                    if (align === 'center') {
+                        xPos = pageWidth / 2;
+                        doc.text(line, xPos, y + (index * (fontSize * 0.5)), { align: 'center' });
+                    } else {
+                        doc.text(line, xPos, y + (index * (fontSize * 0.5)));
+                    }
+                });
+                
+                return y + (lines.length * (fontSize * 0.5));
+            }
+            
+            // Add logo from preloaded data
+            if (LOGO_DATA_URL) {
+                try {
+                    const logoSize = 25;
+                    const imgX = (pageWidth - logoSize) / 2;
+                    const imgY = yPos - 5;
+                    
+                    doc.addImage(LOGO_DATA_URL, 'PNG', imgX, imgY, logoSize, logoSize);
+                    yPos += logoSize + 5;
+                } catch (error) {
+                    // Failed to add logo to PDF
+                }
+            }
+            
+            // Header
+            yPos = addText('REPUBLIC OF THE PHILIPPINES', pageWidth / 2, yPos, { fontSize: 11, bold: true, align: 'center' });
+            yPos = addText('MUNICIPALITY OF MABINI, BATANGAS', pageWidth / 2, yPos + 5, { fontSize: 12, bold: true, align: 'center' });
+            yPos = addText(`BARANGAY ${(formData.barangay || '').toUpperCase()}`, pageWidth / 2, yPos + 5, { fontSize: 13, bold: true, align: 'center' });
+            
+            // Line separator
+            yPos += 10;
+            doc.line(margin, yPos, pageWidth - margin, yPos);
+            yPos += 10;
+            
+            // Document title based on category
+            let docTitle = '';
+            if (category === 'administrative') docTitle = 'ADMINISTRATIVE DOCUMENT';
+            else if (category === 'resolutions') docTitle = 'BARANGAY RESOLUTION/ORDINANCE';
+            else if (category === 'plans') docTitle = 'PLANS AND BUDGET';
+            else if (category === 'peace') docTitle = 'PEACE AND ORDER REPORT';
+            else if (category === 'welfare') docTitle = 'SOCIAL WELFARE REPORT';
+            else if (category === 'sk') docTitle = 'SANGGUNIANG KABATAAN REPORT';
+            else if (category === 'others') docTitle = formData.docTitle || 'OTHER DOCUMENT';
+            
+            yPos = addText(docTitle, pageWidth / 2, yPos, { fontSize: 14, bold: true, align: 'center' });
+            yPos += 10;
+            
+            // Common fields
+            yPos = addText('Date: ' + (formData.date || 'N/A'), margin, yPos, { fontSize: 11 });
+            yPos = addText('Reporting Period: ' + (formData.period || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+            yPos += 10;
+            
+            // Category-specific content
+            if (category === 'administrative') {
+                yPos = addText('Document Type: ' + (formData.docType || 'N/A'), margin, yPos + 5, { fontSize: 11, bold: true });
+                yPos = addText('Document Number: ' + (formData.docNumber || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Date Issued: ' + (formData.issuedDate || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Recipient: ' + (formData.recipient || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Purpose:', margin, yPos + 5, { fontSize: 11, bold: true });
+                yPos = addText(formData.purpose || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                if (formData.remarks) {
+                    yPos += 5;
+                    yPos = addText('Remarks:', margin, yPos + 3, { fontSize: 11, bold: true });
+                    yPos = addText(formData.remarks, margin, yPos + 3, { fontSize: 10 });
+                }
+            } else if (category === 'resolutions') {
+                yPos = addText('Number: ' + (formData.number || 'N/A'), margin, yPos + 5, { fontSize: 11, bold: true });
+                yPos = addText('Date Passed: ' + (formData.datePassed || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Title: ' + (formData.title || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Author: ' + (formData.author || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Background:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.background || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Be It Resolved:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.resolved || 'N/A', margin, yPos + 3, { fontSize: 10 });
+            } else if (category === 'plans') {
+                yPos = addText('Plan Type: ' + (formData.planType || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Plan Title: ' + (formData.title || 'N/A'), margin, yPos + 5, { fontSize: 11, bold: true });
+                yPos = addText('Fiscal Year: ' + (formData.fiscalYear || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Total Budget: ' + (formData.totalBudget || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Source of Funds: ' + (formData.sourceFunds || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Programs/Projects:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.programs || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Objectives:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.objectives || 'N/A', margin, yPos + 3, { fontSize: 10 });
+            } else if (category === 'peace') {
+                yPos = addText('Crime Count: ' + (formData.crimeCount || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Resolved Cases: ' + (formData.resolved || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Incidents Reported:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.incidents || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Programs Implemented:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.programs || 'N/A', margin, yPos + 3, { fontSize: 10 });
+            } else if (category === 'welfare') {
+                yPos = addText('Beneficiaries Count: ' + (formData.beneficiaries || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Budget Utilized: ' + (formData.budget || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Programs/Services:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.programs || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Activities Conducted:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.activities || 'N/A', margin, yPos + 3, { fontSize: 10 });
+            } else if (category === 'sk') {
+                yPos = addText('Participants Count: ' + (formData.participants || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Budget Utilized: ' + (formData.budget || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Programs/Activities:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.programs || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Achievements:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.achievements || 'N/A', margin, yPos + 3, { fontSize: 10 });
+            } else if (category === 'others') {
+                yPos = addText('Document Type: ' + (formData.docType || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Content:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.content || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                if (formData.remarks) {
+                    yPos += 5;
+                    yPos = addText('Remarks:', margin, yPos + 3, { fontSize: 11, bold: true });
+                    yPos = addText(formData.remarks, margin, yPos + 3, { fontSize: 10 });
+                }
+            }
+            
+            // Signatures
+            const pageHeight = doc.internal.pageSize.getHeight();
+            yPos = Math.max(yPos + 20, pageHeight - 60);
+            
+            doc.setFontSize(11);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Prepared by:', margin, yPos);
+            doc.text('Noted by:', pageWidth / 2 + 10, yPos);
+            
+            yPos += 15;
+            doc.setFont('helvetica', 'bold');
+            doc.text(formData.captainName || '___________________', margin, yPos);
+            doc.text(formData.secretaryName || '___________________', pageWidth / 2 + 10, yPos);
+            
+            yPos += 2;
+            doc.line(margin, yPos, margin + 60, yPos);
+            doc.line(pageWidth / 2 + 10, yPos, pageWidth / 2 + 70, yPos);
+            
+            yPos += 5;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text('PUNONG BARANGAY', margin, yPos);
+            doc.text('BARANGAY SECRETARY', pageWidth / 2 + 10, yPos);
+            
+            // Convert to blob
+            const blob = doc.output('blob');
+            return blob;
+        }
+        
+        // Form submission
+        async function submitDocument(category) {
+            // Map category to actual field prefix
+            const fieldPrefixMap = {
+                'administrative': 'admin',
+                'resolutions': 'res',
+                'plans': 'plan',
+                'peace': 'peace',
+                'welfare': 'welfare',
+                'sk': 'sk',
+                'others': 'others'
+            };
+            
+            const fieldPrefix = fieldPrefixMap[category] || category;
+
+            // Check authentication
+            const user = await checkAuth();
+            if (!user) return;
+            
+            // Validate all required fields first
+            let isValid = true;
+            let missingFields = [];
+            
+            // Check barangay name - get value directly from field using correct prefix
+            const barangayField = document.getElementById(`${fieldPrefix}-barangay-name`);
+            const barangayValue = barangayField ? barangayField.value.trim() : '';
+            
+            if (!barangayValue) {
+                isValid = false;
+                if (barangayField) {
+                    barangayField.style.borderColor = 'red';
+                    barangayField.style.borderWidth = '2px';
+                    barangayField.style.borderStyle = 'solid';
+                }
+                missingFields.push('Barangay Name');
+            } else {
+                if (barangayField) {
+                    barangayField.style.borderColor = '#d0d0d0';
+                    barangayField.style.borderWidth = '2px';
+                    barangayField.style.borderStyle = 'solid';
+                }
+            }
+            
+            // Check category-specific required fields
+            let requiredFields = [];
+            
+            if (category === 'administrative') {
+                requiredFields = [
+                    {id: 'admin-doc-type', label: 'Document Type'},
+                    {id: 'admin-doc-number', label: 'Document Number'},
+                    {id: 'admin-purpose', label: 'Purpose'}
+                ];
+            } else if (category === 'resolutions') {
+                requiredFields = [
+                    {id: 'res-number', label: 'Resolution/Ordinance Number'},
+                    {id: 'res-title', label: 'Title'},
+                    {id: 'res-background', label: 'Background'}
+                ];
+            } else if (category === 'plans') {
+                requiredFields = [
+                    {id: 'plan-title', label: 'Plan Title'},
+                    {id: 'plan-total-budget', label: 'Total Budget'},
+                    {id: 'plan-programs', label: 'Programs'}
+                ];
+            }
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (element && !element.value.trim()) {
+                    isValid = false;
+                    element.style.borderColor = 'red';
+                    missingFields.push(field.label);
+                } else if (element) {
+                    element.style.borderColor = '#666';
+                }
+            });
+            
+            // Check signature fields
+            const captainName = document.getElementById(`${fieldPrefix}-captain-name`);
+            const secretaryName = document.getElementById(`${fieldPrefix}-secretary-name`);
+            
+            if (captainName && !captainName.value.trim()) {
+                isValid = false;
+                captainName.style.borderColor = 'red';
+                missingFields.push('Barangay Captain Name');
+            } else if (captainName) {
+                captainName.style.borderColor = '#000';
+            }
+            
+            if (secretaryName && !secretaryName.value.trim()) {
+                isValid = false;
+                secretaryName.style.borderColor = 'red';
+                missingFields.push('Barangay Secretary Name');
+            } else if (secretaryName) {
+                secretaryName.style.borderColor = '#000';
+            }
+            
+            if (!isValid) {
+                showCustomAlert('Please fill in the following required fields:\n\n' + missingFields.join('\n'), 'warning');
+                return;
+            }
+            
+            // Get all form data after validation
+            const formData = getFormData(category);
+            
+            // Show loading message - find the submit button for this category
+            const submitBtn = document.querySelector(`#${category} .btn-submit`);
+            const originalText = submitBtn ? submitBtn.textContent : '';
+            
+            try {
+                if (submitBtn) {
+                    submitBtn.textContent = 'Generating PDF Document...';
+                    submitBtn.disabled = true;
+                }
+                
+                // Generate PDF document from form data
+                const pdfBlob = await generatePDFDocument(category, formData);
+                
+                if (submitBtn) {
+                    submitBtn.textContent = 'Uploading...';
+                }
+                
+                // Prepare form data for upload
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', pdfBlob, `${category}_${barangayValue}_${Date.now()}.pdf`);
+                uploadFormData.append('title', formData.title || getDocumentType(category));
+                uploadFormData.append('category', category);
+                uploadFormData.append('period', formData.period || '');
+                uploadFormData.append('form_data', JSON.stringify(formData));
+                
+                // Submit to backend
+                const response = await fetch('../api/submissions.php', {
+                    method: 'POST',
+                    body: uploadFormData
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert(`DOCUMENT SUBMITTED SUCCESSFULLY\n\nBarangay: ${barangayValue}\nDocument Type: ${getDocumentType(category)}\nSubmitted by: ${formData.captainName}\nNoted by: ${formData.secretaryName}\nDate Submitted: ${new Date().toLocaleDateString()}\n\nYour document has been forwarded to the ABC for review and appropriate action.`, 'success', function() {
+                        clearForm(category);
+                        window.location.href = '../barangayportal.html#submissions';
+                    });
+                } else {
+                    showCustomAlert('Submission failed: ' + (result.error || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                showCustomAlert('An error occurred during submission. Please try again.', 'error');
+            } finally {
+                if (submitBtn) {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
+        }
+        
+        // Clear form
+        function clearForm(category) {
+            const form = document.getElementById(category);
+            const inputs = form.querySelectorAll('input, select, textarea');
+            
+            inputs.forEach(input => {
+                if (input.type !== 'button') {
+                    input.value = '';
+                    input.style.borderColor = '#666';
+                }
+            });
+            
+            // Reset date fields to today
+            const dateFields = form.querySelectorAll('input[type="date"]');
+            const today = new Date().toISOString().split('T')[0];
+            dateFields.forEach(field => {
+                field.value = today;
+            });
+            
+            // Reset display names
+            const displayElements = form.querySelectorAll('span[id$="barangay-display"]');
+            displayElements.forEach(element => {
+                element.textContent = '[Barangay Name]';
+            });
+        }
+        
+        // Helper function to get document type name
+        function getDocumentType(category) {
+            const types = {
+                'administrative': 'Administrative Document',
+                'resolutions': 'Barangay Resolution/Ordinance',
+                'plans': 'Plans and Budget',
+                'peace': 'Peace and Order Report',
+                'welfare': 'Social Welfare Report',
+                'sk': 'SK Report',
+                'others': 'Other Document'
+            };
+            return types[category] || 'Document';
+        }
+        
+        // Global variable for preloaded logo
+        let LOGO_DATA_URL = null;
+        
+        // Initialize dates and check auth on load
+        window.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication
+            await checkAuth();
+            
+            // Preload logo for PDF generation
+            try {
+                const logoImg = await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // Convert to canvas to get base64
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL('image/png'));
+                    };
+                    img.onerror = (e) => {
+                        reject(e);
+                    };
+                    img.src = 'images/Mbnlg.png';
+                });
+                LOGO_DATA_URL = logoImg;
+            } catch (error) {
+                LOGO_DATA_URL = null;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(field => {
+                field.value = today;
+            });
+            
+            // Initialize signature inputs
+            document.querySelectorAll('.signature-input').forEach(input => {
+                input.style.borderColor = '#000';
+            });
+        });
+
+        // Custom Alert Function
+        function showCustomAlert(message, type = 'info', callback = null) {
+            const icons = {
+                success: '✓',
+                error: '✕',
+                warning: '⚠',
+                info: 'ℹ'
+            };
+
+            const titles = {
+                success: 'Success',
+                error: 'Error',
+                warning: 'Warning',
+                info: 'Information'
+            };
+
+            const overlay = document.createElement('div');
+            overlay.className = 'custom-modal-overlay';
+
+            overlay.innerHTML = `
+                <div class="custom-modal-content">
+                    <div class="custom-modal-header ${type}">
+                        <div class="custom-modal-icon">${icons[type]}</div>
+                        <h3 class="custom-modal-title">${titles[type]}</h3>
+                    </div>
+                    <div class="custom-modal-body">
+                        ${message}
+                    </div>
+                    <div class="custom-modal-footer">
+                        <button class="custom-modal-button ${type === 'success' ? 'success' : 'primary'}">OK</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            // OK button handler
+            const okButton = overlay.querySelector('.custom-modal-button');
+            okButton.addEventListener('click', function() {
+                overlay.remove();
+                if (callback) callback();
+            });
+
+            // Click outside to close
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.remove();
+                    if (callback) callback();
+                }
+            });
+
+            // ESC key to close
+            const escHandler = function(e) {
+                if (e.key === 'Escape') {
+                    overlay.remove();
+                    if (callback) callback();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+        }
+
+        window.showCustomAlert = showCustomAlert;
+    </script>
+</body>
+</html>

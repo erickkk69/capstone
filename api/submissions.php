@@ -139,6 +139,7 @@ if ($method === 'POST') {
         $title = $_POST['title'] ?? '';
         $category = $_POST['category'] ?? '';
         $period = $_POST['period'] ?? '';
+        $formData = $_POST['form_data'] ?? null;
         
         // Detailed validation
         $missingFields = [];
@@ -190,8 +191,6 @@ if ($method === 'POST') {
             @chmod($uploadsDir, 0777);
         }
         
-        // More lenient check for hosting environments
-        // Just check if directory exists and is readable, skip write test that causes issues
         if (!is_dir($uploadsDir) || !is_readable($uploadsDir)) {
             http_response_code(500);
             echo json_encode([
@@ -202,7 +201,6 @@ if ($method === 'POST') {
             exit;
         }
         
-        // Validate that temp file exists and is uploaded file
         if (!is_uploaded_file($file['tmp_name'])) {
             http_response_code(400);
             echo json_encode(['ok' => false, 'error' => 'Invalid file upload']);
@@ -253,8 +251,8 @@ if ($method === 'POST') {
         @chmod($filepath, 0644);
         
         $stmt = $pdo->prepare(
-            'INSERT INTO submissions (title, category, period, reporting_period, filename, original_name, uploaded_by, status, uploaded_at) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())'
+            'INSERT INTO submissions (title, category, period, reporting_period, filename, original_name, uploaded_by, status, uploaded_at, form_data) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)'
         );
         $stmt->execute([
             $title,
@@ -264,7 +262,8 @@ if ($method === 'POST') {
             $filename,
             $file['name'],
             $user['barangay'],
-            'pending'
+            'pending',
+            $formData
         ]);
         
         echo json_encode([

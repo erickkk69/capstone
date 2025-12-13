@@ -111,6 +111,8 @@ $activityStmt = $pdo->prepare('UPDATE users SET last_activity = NOW() WHERE id =
 $activityStmt->execute([$user['id']]);
 
 $_SESSION['user_id'] = (int)$user['id'];
+$_SESSION['role'] = $user['role'];
+$_SESSION['barangay'] = $user['barangay'];
 
 json_response([
     'ok' => true,

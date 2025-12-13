@@ -157,10 +157,42 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       margin-top: 10px;
+      position: relative;
     }
 
     .btn:hover {
       background-color: #004a99;
+    }
+    
+    .btn:disabled {
+      background-color: #6699cc;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    .btn.loading {
+      color: transparent;
+    }
+    
+    .btn.loading::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spinner 0.8s linear infinite;
+    }
+    
+    @keyframes spinner {
+      to {
+        transform: rotate(360deg);
+      }
     }
  
     .back-link {
@@ -492,6 +524,10 @@
           showMessage('Password must be at least 8 characters long', true);
           return;
         }
+        
+        const submitBtn = resetForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
 
         try {
           // Call the direct password change API
@@ -508,6 +544,8 @@
 
           if (data.ok) {
             resetForm.reset();
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
             showCustomAlert(
               '✅ Password reset request submitted successfully!<br><br>⚠️ <strong>IMPORTANT:</strong> Your account is now temporarily <strong>LOCKED</strong> until an ABC approves your request.<br><br>You will <strong>NOT</strong> be able to login until approved. Please wait for confirmation.',
               'success',
@@ -516,6 +554,8 @@
               }
             );
           } else {
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
             // Check if error is about same password
             if (data.error && data.error.includes('same as your current password')) {
               showCustomAlert(
@@ -527,6 +567,8 @@
             }
           }
         } catch (error) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
           showMessage('Error changing password. Please try again.', true);
         }
       });

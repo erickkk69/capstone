@@ -215,6 +215,38 @@
       font-weight: bold;
       border-radius: 6px; 
       transition: background 0.3s;
+      position: relative;
+    }
+    
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    button.loading {
+      color: transparent;
+      pointer-events: none;
+    }
+    
+    button.loading::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spinner 0.8s linear infinite;
+    }
+    
+    @keyframes spinner {
+      to {
+        transform: rotate(360deg);
+      }
     }
     
     #view-all-button-container { 
@@ -762,36 +794,38 @@
         Dashboard
       </a>
 
-      <a href="#upload" class="sidebar-link" data-target="upload">
+      <a href="#upload-document" class="sidebar-link" data-target="upload-document">
         <span class="icon" aria-hidden="true">
           <!-- Upload icon -->
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-            <path d="M19 15v4H5v-4H3v4c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-4h-2z" fill="currentColor" />
-            <path d="M11 5v8H8l4 4 4-4h-3V5h-2z" fill="currentColor" />
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor" />
+            <path d="M19 15v4H5v-4H3v4c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-4h-2z" fill="currentColor" opacity="0.9" />
           </svg>
         </span>
-        Upload Report
+        Upload Document
       </a>
 
       <a href="#submissions" class="sidebar-link" data-target="submissions">
         <span class="icon" aria-hidden="true">
-          <!-- Submissions / list icon -->
+          <!-- Submissions icon -->
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-            <path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" fill="currentColor" />
+            <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z" fill="currentColor" opacity="0.9" />
+            <path d="M14 2l6 6h-6V2z" fill="currentColor" />
           </svg>
         </span>
         Submissions
         <span class="sidebar-notif-badge" id="submissionsNotifBadge">0</span>
       </a>
 
-      <a href="#archived" class="sidebar-link" data-target="archived">
+      <a href="#announcements" class="sidebar-link" data-target="announcements">
         <span class="icon" aria-hidden="true">
-          <!-- Archive icon -->
+          <!-- Announcements icon -->
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
-            <path d="M20 2H4c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 4H4V4h16v2zM6 20V8h12v12H6zm4-9h4v2h-4z" fill="currentColor" />
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="currentColor" />
           </svg>
         </span>
-        Archived
+        Announcements
+        <span class="sidebar-notif-badge" id="announcementsNotifBadge">0</span>
       </a>
 
       <a href="index.html" class="sidebar-link" id="logout-link">
@@ -838,13 +872,13 @@
         <div class="dashboard-grid">
              <div>
                  <h2 style="margin-top: 20px;">Quick Access</h2>
-                <div class="quick-access-card" style="padding: 15px; border-left: 5px solid #0066cc; margin-bottom: 10px; cursor: pointer; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" onclick="showContent('upload')">
+                <div class="quick-access-card" style="padding: 15px; border-left: 5px solid #0066cc; margin-bottom: 10px; cursor: pointer; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" onclick="showContent('upload-document')">
                     <h3 style="margin-top: 0;">📤 Submit New Report</h3>
-                    <p style="margin-bottom: 0;">Quick access to <a href="#" onclick="showContent('upload'); return false;">Upload Report</a> form to submit documents.</p>
+                    <p style="margin-bottom: 0;">Quick access to <a href="#" onclick="showContent('upload-document'); return false;">Upload Document</a> to create and submit new reports.</p>
                 </div>
                  <div class="quick-access-card" style="padding: 15px; border-left: 5px solid #28a745; margin-bottom: 10px; cursor: pointer; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" onclick="showContent('submissions')">
                     <h3 style="margin-top: 0;">📋 View All Submissions</h3>
-                    <p style="margin-bottom: 0;">View the complete list of submitted documents on the <a href="#" onclick="showContent('submissions'); return false;">Submissions</a> page.</p>
+                    <p style="margin-bottom: 0;">View the complete list of submitted documents on the <a href="#" onclick="showContent('submissions'); return false;">My Submissions</a> page.</p>
                 </div>
                 <div class="quick-access-card" style="padding: 15px; border-left: 5px solid #ffc107; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
                     <h3 style="margin-top: 0;">📊 Recent Activity</h3>
@@ -862,53 +896,35 @@
 
       </div>
       
-      <div id="upload" class="card">
+      <div id="upload-document" class="card">
         <h2>Upload Official Report</h2>
-        <p style="color: #555;">Please ensure all mandatory fields are completed before submitting the report.</p>
-        <form id="upload-form">
-          <label for="doc-title">Document Title:</label>
-          <input type="text" id="doc-title" required>
-
-        <label for="doc-category">Category:</label>
-        <select id="doc-category" required>
-          <option value="">-- Select Document Type --</option>
-          <option value="administrative">Administrative Document</option> 
-          <option value="resolutions">Barangay Resolutions/Ordinances</option>
-          <option value="plans-budget">Plans and Budget</option>
-          <option value="peace-order">Peace and Order</option>
-          <option value="social-welfare">Social Welfare</option>
-          <option value="sk-reports">SK Reports</option>
-          <option value="others">Others / General Document</option>
-        </select>
-          
-          <div class="form-row">
-            
-            <div class="form-column">
-              <label for="reporting-period">Reporting Period:</label>
-              <select id="reporting-period" required>
-                <option value="">-- Select Reporting Frequency --</option>
-                <option value="monthly">Monthly</option>
-                <option value="quarterly">Quarterly</option>
-                <option value="annual">Annual</option>
-              </select>
-            </div>
-            
-            <div class="form-column">
-              <label for="doc-file">Upload File (PDF/DOCX/Spreadsheet only):</label>
-              <input type="file" id="doc-file" accept=".pdf,.doc,.docx,.xls,.xlsx" required>
-              <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">Allowed: PDF, Word (.doc, .docx), Excel (.xls, .xlsx)</small>
-            </div>
-            
-          </div>
-          <button type="submit">Submit Report for Review</button>
-        </form>
+        <p style="color: #555;">Create and submit official reports using the document template.</p>
+        
+        <div style="text-align: center; padding: 40px 20px;">
+          <button type="button" onclick="window.location.href='template.html'" 
+                  style="background: #0066cc; color: white; border: none; cursor: pointer; padding: 15px 40px; font-size: 16px; font-weight: bold; border-radius: 8px; transition: background 0.3s;">
+            📄 Create a Report
+          </button>
+          <p style="margin-top: 15px; color: #666; font-size: 14px;">Click the button above to open the report template and fill out your document.</p>
+        </div>
       </div>
       
       <div id="submissions" class="card">
+        <div id="submissions-section">
         <h2>Document Submissions Management</h2>
         
+        <!-- Type Filter Tabs (Active/Archived) -->
+        <div style="margin-bottom: 15px; display: flex; gap: 10px;">
+          <button id="filter-active" class="type-filter-btn active" onclick="filterSubmissionsByType('active')" style="padding: 10px 20px; border: 2px solid #0066cc; background: #0066cc; color: white; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s;">
+            Active Submissions
+          </button>
+          <button id="filter-archived" class="type-filter-btn" onclick="filterSubmissionsByType('archived')" style="padding: 10px 20px; border: 2px solid #666; background: white; color: #666; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s;">
+            Archived (<span id="archived-count-badge">0</span>)
+          </button>
+        </div>
+        
         <!-- Status Filter Tabs -->
-        <div style="margin-bottom: 20px; display: flex; gap: 5px; flex-wrap: wrap;">
+        <div id="status-filters" style="margin-bottom: 20px; display: flex; gap: 5px; flex-wrap: wrap;">
           <button id="filter-all" class="status-filter-btn active" onclick="filterSubmissionsByStatus('all')">
             All Submissions (<span id="count-all">0</span>)
           </button>
@@ -958,6 +974,21 @@
             <button id="view-all-button" type="button">View All Submissions</button>
         </div>
         
+        </div>
+        <!-- End of submissions-section -->
+      </div>
+
+      <!-- Announcements Section -->
+      <div id="announcements" class="card">
+        <h2>Announcements</h2>
+        <p style="color: #666; margin-bottom: 20px;">Stay updated with important announcements from ABC</p>
+        
+        <div id="announcements-list" style="min-height: 100px;">
+          <div style="text-align: center; padding: 40px; color: #999;">
+            <div style="font-size: 3em; margin-bottom: 10px;">📭</div>
+            <p>Loading announcements...</p>
+          </div>
+        </div>
       </div>
 
       <!-- Archived Documents Section -->
@@ -1027,12 +1058,12 @@
     if (isBusy) {
       buttonStates.set(buttonElement, true);
       buttonElement.disabled = true;
-      buttonElement.style.opacity = '0.6';
+      buttonElement.classList.add('loading');
       buttonElement.style.cursor = 'wait';
     } else {
       buttonStates.delete(buttonElement);
       buttonElement.disabled = false;
-      buttonElement.style.opacity = '1';
+      buttonElement.classList.remove('loading');
       buttonElement.style.cursor = 'pointer';
     }
   }
@@ -1105,8 +1136,10 @@
         
         // Store all submissions globally for search/filter - MUST BE DECLARED BEFORE USE
         let allSubmissions = [];
+        let allArchivedSubmissions = [];
         let showingAllSubmissions = false;
         let currentStatusFilter = 'all';
+        let currentTypeFilter = 'active'; // 'active' or 'archived'
 
         function showContent(targetId) {
 
@@ -1126,6 +1159,11 @@
             const activeLink = document.querySelector(`.sidebar a[data-target="${targetId}"]`);
             if (activeLink) {
                 activeLink.classList.add('active');
+            }
+            
+            // Load announcements when announcements tab is clicked
+            if (targetId === 'announcements') {
+                loadAnnouncements();
             }
             
             // When viewing submissions page, mark currently displayed submissions as viewed
@@ -1323,97 +1361,6 @@
           hour12: true
         });
       }
-
-      const uploadForm = document.getElementById('upload-form');
-      if (uploadForm) {
-        uploadForm.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          
-          const submitButton = uploadForm.querySelector('button[type="submit"]');
-          
-          // Prevent double submission
-          if (isButtonBusy(submitButton)) {
-            return;
-          }
-          
-          setButtonBusy(submitButton, true);
-          const originalText = submitButton.textContent;
-          submitButton.textContent = 'Uploading...';
-          
-          const fileInput = document.getElementById('doc-file');
-          const file = fileInput.files[0];
-          
-          // Validate file type
-          if (file) {
-            const allowedExtensions = ['pdf', 'doc', 'docx', 'xls', 'xlsx'];
-            const fileName = file.name.toLowerCase();
-            const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
-            
-            if (!allowedExtensions.includes(fileExtension)) {
-              showCustomAlert('Invalid file type. Please upload only PDF, Word (.doc, .docx), or Excel (.xls, .xlsx) files.', 'error');
-              submitButton.textContent = originalText;
-              setButtonBusy(submitButton, false);
-              return;
-            }
-            
-            // Check file size (max 10MB)
-            const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-            if (file.size > maxSize) {
-              showCustomAlert('File is too large. Maximum file size is 10MB.', 'error');
-              submitButton.textContent = originalText;
-              setButtonBusy(submitButton, false);
-              return;
-            }
-          }
-          
-          const formData = new FormData();
-          formData.append('title', document.getElementById('doc-title').value);
-          formData.append('category', document.getElementById('doc-category').value);
-          formData.append('period', document.getElementById('reporting-period').value);
-          formData.append('file', file);
-          
-          try {
-            const response = await fetch('api/submissions.php', {
-              method: 'POST',
-              body: formData
-            });
-            
-            // Try to get JSON response with error details
-            let result;
-            try {
-              result = await response.json();
-            } catch (e) {
-              // If JSON parsing fails, show generic error
-              showCustomAlert(`Server error (${response.status}). Please try again or contact administrator.`, 'error');
-              return;
-            }
-            
-            // Check if response is OK (status 200-299)
-            if (!response.ok) {
-              const errorMsg = result.error || `Server error (${response.status}). Please try again.`;
-              showCustomAlert(errorMsg, 'error');
-              return;
-            }
-            
-            if (result.ok) {
-              showCustomAlert('Report submitted successfully!', 'success');
-              uploadForm.reset();
-              // Refresh submissions list
-              await loadSubmissions();
-              // Switch to submissions view
-              showContent('submissions');
-            } else {
-              const errorMsg = result.error || 'Failed to submit report';
-              showCustomAlert(errorMsg, 'error');
-            }
-          } catch (error) {
-            showCustomAlert('Failed to submit report. Please try again.', 'error');
-          } finally {
-            submitButton.textContent = originalText;
-            setButtonBusy(submitButton, false);
-          }
-        });
-      }
       
       // Load submissions function
       async function loadSubmissions() {
@@ -1427,6 +1374,23 @@
             
             // Store all submissions globally
             allSubmissions = result.submissions || [];
+            
+            // Also load archived submissions
+            try {
+              const archivedResponse = await fetch('api/submissions.php?archived=1');
+              const archivedResult = await archivedResponse.json();
+              if (archivedResult.ok) {
+                allArchivedSubmissions = archivedResult.submissions || [];
+                // Update archived count badge
+                const badge = document.getElementById('archived-count-badge');
+                if (badge) {
+                  badge.textContent = allArchivedSubmissions.length;
+                }
+              }
+            } catch (e) {
+              // Silently fail if archived loading fails
+              allArchivedSubmissions = [];
+            }
             
             if (allSubmissions.length === 0) {
               tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No submissions yet</td></tr>';
@@ -1501,6 +1465,43 @@
         }
       }
       
+      // Filter submissions by type (active/archived)
+      window.filterSubmissionsByType = debounce(function(type) {
+        currentTypeFilter = type;
+        
+        // Update active button for type filter
+        document.querySelectorAll('.type-filter-btn').forEach(btn => {
+          btn.classList.remove('active');
+          btn.style.background = 'white';
+          btn.style.color = '#666';
+          btn.style.borderColor = '#666';
+        });
+        const activeBtn = document.getElementById('filter-' + type);
+        if (activeBtn) {
+          activeBtn.classList.add('active');
+          activeBtn.style.background = '#0066cc';
+          activeBtn.style.color = 'white';
+          activeBtn.style.borderColor = '#0066cc';
+        }
+        
+        if (type === 'active') {
+          // Show status filters for active submissions
+          document.getElementById('status-filters').style.display = 'flex';
+          // Reset to current status filter
+          filterSubmissionsByStatus(currentStatusFilter);
+        } else {
+          // Hide status filters for archived
+          document.getElementById('status-filters').style.display = 'none';
+          // Show archived submissions
+          displaySubmissions(allArchivedSubmissions);
+          // Update view all button
+          const viewAllBtn = document.getElementById('view-all-button');
+          if (viewAllBtn) {
+            viewAllBtn.textContent = 'Show Recent Only';
+          }
+        }
+      }, 200);
+      
       // Archive submission function with debouncing
       window.archiveSubmission = debounce(async function(id, event) {
         // Prevent if already processing
@@ -1533,7 +1534,12 @@
           if (result.ok) {
             showCustomAlert('Submission archived successfully', 'success');
             await loadSubmissions();
-            await loadArchivedSubmissions();
+            // Refresh current view
+            if (currentTypeFilter === 'archived') {
+              filterSubmissionsByType('archived');
+            } else {
+              filterSubmissionsByStatus(currentStatusFilter);
+            }
           } else {
             showCustomAlert('Error: ' + (result.error || 'Failed to archive submission'), 'error');
           }
@@ -1576,7 +1582,10 @@
           if (result.ok) {
             showCustomAlert('Submission restored successfully', 'success');
             await loadSubmissions();
-            await loadArchivedSubmissions();
+            // Refresh current view
+            if (currentTypeFilter === 'archived') {
+              filterSubmissionsByType('archived');
+            }
           } else {
             showCustomAlert('Error: ' + (result.error || 'Failed to restore submission'), 'error');
           }
@@ -1619,7 +1628,10 @@
           if (result.ok) {
             showCustomAlert('Submission deleted successfully', 'success');
             await loadSubmissions();
-            await loadArchivedSubmissions();
+            // Refresh current view
+            if (currentTypeFilter === 'archived') {
+              filterSubmissionsByType('archived');
+            }
           } else {
             showCustomAlert('Error: ' + (result.error || 'Failed to delete submission'), 'error');
           }
@@ -1673,12 +1685,12 @@
         currentStatusFilter = status;
         
         // Update active button
-        document.querySelectorAll('.status-filter-btn').forEach(btn => {
+        document.querySelectorAll('#status-filters .status-filter-btn').forEach(btn => {
           btn.classList.remove('active');
         });
         document.getElementById('filter-' + status).classList.add('active');
         
-        // Filter submissions
+        // Filter active submissions only
         let filteredSubmissions = allSubmissions;
         if (status !== 'all') {
           filteredSubmissions = allSubmissions.filter(submission => submission.status === status);
@@ -1775,10 +1787,24 @@
           }
           
           // Only show archive button if status is still pending (not yet processed by ABC)
-          const archiveButton = submission.status === 'pending' 
-            ? `<a href="#" onclick="archiveSubmission(${submission.id}); return false;" 
-                 style="color: #ff9800; text-decoration: none; margin-left: 8px;" title="Archive submission">📦Archive</a>`
-            : `<span style="color: #999; margin-left: 8px;" title="Documents processed by ABC cannot be archived">🔒Archive</span>`;
+          // But if we're viewing archived submissions, show restore and delete instead
+          let actionButtons = '';
+          
+          if (currentTypeFilter === 'archived') {
+            // For archived submissions, show Restore and Delete
+            actionButtons = `
+              <a href="#" onclick="restoreSubmission(${submission.id}); return false;" 
+                 style="color: #28a745; text-decoration: none; margin-left: 8px;" title="Restore submission">↩️Restore</a>
+              <a href="#" onclick="deleteSubmission(${submission.id}); return false;" 
+                 style="color: #dc3545; text-decoration: none; margin-left: 8px;" title="Permanently delete">🗑️Delete</a>
+            `;
+          } else {
+            // For active submissions, show archive button only if pending
+            actionButtons = submission.status === 'pending' 
+              ? `<a href="#" onclick="archiveSubmission(${submission.id}); return false;" 
+                   style="color: #ff9800; text-decoration: none; margin-left: 8px;" title="Archive submission">📦Archive</a>`
+              : `<span style="color: #999; margin-left: 8px;" title="Documents processed by ABC cannot be archived">🔒Archive</span>`;
+          }
           
           row.innerHTML = `
             <td>
@@ -1791,10 +1817,11 @@
               <span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}
             </td>
             <td>
-              <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}')" style="color: #0066cc; text-decoration: none; margin-right: 8px;">📄 View</a>
+              <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View Form</a>
+              <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none; margin-right: 8px;" title="View PDF">📄PDF</a>
               ${hasComments ? `<a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
-                 class="comment-button" title="View ABC comments">💬 View Comments</a>` : ''}
-              ${archiveButton}
+                 class="comment-button" title="View ABC comments">💬View Comments</a>` : ''}
+              ${actionButtons}
             </td>
           `;
           
@@ -1905,11 +1932,78 @@
       
       // Load submissions on page load
       await loadSubmissions();
-      await loadArchivedSubmissions();
-            
-      showContent('dashboard');
+      await loadAnnouncements();
+      
+      // Check if there's a hash in the URL to navigate to a specific section
+      const hash = window.location.hash.substring(1); // Remove the # symbol
+      if (hash && (hash === 'submissions' || hash === 'dashboard' || hash === 'upload-document' || hash === 'announcements')) {
+        showContent(hash);
+      } else {
+        showContent('dashboard');
+      }
     })();
     });
+
+    // ===== ANNOUNCEMENTS SECTION =====
+    
+    async function loadAnnouncements() {
+      try {
+        const response = await fetch('api/announcements.php');
+        
+        const result = await response.json();
+        
+        const container = document.getElementById('announcements-list');
+        
+        if (!result.ok) {
+          container.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">Error: ' + (result.error || 'Failed to load') + '</p>';
+          updateSidebarBadge('announcementsNotifBadge', 0);
+          return;
+        }
+        
+        if (!result.announcements || result.announcements.length === 0) {
+          container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No announcements at this time.</p>';
+          updateSidebarBadge('announcementsNotifBadge', 0);
+          return;
+        }
+        
+        // Count unread announcements
+        const unreadCount = result.announcements.filter(ann => !ann.is_read).length;
+        updateSidebarBadge('announcementsNotifBadge', unreadCount);
+        
+        const announcementsHtml = result.announcements.map(ann => {
+          const date = new Date(ann.created_at);
+          const dateStr = date.toLocaleString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          
+          const isUnread = !ann.is_read;
+          
+          return `
+            <div style="background: ${isUnread ? '#fff9e6' : 'white'}; border-left: 4px solid ${isUnread ? '#ffc107' : '#ddd'}; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              ${isUnread ? '<span style="background: #ffc107; color: #000; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; margin-bottom: 10px; display: inline-block;">NEW</span>' : ''}
+              <h4 style="margin: ${isUnread ? '5px 0 10px 0' : '0 0 10px 0'}; color: #004c99;">${ann.title}</h4>
+              <p style="margin: 10px 0; color: #333; line-height: 1.6; white-space: pre-wrap;">${ann.content}</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                <span style="color: #666; font-size: 0.9em;">
+                  <strong>From:</strong> ABC Portal
+                </span>
+                <span style="color: #999; font-size: 0.85em;">${dateStr}</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        container.innerHTML = announcementsHtml;
+        
+      } catch (error) {
+        document.getElementById('announcements-list').innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">Error loading announcements.</p>';
+        updateSidebarBadge('announcementsNotifBadge', 0);
+      }
+    }
 
     // ===== ARCHIVED SUBMISSIONS SECTION =====
     
@@ -2021,9 +2115,10 @@
           <td>${date}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}</td>
           <td>
-            <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}')" style="color: #0066cc; text-decoration: none;">View</a>
+            <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View Form</a>
+            <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none;" title="View PDF">📄PDF</a>
             ${hasComments ? ` | <a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
-               style="color: #17a2b8; text-decoration: none;">💬 Comments</a>` : ''}
+               style="color: #17a2b8; text-decoration: none;">💬Comments</a>` : ''}
             ${actionButtons}
           </td>
         `;
@@ -2230,7 +2325,7 @@
     }
     
     // Function to show document viewer modal
-    function showDocumentViewer(filename, title) {
+    function showDocumentViewer(filename, title, submissionId = null) {
         const modal = document.createElement('div');
         modal.className = 'doc-viewer-modal';
         modal.onclick = function(e) {
@@ -2243,8 +2338,16 @@
         const extension = filename.split('.').pop().toLowerCase();
         // Use absolute path from root to ensure it works when hosted
         const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
-        const fileUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}`;
-        const downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
+        
+        // Use generate_pdf.php if submission has form_data, otherwise use view_file.php
+        let fileUrl, downloadUrl;
+        if (submissionId && extension === 'pdf') {
+            fileUrl = `${baseUrl}api/generate_pdf.php?id=${submissionId}`;
+            downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
+        } else {
+            fileUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}`;
+            downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
+        }
         
         // Create proper download filename with extension
         const downloadFilename = title && !title.includes('.') ? `${title}.${extension}` : (title || filename);
@@ -2256,8 +2359,8 @@
                         📄 ${title || filename}
                     </div>
                     <div class="doc-viewer-actions">
-                        <button class="doc-viewer-btn doc-viewer-download" onclick="downloadFile('${downloadUrl}', '${downloadFilename.replace(/'/g, "\\'")}')">
-                            ⬇️ Download
+                        <button class="doc-viewer-btn doc-viewer-download" onclick="printPDF()">
+                            ⬇️ Download/Print PDF
                         </button>
                         <button class="doc-viewer-btn doc-viewer-close" onclick="this.closest('.doc-viewer-modal').remove()">
                             ✖ Close
@@ -2383,7 +2486,6 @@
                 window.URL.revokeObjectURL(blobUrl);
             }, 100);
         } catch (error) {
-            console.error('Download error:', error);
             showCustomAlert('Failed to download file: ' + error.message, 'error');
         }
     }
@@ -2521,6 +2623,14 @@
     window.viewComments = viewComments;
     window.showDocumentViewer = showDocumentViewer;
     window.downloadFile = downloadFile;
+    
+    // Print PDF function for iframe content
+    window.printPDF = function() {
+        const iframe = document.querySelector('.doc-viewer-iframe');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.print();
+        }
+    };
 
     // Activity tracking for barangay secretaries
     async function updateUserActivity() {

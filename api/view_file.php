@@ -19,7 +19,6 @@ if (empty($filename)) {
     die('No file specified');
 }
 
-// Clean filename - remove any directory traversal attempts
 $filename = basename($filename);
 $filename = str_replace(['..', '/', '\\'], '', $filename);
 

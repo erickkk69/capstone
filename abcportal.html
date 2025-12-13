@@ -196,6 +196,38 @@
       margin: 2px;
       font-weight: bold;
       transition: background-color 0.3s;
+      position: relative;
+    }
+    
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    button.loading {
+      color: transparent;
+      pointer-events: none;
+    }
+    
+    button.loading::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spinner 0.8s linear infinite;
+    }
+    
+    @keyframes spinner {
+      to {
+        transform: rotate(360deg);
+      }
     }
     
     .approve {
@@ -1293,6 +1325,16 @@
         <span class="sidebar-notif-badge" id="manageNotifBadge">0</span>
       </a>
 
+      <a href="#announcements" class="sidebar-link" data-target="announcements">
+        <span class="icon" aria-hidden="true">
+          <!-- Announcement icon -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" fill="currentColor" />
+          </svg>
+        </span>
+        Announcements
+      </a>
+
       <a href="#reset-requests" class="sidebar-link" data-target="reset-requests">
         <span class="icon" aria-hidden="true">
           <!-- Password Reset icon -->
@@ -1380,10 +1422,10 @@
                 <option value="all">All Categories</option>
                 <option value="administrative">Administrative Document</option>
                 <option value="resolutions">Barangay Resolutions/Ordinances</option>
-                <option value="plans-budget">Plans and Budget</option>
-                <option value="peace-order">Peace and Order</option>
-                <option value="social-welfare">Social Welfare</option>
-                <option value="sk-reports">SK Reports</option>
+                <option value="plans">Plans and Budget</option>
+                <option value="peace">Peace and Order</option>
+                <option value="welfare">Social Welfare</option>
+                <option value="sk">SK Reports</option>
                 <option value="others">Others / General Document</option>
               </select>
             </div>
@@ -1596,8 +1638,106 @@
           </button>
         </div>
         
+        <!-- Category Filter Buttons -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+          <button id="manage-category-all" class="manage-category-filter active" onclick="filterManageByCategory('all')" style="flex: 1; min-width: 150px;">
+            📋 All Categories (<span id="category-count-all">0</span>)
+          </button>
+          <button id="manage-category-administrative" class="manage-category-filter" onclick="filterManageByCategory('administrative')" style="flex: 1; min-width: 150px;">
+            📄 Administrative (<span id="category-count-administrative">0</span>)
+          </button>
+          <button id="manage-category-resolutions" class="manage-category-filter" onclick="filterManageByCategory('resolutions')" style="flex: 1; min-width: 150px;">
+            ⚖️ Resolutions (<span id="category-count-resolutions">0</span>)
+          </button>
+          <button id="manage-category-plans" class="manage-category-filter" onclick="filterManageByCategory('plans')" style="flex: 1; min-width: 150px;">
+            💰 Plans/Budget (<span id="category-count-plans">0</span>)
+          </button>
+          <button id="manage-category-peace" class="manage-category-filter" onclick="filterManageByCategory('peace')" style="flex: 1; min-width: 150px;">
+            🛡️ Peace & Order (<span id="category-count-peace">0</span>)
+          </button>
+          <button id="manage-category-welfare" class="manage-category-filter" onclick="filterManageByCategory('welfare')" style="flex: 1; min-width: 150px;">
+            🤝 Social Welfare (<span id="category-count-welfare">0</span>)
+          </button>
+          <button id="manage-category-sk" class="manage-category-filter" onclick="filterManageByCategory('sk')" style="flex: 1; min-width: 150px;">
+            👥 SK Reports (<span id="category-count-sk">0</span>)
+          </button>
+          <button id="manage-category-others" class="manage-category-filter" onclick="filterManageByCategory('others')" style="flex: 1; min-width: 150px;">
+            📑 Others (<span id="category-count-others">0</span>)
+          </button>
+        </div>
+        
         <div class="barangay-folder-list" id="barangay-folders">
             </div>
+      </div>
+
+      <!-- Announcements Section -->
+      <div id="announcements" class="card">
+        <h2>Announcements Management</h2>
+        
+        <!-- Create Announcement Form -->
+        <div style="background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px; border: 1px solid rgba(0, 76, 153, 0.1); box-shadow: 0 4px 6px rgba(0, 76, 153, 0.08);">
+          <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #e3e8ef;">
+            <h3 style="margin: 0; color: #004c99; font-size: 1.3em;">Create New Announcement</h3>
+          </div>
+          
+          <div style="display: grid; gap: 20px;">
+            <div>
+              <label for="announcement-title" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95em;">
+                Announcement Title
+              </label>
+              <input type="text" id="announcement-title" placeholder="Enter a clear and concise title" required 
+                style="width: 100%; box-sizing: border-box; padding: 12px 15px; border: 2px solid #e3e8ef; border-radius: 8px; font-size: 1em; transition: all 0.3s ease; font-family: Arial, sans-serif;"
+                onfocus="this.style.borderColor='#004c99'; this.style.boxShadow='0 0 0 3px rgba(0, 76, 153, 0.1)'" 
+                onblur="this.style.borderColor='#e3e8ef'; this.style.boxShadow='none'">
+            </div>
+            
+            <div>
+              <label for="announcement-content" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95em;">
+                Message Content
+              </label>
+              <textarea id="announcement-content" rows="5" placeholder="Type your announcement message here..." required 
+                style="width: 100%; box-sizing: border-box; padding: 12px 15px; border: 2px solid #e3e8ef; border-radius: 8px; font-family: Arial, sans-serif; font-size: 1em; resize: vertical; transition: all 0.3s ease; line-height: 1.6;"
+                onfocus="this.style.borderColor='#004c99'; this.style.boxShadow='0 0 0 3px rgba(0, 76, 153, 0.1)'" 
+                onblur="this.style.borderColor='#e3e8ef'; this.style.boxShadow='none'"></textarea>
+            </div>
+            
+            <div>
+              <label for="announcement-target" style="display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 0.95em;">
+                Target Barangay
+              </label>
+              <select id="announcement-target" required 
+                style="width: 100%; box-sizing: border-box; padding: 12px 15px; border: 2px solid #e3e8ef; border-radius: 8px; font-size: 1em; cursor: pointer; transition: all 0.3s ease; background: white;"
+                onfocus="this.style.borderColor='#004c99'; this.style.boxShadow='0 0 0 3px rgba(0, 76, 153, 0.1)'" 
+                onblur="this.style.borderColor='#e3e8ef'; this.style.boxShadow='none'">
+                <option value="">Select Barangay</option>
+                <option value="All Barangays">All Barangays (Broadcast)</option>
+                <!-- Barangay options will be loaded dynamically from user management -->
+              </select>
+            </div>
+            
+            <button onclick="createAnnouncement()" 
+              style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 14px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1.05em; width: 100%; margin-top: 10px; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(40, 167, 69, 0.2);"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(40, 167, 69, 0.3)'" 
+              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(40, 167, 69, 0.2)'">
+              Create & Send Announcement
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter Tabs for Announcements -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+          <button class="announcement-filter-btn active" data-filter="active" onclick="filterAnnouncements('active')">
+            📢 Active Announcements
+          </button>
+          <button class="announcement-filter-btn" data-filter="archived" onclick="filterAnnouncements('archived')">
+            🗄️ Archived (<span id="archived-announcements-count">0</span>)
+          </button>
+        </div>
+
+        <!-- Announcements List -->
+        <div id="announcements-list">
+          <p style="text-align: center; color: #666; padding: 30px;">Loading announcements...</p>
+        </div>
       </div>
 
       <!-- Password Reset Requests Section -->
@@ -1669,6 +1809,23 @@
   </div>
 
   <style>
+    .announcement-filter-btn {
+      padding: 10px 20px;
+      border: 2px solid #0066cc;
+      background: white;
+      color: #0066cc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+    .announcement-filter-btn:hover {
+      background: #e6f2ff;
+    }
+    .announcement-filter-btn.active {
+      background: #0066cc;
+      color: white;
+    }
     .reset-filter-btn {
       padding: 10px 20px;
       border: 2px solid #0066cc;
@@ -1739,6 +1896,33 @@
       background-color: #0052a3;
       border-color: #0052a3;
     }
+    /* Manage Category Filter Buttons */
+    .manage-category-filter {
+      padding: 10px 15px;
+      border: 2px solid #e0e0e0;
+      background-color: #ffffff;
+      color: #666;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      text-align: center;
+    }
+    .manage-category-filter:hover {
+      background-color: #f5f5f5;
+      border-color: #28a745;
+    }
+    .manage-category-filter.active {
+      background-color: #28a745;
+      color: white;
+      border-color: #28a745;
+    }
+    .manage-category-filter.active:hover {
+      background-color: #218838;
+      border-color: #218838;
+    }
     .status-badge {
       padding: 6px 12px;
       border-radius: 20px;
@@ -1806,9 +1990,12 @@
         { name: "Annual Reports", key: "annual" }
     ];
     
-    // Global submissions data
+    // Global data storage
     let allSubmissions = [];
+    let allUsers = [];
+    let allResetRequests = [];
     let currentManageStatusFilter = 'all'; // Track current filter for manage submissions
+    let currentManageCategoryFilter = 'all'; // Track current category filter for manage submissions
 
     // Debounce utility for button clicks - prevents multiple rapid clicks
     function debounce(func, wait = 300) {
@@ -2026,10 +2213,10 @@
                     const categoryNames = {
                         'administrative': 'Administrative',
                         'resolutions': 'Resolutions/Ordinances',
-                        'plans-budget': 'Plans & Budget',
-                        'peace-order': 'Peace & Order',
-                        'social-welfare': 'Social Welfare',
-                        'sk-reports': 'SK Reports',
+                        'plans': 'Plans & Budget',
+                        'peace': 'Peace & Order',
+                        'welfare': 'Social Welfare',
+                        'sk': 'SK Reports',
                         'others': 'Others'
                     };
                     parts.push(categoryNames[selectedCategory] || selectedCategory);
@@ -2187,6 +2374,17 @@
         const activeBarangays = barangays.filter(b => submissions.some(s => s.barangay === b)).length;
         const totalSubmissions = submissions.length;
         
+        // User Management Metrics
+        const activeUsers = allUsers.filter(u => u.status === 'active').length;
+        const archivedUsers = allUsers.filter(u => u.status === 'archived').length;
+        const totalUsers = allUsers.length;
+        const usersPerBarangay = totalUsers > 0 ? (totalUsers / totalBarangays).toFixed(1) : 0;
+        
+        // Reset Request Metrics
+        const pendingResets = allResetRequests.filter(r => r.status === 'pending').length;
+        const totalResets = allResetRequests.length;
+        const resetApprovalRate = totalResets > 0 ? ((allResetRequests.filter(r => r.status === 'approved').length / totalResets) * 100).toFixed(1) : 0;
+        
         // Calculate key metrics
         const approved = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
         const review = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length;
@@ -2230,24 +2428,24 @@
         // Generate HTML
         let html = '';
         
-        // Card 1: Key Performance Indicators
+        // Card 1: System Overview
         html += `
             <div class="analysis-card">
                 <div class="analysis-card-header">
-                    <div class="analysis-card-icon">📊</div>
-                    <div class="analysis-card-title">Key Performance Indicators</div>
+                    <div class="analysis-card-icon">🏛️</div>
+                    <div class="analysis-card-title">System Overview</div>
                 </div>
                 <div class="analysis-metric">
-                    <span class="analysis-metric-label">Participation Rate</span>
-                    <span class="analysis-metric-value ${participationRate >= 75 ? 'positive' : participationRate >= 50 ? 'neutral' : 'negative'}">${participationRate}%</span>
+                    <span class="analysis-metric-label">Active Barangays</span>
+                    <span class="analysis-metric-value ${participationRate >= 75 ? 'positive' : participationRate >= 50 ? 'neutral' : 'negative'}">${activeBarangays}/${totalBarangays} (${participationRate}%)</span>
                 </div>
                 <div class="analysis-metric">
-                    <span class="analysis-metric-label">Approval Rate</span>
-                    <span class="analysis-metric-value ${approvalRate >= 70 ? 'positive' : approvalRate >= 50 ? 'neutral' : 'negative'}">${approvalRate}%</span>
+                    <span class="analysis-metric-label">Total Users</span>
+                    <span class="analysis-metric-value">${activeUsers} active, ${archivedUsers} archived</span>
                 </div>
                 <div class="analysis-metric">
-                    <span class="analysis-metric-label">Avg. Submissions per Barangay</span>
-                    <span class="analysis-metric-value">${avgSubmissionsPerBarangay}</span>
+                    <span class="analysis-metric-label">Pending Actions</span>
+                    <span class="analysis-metric-value ${(pending + review + pendingResets) > 10 ? 'negative' : 'neutral'}">${pending + review} submissions, ${pendingResets} resets</span>
                 </div>
                 <div class="analysis-metric">
                     <span class="analysis-metric-label">Recent Activity (30 days)</span>
@@ -2256,19 +2454,23 @@
             </div>
         `;
         
-        // Card 2: Statistical Summary
+        // Card 2: Document Processing Metrics
         const inProgressCount = pending + review;
         const completionRate = totalSubmissions > 0 ? (((approved + rejected) / totalSubmissions) * 100).toFixed(1) : 0;
         
         html += `
             <div class="analysis-card">
                 <div class="analysis-card-header">
-                    <div class="analysis-card-icon">📈</div>
-                    <div class="analysis-card-title">Statistical Summary</div>
+                    <div class="analysis-card-icon">📄</div>
+                    <div class="analysis-card-title">Document Processing</div>
                 </div>
                 <div class="analysis-metric">
                     <span class="analysis-metric-label">Total Submissions</span>
                     <span class="analysis-metric-value">${totalSubmissions}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Approval Rate</span>
+                    <span class="analysis-metric-value ${approvalRate >= 70 ? 'positive' : approvalRate >= 50 ? 'neutral' : 'negative'}">${approvalRate}%</span>
                 </div>
                 <div class="analysis-metric">
                     <span class="analysis-metric-label">Completion Rate</span>
@@ -2282,14 +2484,42 @@
                     <span class="analysis-metric-label">Rejection Rate</span>
                     <span class="analysis-metric-value ${rejectionRate > 20 ? 'negative' : rejectionRate > 10 ? 'neutral' : 'positive'}">${rejectionRate}%</span>
                 </div>
+            </div>
+        `;
+        
+        // Card 3: User Management & Access
+        const userCoverage = totalBarangays > 0 ? ((barangays.filter(b => allUsers.some(u => u.barangay === b && u.status === 'active')).length / totalBarangays) * 100).toFixed(1) : 0;
+        
+        html += `
+            <div class="analysis-card">
+                <div class="analysis-card-header">
+                    <div class="analysis-card-icon">👥</div>
+                    <div class="analysis-card-title">User Management</div>
+                </div>
                 <div class="analysis-metric">
-                    <span class="analysis-metric-label">Active Barangays</span>
-                    <span class="analysis-metric-value">${activeBarangays} / ${totalBarangays}</span>
+                    <span class="analysis-metric-label">Total User Accounts</span>
+                    <span class="analysis-metric-value">${totalUsers}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Active Accounts</span>
+                    <span class="analysis-metric-value positive">${activeUsers}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Barangay Coverage</span>
+                    <span class="analysis-metric-value ${userCoverage >= 90 ? 'positive' : userCoverage >= 70 ? 'neutral' : 'negative'}">${userCoverage}%</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Pending Reset Requests</span>
+                    <span class="analysis-metric-value ${pendingResets > 5 ? 'negative' : pendingResets > 0 ? 'neutral' : 'positive'}">${pendingResets}</span>
+                </div>
+                <div class="analysis-metric">
+                    <span class="analysis-metric-label">Reset Approval Rate</span>
+                    <span class="analysis-metric-value">${resetApprovalRate}%</span>
                 </div>
             </div>
         `;
         
-        // Card 3: Top Performers
+        // Card 4: Top Performers
         html += `
             <div class="analysis-card">
                 <div class="analysis-card-header">
@@ -2310,7 +2540,7 @@
             </div>
         `;
         
-        // Card 4: Needs Attention
+        // Card 5: Needs Attention
         html += `
             <div class="analysis-card">
                 <div class="analysis-card-header">
@@ -2334,7 +2564,7 @@
             </div>
         `;
         
-        // Card 5: Trend Analysis
+        // Card 6: Trend Analysis
         const trendDirection = recentSubmissions > (totalSubmissions / 2) ? 'up' : recentSubmissions < (totalSubmissions / 4) ? 'down' : 'stable';
         const trendText = trendDirection === 'up' ? 'Increasing' : trendDirection === 'down' ? 'Decreasing' : 'Stable';
         const trendIcon = trendDirection === 'up' ? '↗' : trendDirection === 'down' ? '↘' : '→';
@@ -2356,9 +2586,21 @@
             </div>
         `;
         
-        // Card 6: Actionable Recommendations
+        // Card 7: Actionable Recommendations
         const recommendations = [];
         
+        // User Management Recommendations
+        if (userCoverage < 70) {
+            recommendations.push('👤 Create user accounts for barangays without access');
+        }
+        if (pendingResets > 5) {
+            recommendations.push('🔑 Review pending password reset requests urgently');
+        }
+        if (archivedUsers > activeUsers * 0.3) {
+            recommendations.push('📊 Review archived user accounts for reactivation');
+        }
+        
+        // Submission Recommendations
         if (participationRate < 60) {
             recommendations.push('📢 Launch outreach campaign to inactive barangays');
         }
@@ -2371,11 +2613,17 @@
         if (recentSubmissions < totalSubmissions * 0.2 && totalSubmissions > 0) {
             recommendations.push('📣 Send reminder notifications to barangays');
         }
+        
+        // Positive Recognition
         if (approvalRate >= 70 && participationRate >= 75) {
             recommendations.push('🎉 Recognize high-performing barangays publicly');
         }
+        if (userCoverage >= 90 && pendingResets === 0) {
+            recommendations.push('✅ User management is in excellent condition');
+        }
+        
         if (recommendations.length === 0) {
-            recommendations.push('✅ Continue monitoring submission patterns');
+            recommendations.push('✅ All systems operating smoothly - maintain current practices');
         }
         
         html += `
@@ -2400,7 +2648,7 @@
         analysisContainer.innerHTML = html;
     }
     
-    // Generate decision support and alerts based on submission data
+    // Generate decision support and alerts based on all system data
     function generateAlerts(filteredSubmissions = null) {
         const alertsContainer = document.getElementById('alerts-container');
         if (!alertsContainer) return;
@@ -2410,7 +2658,56 @@
         
         const alerts = [];
         
-        // 1. Check for barangays with no submissions
+        // USER MANAGEMENT ALERTS
+        
+        // 1. Barangays without user accounts
+        const barangaysWithoutUsers = barangays.filter(b => 
+            !allUsers.some(u => u.barangay === b && u.status === 'active')
+        );
+        
+        if (barangaysWithoutUsers.length > 0) {
+            alerts.push({
+                type: 'critical',
+                icon: '👤',
+                title: 'Barangays Without User Access',
+                message: `${barangaysWithoutUsers.length} barangay(s) do not have active user accounts. They cannot submit documents.`,
+                list: barangaysWithoutUsers.slice(0, 5),
+                extra: barangaysWithoutUsers.length > 5 ? `and ${barangaysWithoutUsers.length - 5} more...` : null
+            });
+        }
+        
+        // 2. Pending password reset requests
+        const pendingResets = allResetRequests.filter(r => r.status === 'pending');
+        
+        if (pendingResets.length > 0) {
+            alerts.push({
+                type: 'warning',
+                icon: '🔑',
+                title: 'Pending Password Reset Requests',
+                message: `${pendingResets.length} user(s) are waiting for password reset approval.`,
+                list: pendingResets.slice(0, 5).map(r => `${r.email} (${r.barangay || 'N/A'})`),
+                extra: pendingResets.length > 5 ? `and ${pendingResets.length - 5} more...` : null
+            });
+        }
+        
+        // 3. Multiple archived users
+        const archivedUsers = allUsers.filter(u => u.status === 'archived');
+        const activeUsers = allUsers.filter(u => u.status === 'active');
+        
+        if (archivedUsers.length > activeUsers.length * 0.3 && archivedUsers.length > 5) {
+            alerts.push({
+                type: 'info',
+                icon: '📦',
+                title: 'High Number of Archived Users',
+                message: `${archivedUsers.length} user accounts are archived. Consider reviewing for potential reactivation.`,
+                list: null,
+                extra: null
+            });
+        }
+        
+        // SUBMISSION ALERTS
+        
+        // 4. Check for barangays with no submissions
         const barangaysWithNoSubmissions = barangays.filter(barangay => 
             !submissions.some(s => s.barangay === barangay)
         );
@@ -2426,7 +2723,7 @@
             });
         }
         
-        // 2. Check for pending/submitted status that needs review
+        // 5. Check for pending/submitted status that needs review
         const pendingSubmissions = submissions.filter(s => 
             s.status && (s.status.toLowerCase() === 'pending' || s.status.toLowerCase() === 'submitted')
         );
@@ -2443,7 +2740,7 @@
             });
         }
         
-        // 3. Check for barangays with low submission counts
+        // 6. Check for barangays with low submission counts
         const submissionCounts = barangays.map(barangay => ({
             barangay,
             count: submissions.filter(s => s.barangay === barangay).length
@@ -2460,7 +2757,7 @@
             });
         }
         
-        // 4. Check for rejected submissions
+        // 7. Check for rejected submissions
         const rejectedSubmissions = submissions.filter(s => 
             s.status && s.status.toLowerCase() === 'rejected'
         );
@@ -2477,7 +2774,7 @@
             });
         }
         
-        // 5. Check for high-performing barangays
+        // 8. Check for high-performing barangays
         const highPerformers = barangays.map(barangay => {
             const barangaySubmissions = submissions.filter(s => s.barangay === barangay);
             const approved = barangaySubmissions.filter(s => s.status && s.status.toLowerCase() === 'approved').length;
@@ -2495,16 +2792,17 @@
             });
         }
         
-        // 6. Overall status summary
+        // 9. Overall system summary
         const totalBarangays = barangays.length;
         const activeBarangays = barangays.filter(b => submissions.some(s => s.barangay === b)).length;
         const completionRate = ((activeBarangays / totalBarangays) * 100).toFixed(1);
+        const barangaysWithAccess = barangays.filter(b => allUsers.some(u => u.barangay === b && u.status === 'active')).length;
         
         alerts.push({
             type: 'info',
             icon: '📊',
-            title: 'Overall Submission Status',
-            message: `${activeBarangays} out of ${totalBarangays} barangays (${completionRate}%) have submitted documents.`,
+            title: 'System Status Overview',
+            message: `${barangaysWithAccess}/${totalBarangays} barangays have user access. ${activeBarangays}/${totalBarangays} (${completionRate}%) have submitted documents. ${pendingResets.length} pending reset requests.`,
             list: null,
             extra: null
         });
@@ -2871,6 +3169,14 @@
         if (currentManageStatusFilter !== 'all') {
             submissionsToDisplay = allSubmissions.filter(s => s.status === currentManageStatusFilter);
         }
+        
+        // Apply category filter
+        if (currentManageCategoryFilter !== 'all') {
+            submissionsToDisplay = submissionsToDisplay.filter(s => {
+                if (!s.category) return false;
+                return s.category.toLowerCase().trim() === currentManageCategoryFilter.toLowerCase().trim();
+            });
+        }
 
         // Sort barangays by submission count (descending) - barangays with submissions first
         const sortedBarangays = [...barangays].sort((a, b) => {
@@ -2939,10 +3245,19 @@
         
         // Show message if no results
         if (folderContainer.children.length === 0) {
+            let filterDesc = [];
+            if (currentManageStatusFilter !== 'all') {
+                filterDesc.push(currentManageStatusFilter);
+            }
+            if (currentManageCategoryFilter !== 'all') {
+                filterDesc.push(currentManageCategoryFilter);
+            }
+            const filterText = filterDesc.length > 0 ? filterDesc.join(' ') + ' ' : '';
+            
             folderContainer.innerHTML = `
                 <div style="padding: 40px; text-align: center; color: #666; background: #f8f9fa; border-radius: 8px; border: 2px dashed #ddd;">
                     <div style="font-size: 3em; margin-bottom: 15px;">📁</div>
-                    <h3 style="margin: 0 0 10px 0; color: #495057;">No ${currentManageStatusFilter === 'all' ? '' : currentManageStatusFilter + ' '}submissions found</h3>
+                    <h3 style="margin: 0 0 10px 0; color: #495057;">No ${filterText}submissions found</h3>
                     <p style="margin: 0; font-size: 0.9em;">Try selecting a different filter or check back later.</p>
                 </div>
             `;
@@ -2956,6 +3271,16 @@
         document.getElementById('manage-count-review').textContent = allSubmissions.filter(s => s.status === 'review').length;
         document.getElementById('manage-count-approved').textContent = allSubmissions.filter(s => s.status === 'approved').length;
         document.getElementById('manage-count-rejected').textContent = allSubmissions.filter(s => s.status === 'rejected').length;
+        
+        // Update category counts
+        document.getElementById('category-count-all').textContent = allSubmissions.length;
+        document.getElementById('category-count-administrative').textContent = allSubmissions.filter(s => s.category && s.category.toLowerCase().trim() === 'administrative').length;
+        document.getElementById('category-count-resolutions').textContent = allSubmissions.filter(s => s.category && s.category.toLowerCase().trim() === 'resolutions').length;
+        document.getElementById('category-count-plans').textContent = allSubmissions.filter(s => s.category && s.category.toLowerCase().trim() === 'plans').length;
+        document.getElementById('category-count-peace').textContent = allSubmissions.filter(s => s.category && s.category.toLowerCase().trim() === 'peace').length;
+        document.getElementById('category-count-welfare').textContent = allSubmissions.filter(s => s.category && s.category.toLowerCase().trim() === 'welfare').length;
+        document.getElementById('category-count-sk').textContent = allSubmissions.filter(s => s.category && s.category.toLowerCase().trim() === 'sk').length;
+        document.getElementById('category-count-others').textContent = allSubmissions.filter(s => s.category && s.category.toLowerCase().trim() === 'others').length;
     }
     
     // Filter manage submissions by status
@@ -2967,6 +3292,26 @@
             btn.classList.remove('active');
         });
         document.getElementById('manage-filter-' + status).classList.add('active');
+        
+        // Re-render folders with filtered data
+        renderBarangayFolders();
+        
+        // Reset search if active
+        const searchInput = document.getElementById('barangay-search');
+        if (searchInput && searchInput.value.trim() !== '') {
+            filterBarangayFolders(searchInput.value.toLowerCase().trim());
+        }
+    };
+    
+    // Filter manage submissions by category
+    window.filterManageByCategory = function(category) {
+        currentManageCategoryFilter = category;
+        
+        // Update active button
+        document.querySelectorAll('.manage-category-filter').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.getElementById('manage-category-' + category).classList.add('active');
         
         // Re-render folders with filtered data
         renderBarangayFolders();
@@ -3153,7 +3498,8 @@
                     <td style="padding: 10px;">${date}</td>
                     <td style="padding: 10px;"><span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}</td>
                     <td style="padding: 10px;">
-                        <a href="javascript:void(0)" onclick="showDocumentViewer('${sub.filename}', '${sub.title}')" style="color: #0066cc; margin-right: 10px; cursor: pointer; text-decoration: none;">📄 View</a>
+                        <a href="view_submission.html?id=${sub.id}" style="color: #0066cc; margin-right: 10px; cursor: pointer; text-decoration: none;" title="View form data">📋 View Form</a>
+                        <a href="javascript:void(0)" onclick="showDocumentViewer('${sub.filename}', '${sub.title}', ${sub.id})" style="color: #28a745; margin-right: 10px; cursor: pointer; text-decoration: none;" title="View PDF">📄 PDF</a>
                         <button onclick="showCommentModal(${sub.id}, '${sub.title}', '${sub.barangay}')" style="padding: 4px 8px; background: ${hasComments ? '#17a2b8' : '#28a745'}; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; font-size: 0.85em;" title="${hasComments ? 'View and manage comments' : 'Add a comment'}">💬 ${hasComments ? 'Comments (' + commentCount + ')' : 'Comment'}</button>
                         <select onchange="if(this.value) { updateSubmissionStatus(${sub.id}, this.value); this.value=''; }" style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; margin-left: 5px;">
                             <option value="">📝 Change Status</option>
@@ -3450,7 +3796,7 @@
     }
     
     // Function to show document viewer modal
-    function showDocumentViewer(filename, title) {
+    function showDocumentViewer(filename, title, submissionId = null) {
         const modal = document.createElement('div');
         modal.className = 'doc-viewer-modal';
         modal.onclick = function(e) {
@@ -3463,8 +3809,16 @@
         const extension = filename.split('.').pop().toLowerCase();
         // Use absolute path from root to ensure it works when hosted
         const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/');
-        const fileUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}`;
-        const downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
+        
+        // Use generate_pdf.php if submission has form_data, otherwise use view_file.php
+        let fileUrl, downloadUrl;
+        if (submissionId && extension === 'pdf') {
+            fileUrl = `${baseUrl}api/generate_pdf.php?id=${submissionId}`;
+            downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
+        } else {
+            fileUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}`;
+            downloadUrl = `${baseUrl}api/view_file.php?file=${encodeURIComponent(filename)}&download=1`;
+        }
         
         // Create proper download filename with extension
         const downloadFilename = title && !title.includes('.') ? `${title}.${extension}` : (title || filename);
@@ -3476,8 +3830,8 @@
                         📄 ${title || filename}
                     </div>
                     <div class="doc-viewer-actions">
-                        <button class="doc-viewer-btn doc-viewer-download" onclick="downloadFile('${downloadUrl}', '${downloadFilename.replace(/'/g, "\\'")}')">
-                            ⬇️ Download
+                        <button class="doc-viewer-btn doc-viewer-download" onclick="printPDF()">
+                            ⬇️ Download/Print PDF
                         </button>
                         <button class="doc-viewer-btn doc-viewer-close" onclick="this.closest('.doc-viewer-modal').remove()">
                             ✖ Close
@@ -3728,10 +4082,17 @@
                 window.URL.revokeObjectURL(blobUrl);
             }, 100);
         } catch (error) {
-            console.error('Download error:', error);
             showCustomAlert('Failed to download file: ' + error.message, 'error');
         }
     }
+    
+    // Print PDF function for iframe content
+    window.printPDF = function() {
+        const iframe = document.querySelector('.doc-viewer-iframe');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.print();
+        }
+    };
     
     // Make functions global
     window.showCommentModal = showCommentModal;
@@ -3755,13 +4116,11 @@
             }
         }
         
-        // Create a temporary link element to trigger download
         const link = document.createElement('a');
         link.href = filepath;
-        link.download = filename; // This triggers download instead of opening in browser
+        link.download = filename;
         link.style.display = 'none';
         
-        // Add to DOM, click it, then remove
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -3982,7 +4341,7 @@
                         <td>${user.barangay}</td>
                         <td>${user.role}</td>
                         <td>${statusDisplay}</td>
-                        <td>${user.role !== 'ABC' ? '<button class="delete archive-user-btn" data-id="' + user.id + '" data-email="' + user.email + '">Archive</button>' : ''}</td>
+                        <td>${user.role !== 'ABC' ? '<button class="delete archive-user-btn" data-id="' + user.id + '" data-email="' + user.email + '">Archive</button>' : '<span style="color: #666; font-style: italic;">Protected Account</span>'}</td>
                     `;
                 });
                 document.querySelectorAll('.archive-user-btn').forEach(btn => {
@@ -4157,6 +4516,8 @@
             const password = document.getElementById('userPassword').value.trim();
             const confirmPassword = document.getElementById('userConfirmPassword').value.trim();
             const barangay = document.getElementById('userBarangay').value;
+            
+            const submitBtn = addUserForm.querySelector('button[type="submit"]');
 
             if (!barangay) {
                 userMessage.textContent = 'Please select a Barangay.';
@@ -4167,6 +4528,9 @@
                 }, 2000);
                 return;
             }
+            
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
 
             // Check if barangay already has a user
             try {
@@ -4175,6 +4539,8 @@
                 if (checkData.ok && checkData.users) {
                     const existingUser = checkData.users.find(user => user.barangay === barangay && user.archived === '0');
                     if (existingUser) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('loading');
                         userMessage.textContent = `A user account already exists for ${barangay} barangay (Email: ${existingUser.email})`;
                         userMessage.style.color = 'red';
                         userMessage.style.display = 'block';
@@ -4189,6 +4555,8 @@
             }
 
             if (password !== confirmPassword) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
                 userMessage.textContent = 'Passwords do not match. Please try again.';
                 userMessage.style.color = 'red';
                 userMessage.style.display = 'block';
@@ -4199,6 +4567,8 @@
             }
 
       if (password.length < 8) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
         userMessage.textContent = 'Password must be at least 8 characters long.';
                 userMessage.style.color = 'red';
                 userMessage.style.display = 'block';
@@ -4216,6 +4586,8 @@
                 });
                 const data = await res.json();
                 if (!data.ok) throw new Error(data.error || 'Failed to add user');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
                 userMessage.textContent = `Successfully added new user for ${barangay}. Email: ${email}`;
                 userMessage.style.color = 'green';
                 userMessage.style.display = 'block';
@@ -4226,6 +4598,8 @@
                 loadUsers();
                 loadArchivedUsers();
             } catch (err) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
                 userMessage.textContent = err.message;
                 userMessage.style.color = 'red';
                 userMessage.style.display = 'block';
@@ -4304,7 +4678,7 @@
                     }
                 }
             } catch (error) {
-                console.error('Error loading reset requests:', error);
+                // Error loading reset requests
             }
         }
 
@@ -4445,6 +4819,381 @@
         window.submitRejection = submitRejection;
         window.deleteResetRequest = deleteResetRequest;
 
+        // ========== ANNOUNCEMENTS FUNCTIONALITY ==========
+        
+        async function loadBarangayDropdown() {
+            const select = document.getElementById('announcement-target');
+            
+            // Keep "Select Barangay" and "All Barangays" options
+            select.innerHTML = `
+                <option value="">Select Barangay</option>
+                <option value="All Barangays">All Barangays</option>
+            `;
+            
+            // Add barangays from the same list used in analytics dashboard
+            barangays.forEach(barangay => {
+                const option = document.createElement('option');
+                option.value = barangay;
+                option.textContent = barangay;
+                select.appendChild(option);
+            });
+        }
+        
+        async function loadAnnouncements() {
+            try {
+                const response = await fetch('api/announcements.php');
+                const result = await response.json();
+                
+                const container = document.getElementById('announcements-list');
+                
+                if (!result.ok || !result.announcements || result.announcements.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; background: #f8f9fc; border-radius: 8px; border: 2px dashed #dee2e6;">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" style="opacity: 0.3; margin-bottom: 15px;">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z" stroke="#666" stroke-width="2" fill="none"/>
+                            </svg>
+                            <p style="color: #666; margin: 0; font-size: 1.1em;">No announcements posted yet.</p>
+                            <p style="color: #999; margin: 10px 0 0 0; font-size: 0.9em;">Create your first announcement above to get started.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const announcementsHtml = result.announcements.map((ann, index) => {
+                    const date = new Date(ann.created_at);
+                    const dateStr = date.toLocaleString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const isAllBarangays = ann.target_barangay === 'All Barangays';
+                    
+                    return `
+                        <div style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%); border: 1px solid #e3e8ef; border-left: 4px solid ${isAllBarangays ? '#28a745' : '#004c99'}; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.12)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'; this.style.transform='translateY(0)'">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="${isAllBarangays ? '#28a745' : '#004c99'}">
+                                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                        </svg>
+                                        <h4 style="margin: 0; color: #1a1a1a; font-size: 1.2em; font-weight: 600;">${ann.title}</h4>
+                                    </div>
+                                    ${isAllBarangays ? '<span style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75em; font-weight: 600; letter-spacing: 0.5px;">BROADCAST</span>' : ''}
+                                </div>
+                                <button onclick="archiveAnnouncement(${ann.id})" 
+                                    style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(255, 152, 0, 0.2);"
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(255, 152, 0, 0.3)'" 
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(255, 152, 0, 0.2)'">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style="vertical-align: middle; margin-right: 4px;">
+                                        <path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/>
+                                    </svg>
+                                    Archive
+                                </button>
+                            </div>
+                            
+                            <div style="background: white; padding: 16px; border-radius: 8px; margin: 15px 0; border: 1px solid #e3e8ef;">
+                                <p style="margin: 0; color: #333; line-height: 1.7; white-space: pre-wrap; font-size: 1em;">${ann.content}</p>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e3e8ef;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#666" stroke-width="2" fill="none"/>
+                                        <circle cx="12" cy="9" r="2.5" stroke="#666" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    <span style="color: #666; font-size: 0.95em; font-weight: 600;">
+                                        ${ann.target_barangay}
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="10" stroke="#999" stroke-width="2" fill="none"/>
+                                        <path d="M12 6v6l4 2" stroke="#999" stroke-width="2"/>
+                                    </svg>
+                                    <span style="color: #999; font-size: 0.85em;">${dateStr}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = announcementsHtml;
+                
+            } catch (error) {
+                document.getElementById('announcements-list').innerHTML = `
+                    <div style="text-align: center; padding: 30px; background: #fff3cd; border-radius: 8px; border: 1px solid #ffc107;">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#856404" style="margin-bottom: 10px;">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        </svg>
+                        <p style="color: #856404; margin: 0; font-weight: 600;">Error loading announcements.</p>
+                        <p style="color: #856404; margin: 5px 0 0 0; font-size: 0.9em;">Please refresh the page or contact support.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function createAnnouncement() {
+            const title = document.getElementById('announcement-title').value.trim();
+            const content = document.getElementById('announcement-content').value.trim();
+            const target = document.getElementById('announcement-target').value;
+            
+            if (!title || !content || !target) {
+                showCustomAlert('Please fill in all fields', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('api/announcements.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        title: title,
+                        content: content,
+                        target_barangay: target
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert('Announcement created successfully!', 'success');
+                    document.getElementById('announcement-title').value = '';
+                    document.getElementById('announcement-content').value = '';
+                    document.getElementById('announcement-target').value = '';
+                    await loadAnnouncements();
+                } else {
+                    showCustomAlert('Failed to create announcement: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showCustomAlert('Error creating announcement. Please try again.', 'error');
+            }
+        }
+        
+        async function archiveAnnouncement(announcementId) {
+            const proceed = await showCustomConfirm('Are you sure you want to archive this announcement?', 'warning');
+            if (!proceed) return;
+            
+            try {
+                const response = await fetch('api/announcements.php', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ announcement_id: announcementId })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert('Announcement archived successfully', 'success');
+                    await loadAnnouncements();
+                    await loadArchivedAnnouncements();
+                } else {
+                    showCustomAlert('Failed to archive announcement: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showCustomAlert('Error archiving announcement. Please try again.', 'error');
+            }
+        }
+        
+        async function loadArchivedAnnouncements() {
+            try {
+                const response = await fetch('api/announcements.php?archived=1');
+                const result = await response.json();
+                
+                // Update count in the filter button
+                const countElement = document.getElementById('archived-announcements-count');
+                if (countElement) {
+                    const count = result.ok && result.announcements ? result.announcements.length : 0;
+                    countElement.textContent = count;
+                }
+                
+                // Store archived data globally for filtering
+                window.archivedAnnouncementsData = result.ok && result.announcements ? result.announcements : [];
+                
+            } catch (error) {
+                console.error('Error loading archived announcements:', error);
+                window.archivedAnnouncementsData = [];
+            }
+        }
+        
+        function filterAnnouncements(filter) {
+            // Update active button
+            document.querySelectorAll('.announcement-filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            const container = document.getElementById('announcements-list');
+            
+            if (filter === 'active') {
+                // Show active announcements
+                loadAnnouncements();
+            } else if (filter === 'archived') {
+                // Show archived announcements
+                const archivedData = window.archivedAnnouncementsData || [];
+                
+                if (archivedData.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 40px; background: #f8f9fc; border-radius: 8px; border: 1px solid #e3e8ef;">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="#999" style="margin-bottom: 15px;">
+                                <path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/>
+                            </svg>
+                            <p style="color: #666; margin: 0; font-size: 1.1em;">No archived announcements.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const archivedHtml = archivedData.map((ann, index) => {
+                    const dateStr = new Date(ann.created_at).toLocaleString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    const isAllBarangays = ann.target_barangay === 'All Barangays';
+                    
+                    return `
+                        <div style="background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%); border: 1px solid #e3e8ef; border-left: 4px solid #999; border-radius: 10px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); opacity: 0.85;">
+                            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#999">
+                                            <path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/>
+                                        </svg>
+                                        <h4 style="margin: 0; color: #666; font-size: 1.2em; font-weight: 600;">${ann.title}</h4>
+                                        <span style="background: #999; color: white; padding: 3px 8px; border-radius: 10px; font-size: 0.7em; font-weight: 600;">ARCHIVED</span>
+                                    </div>
+                                    ${isAllBarangays ? '<span style="background: #999; color: white; padding: 4px 10px; border-radius: 12px; font-size: 0.75em; font-weight: 600; letter-spacing: 0.5px; opacity: 0.7;">BROADCAST</span>' : ''}
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button onclick="restoreAnnouncement(${ann.id})" 
+                                        style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);"
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(40, 167, 69, 0.3)'" 
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(40, 167, 69, 0.2)'">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style="vertical-align: middle; margin-right: 4px;">
+                                            <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
+                                        </svg>
+                                        Restore
+                                    </button>
+                                    <button onclick="permanentDeleteAnnouncement(${ann.id})" 
+                                        style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9em; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);"
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(220, 53, 69, 0.3)'" 
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(220, 53, 69, 0.2)'">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="white" style="vertical-align: middle; margin-right: 4px;">
+                                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 15px 0; border: 1px solid #e3e8ef;">
+                                <p style="margin: 0; color: #555; line-height: 1.7; white-space: pre-wrap; font-size: 1em;">${ann.content}</p>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; padding-top: 16px; border-top: 1px solid #e3e8ef;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" stroke="#999" stroke-width="2" fill="none"/>
+                                        <circle cx="12" cy="9" r="2.5" stroke="#999" stroke-width="2" fill="none"/>
+                                    </svg>
+                                    <span style="color: #999; font-size: 0.95em; font-weight: 600;">
+                                        ${ann.target_barangay}
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="12" r="10" stroke="#999" stroke-width="2" fill="none"/>
+                                        <path d="M12 6v6l4 2" stroke="#999" stroke-width="2"/>
+                                    </svg>
+                                    <span style="color: #999; font-size: 0.85em;">${dateStr}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                container.innerHTML = archivedHtml;
+            }
+        }
+        
+        async function restoreAnnouncement(announcementId) {
+            const proceed = await showCustomConfirm('Are you sure you want to restore this announcement?', 'info');
+            if (!proceed) return;
+            
+            try {
+                const response = await fetch('api/announcements.php', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ announcement_id: announcementId, action: 'restore' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert('Announcement restored successfully', 'success');
+                    await loadAnnouncements();
+                    await loadArchivedAnnouncements();
+                    // Refresh the current view
+                    const activeBtn = document.querySelector('.announcement-filter-btn.active');
+                    if (activeBtn && activeBtn.dataset.filter === 'archived') {
+                        filterAnnouncements('archived');
+                    }
+                } else {
+                    showCustomAlert('Failed to restore announcement: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showCustomAlert('Error restoring announcement. Please try again.', 'error');
+            }
+        }
+        
+        async function permanentDeleteAnnouncement(announcementId) {
+            const firstConfirm = await showCustomConfirm('⚠️ WARNING: Are you sure you want to PERMANENTLY DELETE this announcement?<br><br>This action CANNOT be undone!', 'error');
+            if (!firstConfirm) return;
+            
+            const finalConfirm = await showCustomConfirm('FINAL CONFIRMATION: Permanently delete this announcement?', 'error');
+            if (!finalConfirm) return;
+            
+            try {
+                const response = await fetch('api/announcements.php', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ announcement_id: announcementId, action: 'permanent_delete' })
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    showCustomAlert('Announcement permanently deleted', 'success');
+                    await loadArchivedAnnouncements();
+                    // Refresh the current view
+                    const activeBtn = document.querySelector('.announcement-filter-btn.active');
+                    if (activeBtn && activeBtn.dataset.filter === 'archived') {
+                        filterAnnouncements('archived');
+                    }
+                } else {
+                    showCustomAlert('Failed to delete announcement: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showCustomAlert('Error deleting announcement. Please try again.', 'error');
+            }
+        }
+        
+        window.createAnnouncement = createAnnouncement;
+        window.archiveAnnouncement = archiveAnnouncement;
+        window.restoreAnnouncement = restoreAnnouncement;
+        window.permanentDeleteAnnouncement = permanentDeleteAnnouncement;
+        window.filterAnnouncements = filterAnnouncements;
+        
+        // ========== END ANNOUNCEMENTS FUNCTIONALITY ==========
+
         // Add event listeners for reset request filter buttons
         document.querySelectorAll('.reset-filter-btn').forEach(btn => {
             btn.addEventListener('click', function() {
@@ -4477,6 +5226,9 @@
             await loadArchivedUsers();
             await loadAllSubmissions();
             await loadResetRequests('pending');
+            loadBarangayDropdown(); // Load barangay dropdown (no await needed, uses global barangays array)
+            await loadAnnouncements();
+            await loadArchivedAnnouncements();
             initializeBarangaySearch(); // Initialize search functionality
             showContent('dashboard');
         })();

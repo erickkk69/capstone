@@ -156,10 +156,42 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
       margin-top: 10px;
+      position: relative;
     }
 
     .btn:hover {
       background-color: #004a99;
+    }
+    
+    .btn:disabled {
+      background-color: #6699cc;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    
+    .btn.loading {
+      color: transparent;
+    }
+    
+    .btn.loading::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      top: 50%;
+      left: 50%;
+      margin-left: -10px;
+      margin-top: -10px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spinner 0.8s linear infinite;
+    }
+    
+    @keyframes spinner {
+      to {
+        transform: rotate(360deg);
+      }
     }
     
     /* New style for login message */
@@ -296,6 +328,11 @@
 
             const email = emailInput.value.trim().toLowerCase();
             const password = passwordInput.value.trim();
+            
+            // Get the submit button and add loading state
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
 
             try {
                 const res = await fetch('api/login.php', {
@@ -326,6 +363,10 @@
                     }, 2000);
                 }
             } catch (err) {
+                // Remove loading state on error
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+                
                 // Check if error is from API response
                 if (err.message && err.message.includes('not registered')) {
                     // Email is not registered in the system

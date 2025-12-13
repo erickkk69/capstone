@@ -20,9 +20,11 @@ try {
     $pdo->exec("USE `" . DB_NAME . "`");
 
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+    $pdo->exec("DROP TABLE IF EXISTS announcement_reads");
     $pdo->exec("DROP TABLE IF EXISTS login_attempts");
     $pdo->exec("DROP TABLE IF EXISTS password_change_logs");
     $pdo->exec("DROP TABLE IF EXISTS password_reset_requests");
+    $pdo->exec("DROP TABLE IF EXISTS announcements");
     $pdo->exec("DROP TABLE IF EXISTS submissions");
     $pdo->exec("DROP TABLE IF EXISTS users");
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
@@ -60,6 +62,7 @@ try {
             status_changed_at VARCHAR(255) DEFAULT NULL,
             archived TINYINT(1) DEFAULT 0,
             user_id INT,
+            form_data JSON DEFAULT NULL,
             INDEX idx_status (status),
             INDEX idx_uploaded_by (uploaded_by),
             INDEX idx_archived (archived),
@@ -113,6 +116,33 @@ try {
             INDEX idx_locked_until (locked_until)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    $pdo->exec("CREATE TABLE announcements (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            content TEXT NOT NULL,
+            target_barangay VARCHAR(255) NOT NULL,
+            created_by INT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            is_read TINYINT(1) DEFAULT 0,
+            archived TINYINT(1) DEFAULT 0,
+            INDEX idx_target_barangay (target_barangay),
+            INDEX idx_created_at (created_at),
+            INDEX idx_archived (archived),
+            FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    $pdo->exec("CREATE TABLE announcement_reads (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            announcement_id INT NOT NULL,
+            user_id INT NOT NULL,
+            read_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_read (announcement_id, user_id),
+            INDEX idx_announcement_id (announcement_id),
+            INDEX idx_user_id (user_id),
+            FOREIGN KEY (announcement_id) REFERENCES announcements(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
     $defaultEmail = 'abcportal@gmail.com';
     $defaultPassword = 'abcpassword';
     $passwordHash = password_hash($defaultPassword, PASSWORD_DEFAULT);
@@ -125,7 +155,7 @@ try {
         'message' => 'Setup complete! Database reset successfully.',
         'details' => [
             'database' => DB_NAME,
-            'tables_created' => ['users', 'submissions', 'password_reset_requests', 'password_change_logs', 'login_attempts'],
+            'tables_created' => ['users', 'submissions', 'password_reset_requests', 'password_change_logs', 'login_attempts', 'announcements', 'announcement_reads'],
             'default_account' => [
                 'email' => $defaultEmail,
                 'password' => $defaultPassword,
