@@ -136,10 +136,17 @@ $html = '<!DOCTYPE html>
         .signature-box {
             text-align: center;
         }
+        .signature-image {
+            width: 150px;
+            height: 60px;
+            object-fit: contain;
+            margin: 10px auto;
+            display: block;
+        }
         .signature-line {
             border-bottom: 2px solid #000;
             width: 200px;
-            margin: 30px auto 5px;
+            margin: 10px auto 5px;
             font-weight: bold;
         }
         .signature-title {
@@ -378,12 +385,30 @@ if (isset($formData['captainName']) || isset($formData['secretaryName'])) {
     $html .= '
     <div class="signatures">
         <div class="signature-box">
-            <div class="signature-line">' . htmlspecialchars($formData['captainName'] ?? '') . '</div>
-            <div class="signature-title">PUNONG BARANGAY</div>
-        </div>
-        <div class="signature-box">
+            <p style="margin-bottom: 5px; font-size: 10pt;">Noted by:</p>';
+    
+    // Add secretary signature image if available
+    if (!empty($formData['secretarySignature'])) {
+        $html .= '
+            <img src="' . htmlspecialchars($formData['secretarySignature']) . '" alt="Secretary Signature" class="signature-image">';
+    }
+    
+    $html .= '
             <div class="signature-line">' . htmlspecialchars($formData['secretaryName'] ?? '') . '</div>
             <div class="signature-title">BARANGAY SECRETARY</div>
+        </div>
+        <div class="signature-box">
+            <p style="margin-bottom: 5px; font-size: 10pt;">Respectfully submitted,</p>';
+    
+    // Add captain signature image if available
+    if (!empty($formData['captainSignature'])) {
+        $html .= '
+            <img src="' . htmlspecialchars($formData['captainSignature']) . '" alt="Captain Signature" class="signature-image">';
+    }
+    
+    $html .= '
+            <div class="signature-line">' . htmlspecialchars($formData['captainName'] ?? '') . '</div>
+            <div class="signature-title">PUNONG BARANGAY</div>
         </div>
     </div>';
 }

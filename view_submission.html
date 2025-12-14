@@ -225,6 +225,16 @@
             margin: 0 20px;
         }
         
+        .signature-image {
+            width: 150px;
+            height: 60px;
+            object-fit: contain;
+            margin: 10px auto;
+            display: block;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+        }
+        
         .signature-line {
             font-weight: bold;
             border-bottom: 2px solid #000;
@@ -402,8 +412,16 @@
                     formData = typeof submission.form_data === 'string' 
                         ? JSON.parse(submission.form_data) 
                         : submission.form_data;
+                    
+                    // Debug: Check if signatures are present
+                    console.log('Loaded form data with signatures:', {
+                        captainSignature: formData.captainSignature ? 'Present' : 'Missing',
+                        secretarySignature: formData.secretarySignature ? 'Present' : 'Missing',
+                        captainSignatureLength: formData.captainSignature?.length,
+                        secretarySignatureLength: formData.secretarySignature?.length
+                    });
                 } catch (e) {
-                    // Error parsing form data
+                    console.error('Error parsing form data:', e);
                 }
             }
             
@@ -665,12 +683,16 @@
             html += `
                 <div class="signature-section">
                     <div class="signature-box">
-                        <div class="signature-line">${data.captainName || ''}</div>
-                        <div class="signature-title">PUNONG BARANGAY</div>
-                    </div>
-                    <div class="signature-box">
+                        <p style="margin-bottom: 5px; font-size: 12px;">Noted by:</p>
+                        ${data.secretarySignature ? `<img src="${data.secretarySignature}" alt="Secretary Signature" class="signature-image">` : ''}
                         <div class="signature-line">${data.secretaryName || ''}</div>
                         <div class="signature-title">BARANGAY SECRETARY</div>
+                    </div>
+                    <div class="signature-box">
+                        <p style="margin-bottom: 5px; font-size: 12px;">Respectfully submitted,</p>
+                        ${data.captainSignature ? `<img src="${data.captainSignature}" alt="Captain Signature" class="signature-image">` : ''}
+                        <div class="signature-line">${data.captainName || ''}</div>
+                        <div class="signature-title">PUNONG BARANGAY</div>
                     </div>
                 </div>
             `;

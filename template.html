@@ -136,6 +136,53 @@
             font-size: 14px;
         }
         
+        .e-signature {
+            width: 150px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 5px;
+            border: 1px dashed #ccc;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        
+        .signature-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 10px 0;
+        }
+        
+        .signature-section.left .signature-upload-container {
+            align-items: flex-start;
+        }
+        
+        .signature-section.right .signature-upload-container {
+            align-items: flex-end;
+        }
+        
+        .signature-upload-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: #004c99;
+            color: white;
+            font-size: 11px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .signature-upload-btn:hover {
+            background-color: #003a80;
+        }
+        
+        .signature-file-input {
+            display: none;
+        }
+        
         .signature-input {
             width: 250px;
             text-align: center;
@@ -618,6 +665,11 @@
         <div class="signature-container">
             <div class="signature-section left">
                 <div>Noted by:</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="admin-secretary-signature-img" onclick="document.getElementById('admin-secretary-signature-file').click()">
+                    <input type="file" id="admin-secretary-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('admin-secretary')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('admin-secretary-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="admin-secretary-name" placeholder="[Barangay Secretary's Name]">
@@ -627,6 +679,11 @@
             
             <div class="signature-section right">
                 <div>Respectfully submitted,</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="admin-captain-signature-img" onclick="document.getElementById('admin-captain-signature-file').click()">
+                    <input type="file" id="admin-captain-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('admin-captain')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('admin-captain-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="admin-captain-name" placeholder="[Barangay Captain's Name]">
@@ -723,6 +780,11 @@
         <div class="signature-container">
             <div class="signature-section left">
                 <div>Noted by:</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="res-secretary-signature-img" onclick="document.getElementById('res-secretary-signature-file').click()">
+                    <input type="file" id="res-secretary-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('res-secretary')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('res-secretary-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="res-secretary-name" placeholder="[Barangay Secretary's Name]">
@@ -732,6 +794,11 @@
             
             <div class="signature-section right">
                 <div>Respectfully submitted,</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="res-captain-signature-img" onclick="document.getElementById('res-captain-signature-file').click()">
+                    <input type="file" id="res-captain-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('res-captain')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('res-captain-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="res-captain-name" placeholder="[Barangay Captain's Name]">
@@ -841,6 +908,11 @@
         <div class="signature-container">
             <div class="signature-section left">
                 <div>Noted by:</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="plan-secretary-signature-img" onclick="document.getElementById('plan-secretary-signature-file').click()">
+                    <input type="file" id="plan-secretary-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('plan-secretary')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('plan-secretary-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="plan-secretary-name" placeholder="[Barangay Secretary's Name]">
@@ -850,6 +922,11 @@
             
             <div class="signature-section right">
                 <div>Respectfully submitted,</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="plan-captain-signature-img" onclick="document.getElementById('plan-captain-signature-file').click()">
+                    <input type="file" id="plan-captain-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('plan-captain')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('plan-captain-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="plan-captain-name" placeholder="[Barangay Captain's Name]">
@@ -938,6 +1015,11 @@
         <div class="signature-container">
             <div class="signature-section left">
                 <div>Noted by:</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="peace-secretary-signature-img" onclick="document.getElementById('peace-secretary-signature-file').click()">
+                    <input type="file" id="peace-secretary-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('peace-secretary')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('peace-secretary-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="peace-secretary-name" placeholder="[Barangay Secretary's Name]">
@@ -947,6 +1029,11 @@
             
             <div class="signature-section right">
                 <div>Respectfully submitted,</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="peace-captain-signature-img" onclick="document.getElementById('peace-captain-signature-file').click()">
+                    <input type="file" id="peace-captain-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('peace-captain')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('peace-captain-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="peace-captain-name" placeholder="[Barangay Captain's Name]">
@@ -1035,6 +1122,11 @@
         <div class="signature-container">
             <div class="signature-section left">
                 <div>Noted by:</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="welfare-secretary-signature-img" onclick="document.getElementById('welfare-secretary-signature-file').click()">
+                    <input type="file" id="welfare-secretary-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('welfare-secretary')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('welfare-secretary-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="welfare-secretary-name" placeholder="[Barangay Secretary's Name]">
@@ -1044,6 +1136,11 @@
             
             <div class="signature-section right">
                 <div>Respectfully submitted,</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="welfare-captain-signature-img" onclick="document.getElementById('welfare-captain-signature-file').click()">
+                    <input type="file" id="welfare-captain-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('welfare-captain')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('welfare-captain-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="welfare-captain-name" placeholder="[Barangay Captain's Name]">
@@ -1132,6 +1229,11 @@
         <div class="signature-container">
             <div class="signature-section left">
                 <div>Noted by:</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="sk-secretary-signature-img" onclick="document.getElementById('sk-secretary-signature-file').click()">
+                    <input type="file" id="sk-secretary-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('sk-secretary')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('sk-secretary-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="sk-secretary-name" placeholder="[Barangay Secretary's Name]">
@@ -1141,6 +1243,11 @@
             
             <div class="signature-section right">
                 <div>Respectfully submitted,</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="sk-captain-signature-img" onclick="document.getElementById('sk-captain-signature-file').click()">
+                    <input type="file" id="sk-captain-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('sk-captain')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('sk-captain-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="sk-captain-name" placeholder="[Barangay Captain's Name]">
@@ -1239,6 +1346,11 @@
         <div class="signature-container">
             <div class="signature-section left">
                 <div>Noted by:</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="others-secretary-signature-img" onclick="document.getElementById('others-secretary-signature-file').click()">
+                    <input type="file" id="others-secretary-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('others-secretary')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('others-secretary-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="others-secretary-name" placeholder="[Barangay Secretary's Name]">
@@ -1248,6 +1360,11 @@
             
             <div class="signature-section right">
                 <div>Respectfully submitted,</div>
+                <div class="signature-upload-container">
+                    <img src="" alt="E-Signature" class="e-signature" id="others-captain-signature-img" onclick="document.getElementById('others-captain-signature-file').click()">
+                    <input type="file" id="others-captain-signature-file" class="signature-file-input" accept="image/*" onchange="uploadSignature('others-captain')">
+                    <button type="button" class="signature-upload-btn" onclick="document.getElementById('others-captain-signature-file').click()">Upload Signature</button>
+                </div>
                 <div class="signature-line"></div>
                 <div class="signature-name">
                     <input type="text" class="signature-input" id="others-captain-name" placeholder="[Barangay Captain's Name]">
@@ -1265,6 +1382,40 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
+        // Upload signature function
+        function uploadSignature(prefix) {
+            const fileInput = document.getElementById(`${prefix}-signature-file`);
+            const imgElement = document.getElementById(`${prefix}-signature-img`);
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload an image file.');
+                    return;
+                }
+                
+                // Validate file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('Image size should not exceed 2MB.');
+                    return;
+                }
+                
+                // Create a FileReader to read the image
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Set the image source to the uploaded file
+                    imgElement.src = e.target.result;
+                    imgElement.style.border = '1px solid #004c99';
+                    imgElement.style.backgroundColor = '#fff';
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+        
         // Check authentication
         async function checkAuth() {
             try {
@@ -1369,6 +1520,12 @@
             data.captainName = document.getElementById(`${fieldPrefix}-captain-name`)?.value || '';
             data.secretaryName = document.getElementById(`${fieldPrefix}-secretary-name`)?.value || '';
             data.barangaySignature = document.getElementById(`${fieldPrefix}-barangay-signature`)?.value || '';
+            
+            // Get e-signatures
+            const captainSigImg = document.getElementById(`${fieldPrefix}-captain-signature-img`);
+            const secretarySigImg = document.getElementById(`${fieldPrefix}-secretary-signature-img`);
+            data.captainSignature = captainSigImg?.src || '';
+            data.secretarySignature = secretarySigImg?.src || '';
             
             // Category-specific fields
             if (category === 'administrative') {
@@ -1581,27 +1738,46 @@
             
             // Signatures
             const pageHeight = doc.internal.pageSize.getHeight();
-            yPos = Math.max(yPos + 20, pageHeight - 60);
+            yPos = Math.max(yPos + 20, pageHeight - 70);
             
             doc.setFontSize(11);
             doc.setFont('helvetica', 'normal');
-            doc.text('Prepared by:', margin, yPos);
-            doc.text('Noted by:', pageWidth / 2 + 10, yPos);
+            doc.text('Noted by:', margin, yPos);
+            doc.text('Respectfully submitted,', pageWidth / 2 + 10, yPos);
+            
+            yPos += 5;
+            
+            // Add e-signatures if available
+            if (formData.secretarySignature && formData.secretarySignature !== '') {
+                try {
+                    doc.addImage(formData.secretarySignature, 'PNG', margin, yPos, 30, 12);
+                } catch (e) {
+                    console.log('Failed to add secretary signature to PDF');
+                }
+            }
+            
+            if (formData.captainSignature && formData.captainSignature !== '') {
+                try {
+                    doc.addImage(formData.captainSignature, 'PNG', pageWidth / 2 + 10, yPos, 30, 12);
+                } catch (e) {
+                    console.log('Failed to add captain signature to PDF');
+                }
+            }
             
             yPos += 15;
-            doc.setFont('helvetica', 'bold');
-            doc.text(formData.captainName || '___________________', margin, yPos);
-            doc.text(formData.secretaryName || '___________________', pageWidth / 2 + 10, yPos);
-            
-            yPos += 2;
             doc.line(margin, yPos, margin + 60, yPos);
             doc.line(pageWidth / 2 + 10, yPos, pageWidth / 2 + 70, yPos);
             
             yPos += 5;
-            doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
-            doc.text('PUNONG BARANGAY', margin, yPos);
-            doc.text('BARANGAY SECRETARY', pageWidth / 2 + 10, yPos);
+            doc.text(formData.secretaryName || '___________________', margin, yPos);
+            doc.text(formData.captainName || '___________________', pageWidth / 2 + 10, yPos);
+            
+            yPos += 5;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'italic');
+            doc.text('Barangay Secretary', margin, yPos);
+            doc.text('Punong Barangay', pageWidth / 2 + 10, yPos);
             
             // Convert to blob
             const blob = doc.output('blob');
@@ -1712,6 +1888,14 @@
             
             // Get all form data after validation
             const formData = getFormData(category);
+            
+            // Debug: Log signature data
+            console.log('Form data with signatures:', {
+                captainSignature: formData.captainSignature ? 'Present' : 'Missing',
+                secretarySignature: formData.secretarySignature ? 'Present' : 'Missing',
+                captainSignatureLength: formData.captainSignature?.length,
+                secretarySignatureLength: formData.secretarySignature?.length
+            });
             
             // Show loading message - find the submit button for this category
             const submitBtn = document.querySelector(`#${category} .btn-submit`);
