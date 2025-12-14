@@ -101,12 +101,13 @@ try {
             exit;
         }
         
+        // Insert into announcement_reads table to mark as read for this user
         $stmt = $pdo->prepare("
-            UPDATE announcements 
-            SET is_read = 1 
-            WHERE id = ?
+            INSERT INTO announcement_reads (announcement_id, user_id, read_at)
+            VALUES (?, ?, NOW())
+            ON DUPLICATE KEY UPDATE read_at = NOW()
         ");
-        $stmt->execute([$announcement_id]);
+        $stmt->execute([$announcement_id, $_SESSION['user_id']]);
         
         echo json_encode([
             'ok' => true,

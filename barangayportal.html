@@ -764,6 +764,190 @@
         box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
     }
 
+    /* Notification Bell Styles */
+    .notification-bell {
+        position: relative;
+        cursor: pointer;
+        margin-right: 15px;
+    }
+
+    .notification-bell svg {
+        width: 28px;
+        height: 28px;
+        fill: white;
+        transition: transform 0.2s;
+    }
+
+    .notification-bell:hover svg {
+        transform: scale(1.1);
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #dc3545;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7em;
+        font-weight: bold;
+        display: none;
+        animation: pulse 2s infinite;
+    }
+
+    .notification-badge.show {
+        display: flex;
+    }
+
+    .notification-dropdown {
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        width: 400px;
+        max-height: 500px;
+        z-index: 10000;
+        display: none;
+        overflow: hidden;
+    }
+
+    .notification-dropdown.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .notification-dropdown-header {
+        padding: 15px 20px;
+        border-bottom: 2px solid #eee;
+        background: #f8f9fa;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .notification-dropdown-header h3 {
+        margin: 0;
+        font-size: 1.1em;
+        color: #333;
+    }
+
+    .mark-all-read {
+        background: none;
+        border: none;
+        color: #0066cc;
+        cursor: pointer;
+        font-size: 0.9em;
+        padding: 0;
+        margin: 0;
+    }
+
+    .mark-all-read:hover {
+        color: #22ff00;
+        background: none;
+        border: none;
+    }
+
+    .notification-dropdown-body {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .notification-item {
+        padding: 15px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background 0.2s;
+        position: relative;
+    }
+
+    .notification-item:hover {
+        background: #f8f9fa;
+    }
+
+    .notification-item.unread {
+        background: #fff9e6;
+        border-left: 4px solid #ffc107;
+    }
+
+    .notification-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 5px;
+    }
+
+    .notification-item-title {
+        font-weight: bold;
+        color: #004c99;
+        font-size: 0.95em;
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .notification-item-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .notification-item-action {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.2em;
+        padding: 0;
+        margin: 0;
+        opacity: 0.6;
+        transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .notification-item-action:hover {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+
+    .notification-item-content {
+        font-size: 0.85em;
+        color: #666;
+        margin-bottom: 5px;
+        line-height: 1.4;
+    }
+
+    .notification-item-time {
+        font-size: 0.75em;
+        color: #999;
+    }
+
+    .notification-empty {
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+    }
+
+    .notification-empty svg {
+        width: 60px;
+        height: 60px;
+        fill: #ddd;
+        margin-bottom: 10px;
+    }
+
   </style>
 </head>
 <body>
@@ -773,11 +957,35 @@
       <h1 id="portalTitle">Barangay Secretary Portal</h1>
     </div>
     <div class="header-right">
+      <!-- Notification Bell -->
+      <div class="notification-bell" id="notificationBell" onclick="toggleNotificationDropdown()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+        </svg>
+        <span class="notification-badge" id="notificationBadge">0</span>
+      </div>
+      
       <div class="user-info">
         <span id="userInfoText">Barangay Secretary</span>
       </div>
     </div>
   </header>
+
+  <!-- Notification Dropdown -->
+  <div class="notification-dropdown" id="notificationDropdown">
+    <div class="notification-dropdown-header">
+      <h3>Notifications</h3>
+      <button class="mark-all-read" onclick="markAllAnnouncementsAsRead()">Mark all as read</button>
+    </div>
+    <div class="notification-dropdown-body" id="notificationDropdownBody">
+      <div class="notification-empty">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+        </svg>
+        <p>No new notifications</p>
+      </div>
+    </div>
+  </div>
 
   <div class="main-layout">
     <nav class="sidebar">
@@ -980,8 +1188,15 @@
 
       <!-- Announcements Section -->
       <div id="announcements" class="card">
-        <h2>Announcements</h2>
-        <p style="color: #666; margin-bottom: 20px;">Stay updated with important announcements from ABC</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <div>
+            <h2 style="margin: 0;">Announcements</h2>
+            <p style="color: #666; margin: 5px 0 0 0;">Stay updated with important announcements from ABC</p>
+          </div>
+          <button id="show-hidden-announcements-btn" onclick="toggleHiddenAnnouncements()" style="display: none; background: #00ff1e; padding: 8px 16px; margin: 0;">
+            Show Hidden (<span id="hidden-count">0</span>)
+          </button>
+        </div>
         
         <div id="announcements-list" style="min-height: 100px;">
           <div style="text-align: center; padding: 40px; color: #999;">
@@ -1122,13 +1337,30 @@
       // Update the header based on user
       userInfoText.textContent = `${loggedInUser.barangay}`;
       portalTitle.textContent = `${loggedInUser.barangay} Portal`;
-      logoutLink.href = 'index.html'; 
-            
-      // Clear session storage on logout
+      // Clear session storage on logout with confirmation
       logoutLink.addEventListener('click', async (e) => {
-        // Best-effort logout on backend too
-        try { await fetch('api/logout.php', { method: 'POST' }); } catch {}
-        sessionStorage.removeItem('loggedInUser');
+        e.preventDefault(); // Prevent default navigation
+        
+        // Show custom confirmation alert
+        const confirmed = await showCustomConfirm(
+          'Are you sure you want to logout from the Barangay Secretary Portal?',
+          'warning'
+        );
+        
+        if (confirmed) {
+          // Best-effort logout on backend
+          try { 
+            await fetch('api/logout.php', { method: 'POST' }); 
+          } catch {}
+          
+          // Clear session storage
+          sessionStorage.removeItem('loggedInUser');
+          
+          // Show logout success message and redirect
+          showCustomAlert('You have been logged out successfully.', 'success', function() {
+            window.location.href = 'index.html';
+          });
+        }
       });
 
         const sidebarLinks = document.querySelectorAll('.sidebar a.sidebar-link:not(#logout-link)');
@@ -1946,6 +2178,9 @@
 
     // ===== ANNOUNCEMENTS SECTION =====
     
+    // Store announcements globally
+    let allAnnouncements = [];
+    
     async function loadAnnouncements() {
       try {
         const response = await fetch('api/announcements.php');
@@ -1957,18 +2192,25 @@
         if (!result.ok) {
           container.innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">Error: ' + (result.error || 'Failed to load') + '</p>';
           updateSidebarBadge('announcementsNotifBadge', 0);
+          updateNotificationBadge(0);
           return;
         }
         
         if (!result.announcements || result.announcements.length === 0) {
           container.innerHTML = '<p style="text-align: center; color: #666; padding: 20px;">No announcements at this time.</p>';
           updateSidebarBadge('announcementsNotifBadge', 0);
+          updateNotificationBadge(0);
+          allAnnouncements = [];
           return;
         }
+        
+        // Store announcements globally
+        allAnnouncements = result.announcements;
         
         // Count unread announcements
         const unreadCount = result.announcements.filter(ann => !ann.is_read).length;
         updateSidebarBadge('announcementsNotifBadge', unreadCount);
+        updateNotificationBadge(unreadCount);
         
         const announcementsHtml = result.announcements.map(ann => {
           const date = new Date(ann.created_at);
@@ -1981,17 +2223,32 @@
           });
           
           const isUnread = !ann.is_read;
+          const isHidden = hiddenAnnouncements.has(ann.id);
           
           return `
-            <div style="background: ${isUnread ? '#fff9e6' : 'white'}; border-left: 4px solid ${isUnread ? '#ffc107' : '#ddd'}; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-              ${isUnread ? '<span style="background: #ffc107; color: #000; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; margin-bottom: 10px; display: inline-block;">NEW</span>' : ''}
-              <h4 style="margin: ${isUnread ? '5px 0 10px 0' : '0 0 10px 0'}; color: #004c99;">${ann.title}</h4>
-              <p style="margin: 10px 0; color: #333; line-height: 1.6; white-space: pre-wrap;">${ann.content}</p>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
-                <span style="color: #666; font-size: 0.9em;">
-                  <strong>From:</strong> ABC Portal
-                </span>
-                <span style="color: #999; font-size: 0.85em;">${dateStr}</span>
+            <div class="announcement-card" data-announcement-id="${ann.id}" style="background: ${isUnread ? '#fff9e6' : 'white'}; border-left: 4px solid ${isUnread ? '#ffc107' : '#ddd'}; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: ${isHidden ? 'none' : 'block'};">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <div style="flex: 1;">
+                  ${isUnread ? '<span style="background: #ffc107; color: #000; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; margin-bottom: 5px; display: inline-block;">NEW</span>' : ''}
+                  <h4 style="margin: ${isUnread ? '5px 0 0 0' : '0'}; color: #004c99;">${ann.title}</h4>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button onclick="toggleAnnouncementContent(${ann.id})" class="announcement-toggle-btn" style="background: none; border: 1px solid #ccc; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; color: #666; margin: 0;" title="Collapse/Expand">
+                    <span id="toggle-text-${ann.id}">▼</span>
+                  </button>
+                  <button onclick="hideAnnouncement(${ann.id})" style="background: none; border: 1px solid #dc3545; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; color: #dc3545; margin: 0;" title="Hide this announcement">
+                    Hide
+                  </button>
+                </div>
+              </div>
+              <div id="announcement-content-${ann.id}" class="announcement-content" style="display: block;">
+                <p style="margin: 10px 0; color: #333; line-height: 1.6; white-space: pre-wrap;">${ann.content}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee;">
+                  <span style="color: #666; font-size: 0.9em;">
+                    <strong>From:</strong> ABC Portal
+                  </span>
+                  <span style="color: #999; font-size: 0.85em;">${dateStr}</span>
+                </div>
               </div>
             </div>
           `;
@@ -1999,10 +2256,349 @@
         
         container.innerHTML = announcementsHtml;
         
+        // Update dashboard notifications
+        updateDashboardNotifications();
+        
+        // Update hidden announcements button
+        updateHiddenAnnouncementsButton();
+        
       } catch (error) {
         document.getElementById('announcements-list').innerHTML = '<p style="text-align: center; color: #dc3545; padding: 20px;">Error loading announcements.</p>';
         updateSidebarBadge('announcementsNotifBadge', 0);
+        updateNotificationBadge(0);
       }
+    }
+    
+    // Store hidden announcements in a Set
+    let hiddenAnnouncements = new Set();
+    
+    // Toggle announcement content (collapse/expand)
+    function toggleAnnouncementContent(announcementId) {
+      const content = document.getElementById(`announcement-content-${announcementId}`);
+      const toggleText = document.getElementById(`toggle-text-${announcementId}`);
+      
+      if (content && toggleText) {
+        if (content.style.display === 'none') {
+          content.style.display = 'block';
+          toggleText.textContent = '▼';
+        } else {
+          content.style.display = 'none';
+          toggleText.textContent = '▶';
+        }
+      }
+    }
+    
+    // Hide announcement
+    function hideAnnouncement(announcementId) {
+      const card = document.querySelector(`.announcement-card[data-announcement-id="${announcementId}"]`);
+      
+      if (card) {
+        // Add to hidden set
+        hiddenAnnouncements.add(announcementId);
+        
+        // Animate hide
+        card.style.transition = 'opacity 0.3s, transform 0.3s';
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+          card.style.display = 'none';
+          updateHiddenAnnouncementsButton();
+        }, 300);
+      }
+    }
+    
+    // Show hidden announcement
+    function showAnnouncement(announcementId) {
+      const card = document.querySelector(`.announcement-card[data-announcement-id="${announcementId}"]`);
+      
+      if (card) {
+        // Remove from hidden set
+        hiddenAnnouncements.delete(announcementId);
+        
+        // Show with animation
+        card.style.display = 'block';
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(-20px)';
+        
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.3s, transform 0.3s';
+          card.style.opacity = '1';
+          card.style.transform = 'translateX(0)';
+          updateHiddenAnnouncementsButton();
+        }, 10);
+      }
+    }
+    
+    // Update hidden announcements button
+    function updateHiddenAnnouncementsButton() {
+      const btn = document.getElementById('show-hidden-announcements-btn');
+      const countSpan = document.getElementById('hidden-count');
+      
+      if (btn && countSpan) {
+        const hiddenCount = hiddenAnnouncements.size;
+        countSpan.textContent = hiddenCount;
+        
+        if (hiddenCount > 0) {
+          btn.style.display = 'block';
+        } else {
+          btn.style.display = 'none';
+        }
+      }
+    }
+    
+    // Toggle showing hidden announcements
+    function toggleHiddenAnnouncements() {
+      const hiddenArray = Array.from(hiddenAnnouncements);
+      
+      if (hiddenArray.length > 0) {
+        // Show all hidden announcements
+        hiddenArray.forEach(id => showAnnouncement(id));
+        hiddenAnnouncements.clear();
+        updateHiddenAnnouncementsButton();
+      }
+    }
+    
+    // Update notification badge in header
+    function updateNotificationBadge(count) {
+      const badge = document.getElementById('notificationBadge');
+      if (badge) {
+        badge.textContent = count;
+        if (count > 0) {
+          badge.classList.add('show');
+        } else {
+          badge.classList.remove('show');
+        }
+      }
+    }
+    
+    // Toggle notification dropdown
+    function toggleNotificationDropdown() {
+      const dropdown = document.getElementById('notificationDropdown');
+      if (dropdown) {
+        const isShowing = dropdown.classList.contains('show');
+        if (isShowing) {
+          dropdown.classList.remove('show');
+        } else {
+          dropdown.classList.add('show');
+          renderNotificationDropdown();
+        }
+      }
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('notificationDropdown');
+      const bell = document.getElementById('notificationBell');
+      
+      if (dropdown && bell && !dropdown.contains(event.target) && !bell.contains(event.target)) {
+        dropdown.classList.remove('show');
+      }
+    });
+    
+    // Render notification dropdown content
+    function renderNotificationDropdown() {
+      const dropdownBody = document.getElementById('notificationDropdownBody');
+      if (!dropdownBody) return;
+      
+      if (allAnnouncements.length === 0) {
+        dropdownBody.innerHTML = `
+          <div class="notification-empty">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+            </svg>
+            <p>No new notifications</p>
+          </div>
+        `;
+        return;
+      }
+      
+      // Show only recent 5 announcements
+      const recentAnnouncements = allAnnouncements.slice(0, 5);
+      
+      const notificationsHtml = recentAnnouncements.map(ann => {
+        const date = new Date(ann.created_at);
+        const timeAgo = getTimeAgo(date);
+        const isUnread = !ann.is_read;
+        
+        // Truncate content for preview
+        const contentPreview = ann.content.length > 80 
+          ? ann.content.substring(0, 80) + '...' 
+          : ann.content;
+        
+        return `
+          <div class="notification-item ${isUnread ? 'unread' : ''}" data-announcement-id="${ann.id}">
+            <div class="notification-item-header">
+              <div class="notification-item-title">${ann.title}</div>
+              <div class="notification-item-actions">
+                ${isUnread ? `<button class="notification-item-action" onclick="markAnnouncementAsRead(${ann.id}, event)" title="Mark as read">✓</button>` : ''}
+                <button class="notification-item-action" onclick="deleteNotification(${ann.id}, event)" title="Remove">✕</button>
+              </div>
+            </div>
+            <div class="notification-item-content">${contentPreview}</div>
+            <div class="notification-item-time">${timeAgo}</div>
+          </div>
+        `;
+      }).join('');
+      
+      dropdownBody.innerHTML = notificationsHtml;
+    }
+    
+    // Get relative time (e.g., "2 hours ago")
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+      
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+      if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+      
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    
+    // Mark single announcement as read
+    async function markAnnouncementAsRead(announcementId, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      
+      try {
+        const response = await fetch('api/announcements.php', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            announcement_id: announcementId
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.ok) {
+          // Update local state
+          const announcement = allAnnouncements.find(a => a.id === announcementId);
+          if (announcement) {
+            announcement.is_read = 1;
+          }
+          
+          // Update UI
+          const unreadCount = allAnnouncements.filter(ann => !ann.is_read).length;
+          updateSidebarBadge('announcementsNotifBadge', unreadCount);
+          updateNotificationBadge(unreadCount);
+          
+          // Refresh dropdown
+          renderNotificationDropdown();
+          
+          // Refresh announcements page if currently viewing
+          await loadAnnouncements();
+        }
+      } catch (error) {
+        console.error('Error marking announcement as read:', error);
+      }
+    }
+    
+    // Mark all announcements as read
+    async function markAllAnnouncementsAsRead() {
+      const unreadAnnouncements = allAnnouncements.filter(ann => !ann.is_read);
+      
+      if (unreadAnnouncements.length === 0) {
+        return;
+      }
+      
+      try {
+        // Mark all unread announcements as read
+        const promises = unreadAnnouncements.map(ann => 
+          fetch('api/announcements.php', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              announcement_id: ann.id
+            })
+          })
+        );
+        
+        await Promise.all(promises);
+        
+        // Update local state
+        allAnnouncements.forEach(ann => {
+          ann.is_read = 1;
+        });
+        
+        // Update UI
+        updateSidebarBadge('announcementsNotifBadge', 0);
+        updateNotificationBadge(0);
+        
+        // Refresh dropdown
+        renderNotificationDropdown();
+        
+        // Refresh announcements page if currently viewing
+        await loadAnnouncements();
+        
+      } catch (error) {
+        console.error('Error marking all announcements as read:', error);
+      }
+    }
+    
+    // Delete/remove notification (local only - just hides from dropdown)
+    function deleteNotification(announcementId, event) {
+      if (event) {
+        event.stopPropagation();
+      }
+      
+      // Mark as read first
+      markAnnouncementAsRead(announcementId, null);
+      
+      // Remove from dropdown immediately
+      const notificationItem = document.querySelector(`.notification-item[data-announcement-id="${announcementId}"]`);
+      if (notificationItem) {
+        notificationItem.style.transition = 'opacity 0.3s, transform 0.3s';
+        notificationItem.style.opacity = '0';
+        notificationItem.style.transform = 'translateX(100%)';
+        
+        setTimeout(() => {
+          notificationItem.remove();
+          
+          // Check if dropdown is now empty
+          const remainingItems = document.querySelectorAll('.notification-item');
+          if (remainingItems.length === 0) {
+            renderNotificationDropdown();
+          }
+        }, 300);
+      }
+    }
+    
+    // Update dashboard notifications section
+    function updateDashboardNotifications() {
+      const notificationsContainer = document.getElementById('notifications-container');
+      if (!notificationsContainer) return;
+      
+      const unreadAnnouncements = allAnnouncements.filter(ann => !ann.is_read).slice(0, 3);
+      
+      if (unreadAnnouncements.length === 0) {
+        notificationsContainer.innerHTML = '<div class="notif">No new notifications <span class="notif-timestamp">--</span></div>';
+        return;
+      }
+      
+      const notificationsHtml = unreadAnnouncements.map(ann => {
+        const date = new Date(ann.created_at);
+        const timeAgo = getTimeAgo(date);
+        
+        return `
+          <div class="notif">
+            <strong>${ann.title}</strong> - ${ann.content.substring(0, 60)}${ann.content.length > 60 ? '...' : ''}
+            <span class="notif-timestamp">${timeAgo}</span>
+          </div>
+        `;
+      }).join('');
+      
+      notificationsContainer.innerHTML = notificationsHtml;
     }
 
     // ===== ARCHIVED SUBMISSIONS SECTION =====

@@ -373,11 +373,81 @@
     .chart-container canvas {
         max-height: 400px;
     }
+    
+    /* Multi-Chart Grid Layout */
+    .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .chart-box {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 76, 153, 0.08);
+        border: 1px solid #e3e8ef;
+    }
+    
+    .chart-box h4 {
+        margin: 0 0 15px 0;
+        color: #004c99;
+        font-size: 1.1em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .chart-box canvas {
+        max-height: 300px;
+    }
+    
+    .chart-type-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    
+    .chart-tab {
+        padding: 10px 20px;
+        background: white;
+        border: 2px solid #004c99;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #004c99;
+        transition: all 0.3s ease;
+    }
+    
+    .chart-tab:hover {
+        background: #e8f4f8;
+    }
+    
+    .chart-tab.active {
+        background: #004c99;
+        color: white;
+    }
 
     /* Responsive adjustments for analytics */
     @media (max-width: 768px) {
         .analytics-filters {
             flex-direction: column;
+        }
+        
+        .charts-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .chart-type-tabs {
+            justify-content: center;
+        }
+        
+        .chart-tab {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
             align-items: stretch;
         }
         
@@ -1468,9 +1538,94 @@
             </div>
           </div>
           
-          <!-- Chart Container -->
-          <div class="chart-container">
-            <canvas id="chartSubmissions"></canvas>
+          <!-- Chart Type Selection Tabs -->
+          <div class="chart-type-tabs">
+            <button class="chart-tab active" onclick="switchChartView('documents')">📄 Documents</button>
+            <button class="chart-tab" onclick="switchChartView('users')">👥 Users</button>
+            <button class="chart-tab" onclick="switchChartView('engagement')">📈 Engagement</button>
+            <button class="chart-tab" onclick="switchChartView('trends')">📊 Trends</button>
+          </div>
+          
+          <!-- Documents View -->
+          <div id="view-documents" class="chart-view">
+            <div class="chart-container">
+              <h4 style="margin: 0 0 15px 0; color: #004c99;">📄 Document Submissions by Barangay</h4>
+              <canvas id="chartSubmissions"></canvas>
+            </div>
+            
+            <div class="charts-grid" style="margin-top: 20px;">
+              <div class="chart-box">
+                <h4>📊 Status Distribution</h4>
+                <canvas id="chartStatusPie"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>📂 Category Distribution</h4>
+                <canvas id="chartCategoryPie"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Users View -->
+          <div id="view-users" class="chart-view" style="display: none;">
+            <div class="charts-grid">
+              <div class="chart-box">
+                <h4>👥 User Distribution by Barangay</h4>
+                <canvas id="chartUsersByBarangay"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>📊 User Status Overview</h4>
+                <canvas id="chartUserStatus"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>🔐 Password Reset Requests</h4>
+                <canvas id="chartResetRequests"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>📈 User Activity Trend</h4>
+                <canvas id="chartUserTrend"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Engagement View -->
+          <div id="view-engagement" class="chart-view" style="display: none;">
+            <div class="charts-grid">
+              <div class="chart-box">
+                <h4>🏛️ Barangay Participation Rate</h4>
+                <canvas id="chartParticipation"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>📊 Top Performing Barangays</h4>
+                <canvas id="chartTopBarangays"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>⚠️ Barangays Needing Attention</h4>
+                <canvas id="chartNeedsAttention"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>📈 Submission Growth Rate</h4>
+                <canvas id="chartGrowthRate"></canvas>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Trends View -->
+          <div id="view-trends" class="chart-view" style="display: none;">
+            <div class="chart-container">
+              <h4 style="margin: 0 0 15px 0; color: #004c99;">📅 Monthly Submission Trends</h4>
+              <canvas id="chartMonthlyTrend"></canvas>
+            </div>
+            
+            <div class="charts-grid" style="margin-top: 20px;">
+              <div class="chart-box">
+                <h4>⏰ Recent Activity (Last 30 Days)</h4>
+                <canvas id="chartRecentActivity"></canvas>
+              </div>
+              <div class="chart-box">
+                <h4>🔄 Approval Rate Trend</h4>
+                <canvas id="chartApprovalRate"></canvas>
+              </div>
+            </div>
           </div>
         </div>
         
@@ -2044,12 +2199,44 @@
         }
     }
 
+    // Load users data for analytics
+    async function loadUsersData() {
+        try {
+            const res = await fetch('api/users.php');
+            const data = await res.json();
+            if (data.ok && Array.isArray(data.users)) {
+                allUsers = data.users.filter(u => u.status === 'active');
+            }
+        } catch (error) {
+            console.error('Error loading users data:', error);
+            allUsers = [];
+        }
+    }
+    
+    // Load reset requests data for analytics
+    async function loadResetRequestsData() {
+        try {
+            const res = await fetch('api/get_reset_requests.php');
+            const data = await res.json();
+            if (data.ok && Array.isArray(data.requests)) {
+                allResetRequests = data.requests;
+            }
+        } catch (error) {
+            console.error('Error loading reset requests data:', error);
+            allResetRequests = [];
+        }
+    }
+
     // Load all submissions
     async function loadAllSubmissions() {
         const indicator = document.getElementById('autoRefreshIndicator');
         try {
             // Show refreshing state
             if (indicator) indicator.classList.add('refreshing');
+            
+            // Load users and reset requests data for analytics
+            await loadUsersData();
+            await loadResetRequestsData();
             
             const response = await fetch('api/submissions.php');
             
@@ -2287,6 +2474,711 @@
         updateDocumentStats(filteredSubmissions);
         generateAnalysisDashboard(filteredSubmissions);
         generateAlerts(filteredSubmissions);
+        
+        // Also update the additional charts
+        updateAllCharts(filteredSubmissions);
+    }
+    
+    // Switch between different chart views
+    function switchChartView(view) {
+        // Hide all views
+        document.getElementById('view-documents').style.display = 'none';
+        document.getElementById('view-users').style.display = 'none';
+        document.getElementById('view-engagement').style.display = 'none';
+        document.getElementById('view-trends').style.display = 'none';
+        
+        // Remove active class from all tabs
+        document.querySelectorAll('.chart-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        
+        // Show selected view and activate tab
+        document.getElementById('view-' + view).style.display = 'block';
+        event.target.classList.add('active');
+        
+        // Generate charts for the selected view if not already generated
+        const filteredSubmissions = allSubmissions; // Use current filtered data
+        updateAllCharts(filteredSubmissions);
+    }
+    
+    // Update all analytics charts
+    function updateAllCharts(filteredSubmissions) {
+        updateStatusPieChart(filteredSubmissions);
+        updateCategoryPieChart(filteredSubmissions);
+        updateUserCharts();
+        updateEngagementCharts(filteredSubmissions);
+        updateTrendCharts(filteredSubmissions);
+    }
+    
+    // Update Status Distribution Pie Chart
+    function updateStatusPieChart(submissions) {
+        const ctx = document.getElementById('chartStatusPie');
+        if (!ctx) return;
+        
+        const approved = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+        const review = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length;
+        const pending = submissions.filter(s => {
+            if (!s.status) return false;
+            const statusLower = s.status.toLowerCase().trim();
+            return statusLower === 'pending' || statusLower === 'submitted';
+        }).length;
+        const rejected = submissions.filter(s => s.status && s.status.toLowerCase().trim() === 'rejected').length;
+        
+        if (window.statusPieChart) {
+            window.statusPieChart.destroy();
+        }
+        
+        window.statusPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Approved', 'Under Review', 'Pending', 'Rejected'],
+                datasets: [{
+                    data: [approved, review, pending, rejected],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(0, 123, 255, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+    
+    // Update Category Distribution Pie Chart
+    function updateCategoryPieChart(submissions) {
+        const ctx = document.getElementById('chartCategoryPie');
+        if (!ctx) return;
+        
+        const categories = {
+            'administrative': 0,
+            'resolutions': 0,
+            'plans': 0,
+            'peace': 0,
+            'welfare': 0,
+            'sk': 0,
+            'others': 0
+        };
+        
+        submissions.forEach(s => {
+            if (s.document_category && categories.hasOwnProperty(s.document_category)) {
+                categories[s.document_category]++;
+            }
+        });
+        
+        const categoryLabels = {
+            'administrative': 'Administrative',
+            'resolutions': 'Resolutions',
+            'plans': 'Plans & Budget',
+            'peace': 'Peace & Order',
+            'welfare': 'Social Welfare',
+            'sk': 'SK Reports',
+            'others': 'Others'
+        };
+        
+        if (window.categoryPieChart) {
+            window.categoryPieChart.destroy();
+        }
+        
+        window.categoryPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(categories).map(k => categoryLabels[k]),
+                datasets: [{
+                    data: Object.values(categories),
+                    backgroundColor: [
+                        'rgba(0, 102, 204, 0.8)',
+                        'rgba(108, 117, 125, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(220, 53, 69, 0.8)',
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(23, 162, 184, 0.8)',
+                        'rgba(111, 66, 193, 0.8)'
+                    ],
+                    borderColor: 'white',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+    
+    // Update User-related Charts
+    function updateUserCharts() {
+        updateUsersByBarangayChart();
+        updateUserStatusChart();
+        updateResetRequestsChart();
+        updateUserTrendChart();
+    }
+    
+    // Users by Barangay Chart
+    function updateUsersByBarangayChart() {
+        const ctx = document.getElementById('chartUsersByBarangay');
+        if (!ctx) return;
+        
+        const usersByBarangay = {};
+        barangays.forEach(b => usersByBarangay[b] = 0);
+        
+        allUsers.forEach(user => {
+            if (user.barangay && usersByBarangay.hasOwnProperty(user.barangay)) {
+                usersByBarangay[user.barangay]++;
+            }
+        });
+        
+        if (window.usersByBarangayChart) {
+            window.usersByBarangayChart.destroy();
+        }
+        
+        window.usersByBarangayChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: barangays,
+                datasets: [{
+                    label: 'Users per Barangay',
+                    data: barangays.map(b => usersByBarangay[b]),
+                    backgroundColor: 'rgba(111, 66, 193, 0.7)',
+                    borderColor: 'rgba(111, 66, 193, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+    
+    // User Status Chart
+    function updateUserStatusChart() {
+        const ctx = document.getElementById('chartUserStatus');
+        if (!ctx) return;
+        
+        const activeUsers = allUsers.filter(u => u.status === 'active').length;
+        const archivedUsers = allUsers.filter(u => u.status === 'archived').length;
+        
+        if (window.userStatusChart) {
+            window.userStatusChart.destroy();
+        }
+        
+        window.userStatusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active Users', 'Archived Users'],
+                datasets: [{
+                    data: [activeUsers, archivedUsers],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(108, 117, 125, 0.8)'
+                    ],
+                    borderColor: ['rgba(40, 167, 69, 1)', 'rgba(108, 117, 125, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+    
+    // Reset Requests Chart
+    function updateResetRequestsChart() {
+        const ctx = document.getElementById('chartResetRequests');
+        if (!ctx) return;
+        
+        const pending = allResetRequests.filter(r => r.status === 'pending').length;
+        const approved = allResetRequests.filter(r => r.status === 'approved').length;
+        const rejected = allResetRequests.filter(r => r.status === 'rejected').length;
+        
+        if (window.resetRequestsChart) {
+            window.resetRequestsChart.destroy();
+        }
+        
+        window.resetRequestsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'Approved', 'Rejected'],
+                datasets: [{
+                    label: 'Reset Requests',
+                    data: [pending, approved, rejected],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+    
+    // User Trend Chart (Users created over time)
+    function updateUserTrendChart() {
+        const ctx = document.getElementById('chartUserTrend');
+        if (!ctx) return;
+        
+        // Group users by creation month
+        const usersByMonth = {};
+        allUsers.forEach(user => {
+            if (user.created_at) {
+                const date = new Date(user.created_at);
+                const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                usersByMonth[monthYear] = (usersByMonth[monthYear] || 0) + 1;
+            }
+        });
+        
+        const months = Object.keys(usersByMonth).sort();
+        const counts = months.map(m => usersByMonth[m]);
+        
+        if (window.userTrendChart) {
+            window.userTrendChart.destroy();
+        }
+        
+        window.userTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months.map(m => {
+                    const date = new Date(m + '-01');
+                    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Users Created',
+                    data: counts,
+                    borderColor: 'rgba(111, 66, 193, 1)',
+                    backgroundColor: 'rgba(111, 66, 193, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Update Engagement Charts
+    function updateEngagementCharts(submissions) {
+        updateParticipationChart(submissions);
+        updateTopBarangaysChart(submissions);
+        updateNeedsAttentionChart(submissions);
+        updateGrowthRateChart(submissions);
+    }
+    
+    // Barangay Participation Rate Chart
+    function updateParticipationChart(submissions) {
+        const ctx = document.getElementById('chartParticipation');
+        if (!ctx) return;
+        
+        const activeBarangays = barangays.filter(b => submissions.some(s => s.barangay === b)).length;
+        const inactiveBarangays = barangays.length - activeBarangays;
+        
+        if (window.participationChart) {
+            window.participationChart.destroy();
+        }
+        
+        window.participationChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active Barangays', 'Inactive Barangays'],
+                datasets: [{
+                    data: [activeBarangays, inactiveBarangays],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: ['rgba(40, 167, 69, 1)', 'rgba(220, 53, 69, 1)'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+    
+    // Top Performing Barangays Chart
+    function updateTopBarangaysChart(submissions) {
+        const ctx = document.getElementById('chartTopBarangays');
+        if (!ctx) return;
+        
+        const barangayPerformance = barangays.map(barangay => {
+            const barangaySubmissions = submissions.filter(s => s.barangay === barangay);
+            const approvedCount = barangaySubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length;
+            return { barangay, approvedCount };
+        }).filter(item => item.approvedCount > 0)
+          .sort((a, b) => b.approvedCount - a.approvedCount)
+          .slice(0, 10);
+        
+        if (window.topBarangaysChart) {
+            window.topBarangaysChart.destroy();
+        }
+        
+        window.topBarangaysChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: barangayPerformance.map(b => b.barangay),
+                datasets: [{
+                    label: 'Approved Documents',
+                    data: barangayPerformance.map(b => b.approvedCount),
+                    backgroundColor: 'rgba(40, 167, 69, 0.8)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Barangays Needing Attention Chart
+    function updateNeedsAttentionChart(submissions) {
+        const ctx = document.getElementById('chartNeedsAttention');
+        if (!ctx) return;
+        
+        const needsAttention = barangays.map(barangay => {
+            const count = submissions.filter(s => s.barangay === barangay).length;
+            return { barangay, count };
+        }).filter(item => item.count < 3)
+          .sort((a, b) => a.count - b.count)
+          .slice(0, 10);
+        
+        if (window.needsAttentionChart) {
+            window.needsAttentionChart.destroy();
+        }
+        
+        window.needsAttentionChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: needsAttention.map(b => b.barangay),
+                datasets: [{
+                    label: 'Total Submissions',
+                    data: needsAttention.map(b => b.count),
+                    backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Submission Growth Rate Chart
+    function updateGrowthRateChart(submissions) {
+        const ctx = document.getElementById('chartGrowthRate');
+        if (!ctx) return;
+        
+        // Calculate month-over-month growth
+        const submissionsByMonth = {};
+        submissions.forEach(s => {
+            const dateValue = s.submission_date || s.uploaded_at || s.created_at;
+            if (dateValue) {
+                const date = new Date(dateValue);
+                const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                submissionsByMonth[monthYear] = (submissionsByMonth[monthYear] || 0) + 1;
+            }
+        });
+        
+        const months = Object.keys(submissionsByMonth).sort();
+        const counts = months.map(m => submissionsByMonth[m]);
+        
+        if (window.growthRateChart) {
+            window.growthRateChart.destroy();
+        }
+        
+        window.growthRateChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months.map(m => {
+                    const date = new Date(m + '-01');
+                    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Submissions per Month',
+                    data: counts,
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Update Trend Charts
+    function updateTrendCharts(submissions) {
+        updateMonthlyTrendChart(submissions);
+        updateRecentActivityChart(submissions);
+        updateApprovalRateChart(submissions);
+    }
+    
+    // Monthly Submission Trends Chart
+    function updateMonthlyTrendChart(submissions) {
+        const ctx = document.getElementById('chartMonthlyTrend');
+        if (!ctx) return;
+        
+        const submissionsByMonth = {};
+        submissions.forEach(s => {
+            const dateValue = s.submission_date || s.uploaded_at || s.created_at;
+            if (dateValue) {
+                const date = new Date(dateValue);
+                const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                submissionsByMonth[monthYear] = (submissionsByMonth[monthYear] || 0) + 1;
+            }
+        });
+        
+        const months = Object.keys(submissionsByMonth).sort();
+        const counts = months.map(m => submissionsByMonth[m]);
+        
+        if (window.monthlyTrendChart) {
+            window.monthlyTrendChart.destroy();
+        }
+        
+        window.monthlyTrendChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months.map(m => {
+                    const date = new Date(m + '-01');
+                    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Total Submissions',
+                    data: counts,
+                    borderColor: 'rgba(0, 102, 204, 1)',
+                    backgroundColor: 'rgba(0, 102, 204, 0.2)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+    }
+    
+    // Recent Activity Chart (Last 30 Days)
+    function updateRecentActivityChart(submissions) {
+        const ctx = document.getElementById('chartRecentActivity');
+        if (!ctx) return;
+        
+        const now = new Date();
+        const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        
+        const recentSubmissions = submissions.filter(s => {
+            const dateValue = s.submission_date || s.uploaded_at || s.created_at;
+            if (!dateValue) return false;
+            return new Date(dateValue) >= last30Days;
+        });
+        
+        const statusCounts = {
+            approved: recentSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'approved').length,
+            review: recentSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'review').length,
+            pending: recentSubmissions.filter(s => {
+                if (!s.status) return false;
+                const statusLower = s.status.toLowerCase().trim();
+                return statusLower === 'pending' || statusLower === 'submitted';
+            }).length,
+            rejected: recentSubmissions.filter(s => s.status && s.status.toLowerCase().trim() === 'rejected').length
+        };
+        
+        if (window.recentActivityChart) {
+            window.recentActivityChart.destroy();
+        }
+        
+        window.recentActivityChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Approved', 'Under Review', 'Pending', 'Rejected'],
+                datasets: [{
+                    label: 'Last 30 Days',
+                    data: [statusCounts.approved, statusCounts.review, statusCounts.pending, statusCounts.rejected],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(0, 123, 255, 0.8)',
+                        'rgba(220, 53, 69, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(255, 193, 7, 1)',
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(220, 53, 69, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Approval Rate Trend Chart
+    function updateApprovalRateChart(submissions) {
+        const ctx = document.getElementById('chartApprovalRate');
+        if (!ctx) return;
+        
+        const submissionsByMonth = {};
+        const approvalsByMonth = {};
+        
+        submissions.forEach(s => {
+            const dateValue = s.submission_date || s.uploaded_at || s.created_at;
+            if (dateValue) {
+                const date = new Date(dateValue);
+                const monthYear = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                submissionsByMonth[monthYear] = (submissionsByMonth[monthYear] || 0) + 1;
+                
+                if (s.status && s.status.toLowerCase().trim() === 'approved') {
+                    approvalsByMonth[monthYear] = (approvalsByMonth[monthYear] || 0) + 1;
+                }
+            }
+        });
+        
+        const months = Object.keys(submissionsByMonth).sort();
+        const approvalRates = months.map(m => {
+            const total = submissionsByMonth[m] || 0;
+            const approved = approvalsByMonth[m] || 0;
+            return total > 0 ? ((approved / total) * 100).toFixed(1) : 0;
+        });
+        
+        if (window.approvalRateChart) {
+            window.approvalRateChart.destroy();
+        }
+        
+        window.approvalRateChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: months.map(m => {
+                    const date = new Date(m + '-01');
+                    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+                }),
+                datasets: [{
+                    label: 'Approval Rate (%)',
+                    data: approvalRates,
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
     }
     
     // Populate month filter dropdown with available months from submissions
@@ -4281,11 +5173,30 @@
             }
         }
 
-        // Logout via backend
+        // Logout via backend with confirmation
         logoutLink.addEventListener('click', async (e) => {
             e.preventDefault();
-            try { await fetch('api/logout.php', { method: 'POST' }); } catch {}
-            window.location.href = 'index.html';
+            
+            // Show custom confirmation alert
+            const confirmed = await showCustomConfirm(
+                'Are you sure you want to logout from the ABC Portal?',
+                'warning'
+            );
+            
+            if (confirmed) {
+                // Best-effort logout on backend
+                try { 
+                    await fetch('api/logout.php', { method: 'POST' }); 
+                } catch {}
+                
+                // Clear session storage
+                sessionStorage.removeItem('loggedInUser');
+                
+                // Show logout success message and redirect
+                showCustomAlert('You have been logged out successfully.', 'success', function() {
+                    window.location.href = 'index.html';
+                });
+            }
         });
 
         // Users table and form handlers using backend API

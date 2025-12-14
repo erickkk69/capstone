@@ -535,7 +535,7 @@
     <!-- Administrative Document Form -->
     <div id="administrative" class="form-container active">
         <div class="official-header">
-            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <img src="images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
             <div class="republic">Republic of the Philippines</div>
             <div class="city">Municipality of Mabini, Batangas</div>
             <div class="office">Office of the Barangay</div>
@@ -645,7 +645,7 @@
     <!-- Barangay Resolutions/Ordinances Form -->
     <div id="resolutions" class="form-container">
         <div class="official-header">
-            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <img src="images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
             <div class="republic">Republic of the Philippines</div>
             <div class="city">Municipality of Mabini, Batangas</div>
             <div class="office">Office of the Barangay</div>
@@ -750,7 +750,7 @@
     <!-- Plans and Budget Form -->
     <div id="plans" class="form-container">
         <div class="official-header">
-            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <img src="images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
             <div class="republic">Republic of the Philippines</div>
             <div class="city">Municipality of Mabini, Batangas</div>
             <div class="office">Office of the Barangay</div>
@@ -868,7 +868,7 @@
     <!-- Peace & Order Form -->
     <div id="peace" class="form-container">
         <div class="official-header">
-            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <img src="images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
             <div class="republic">Republic of the Philippines</div>
             <div class="city">Municipality of Mabini, Batangas</div>
             <div class="office">Office of the Barangay</div>
@@ -965,7 +965,7 @@
     <!-- Social Welfare Form -->
     <div id="welfare" class="form-container">
         <div class="official-header">
-            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <img src="images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
             <div class="republic">Republic of the Philippines</div>
             <div class="city">Municipality of Mabini, Batangas</div>
             <div class="office">Office of the Barangay</div>
@@ -1062,7 +1062,7 @@
     <!-- SK Reports Form -->
     <div id="sk" class="form-container">
         <div class="official-header">
-            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <img src="images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
             <div class="republic">Republic of the Philippines</div>
             <div class="city">Municipality of Mabini, Batangas</div>
             <div class="office">Office of the Barangay</div>
@@ -1159,7 +1159,7 @@
     <!-- Other Documents Form -->
     <div id="others" class="form-container">
         <div class="official-header">
-            <img src="../images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
+            <img src="images/Mbnlg.png" alt="Mabini Logo" style="width: 100px; height: 100px; margin-bottom: 10px;">
             <div class="republic">Republic of the Philippines</div>
             <div class="city">Municipality of Mabini, Batangas</div>
             <div class="office">Office of the Barangay</div>
@@ -1268,27 +1268,40 @@
         // Check authentication
         async function checkAuth() {
             try {
-                const response = await fetch('../api/me.php');
+                const response = await fetch('api/me.php', {
+                    credentials: 'same-origin'
+                });
+                
+                if (!response.ok) {
+                    console.error('API response error:', response.status, response.statusText);
+                    showCustomAlert('Session error. Please login again.', 'error', function() {
+                        window.location.href = 'index.html';
+                    });
+                    return null;
+                }
+                
                 const data = await response.json();
+                console.log('Auth check response:', data);
                 
                 if (!data.ok || !data.user) {
                     showCustomAlert('You must be logged in to submit documents.', 'error', function() {
-                        window.location.href = '../index.html';
+                        window.location.href = 'index.html';
                     });
                     return null;
                 }
                 
                 if (data.user.role !== 'Barangay Secretary') {
                     showCustomAlert('Only Barangay Secretaries can submit documents.', 'error', function() {
-                        window.location.href = '../barangayportal.html';
+                        window.location.href = 'barangayportal.html';
                     });
                     return null;
                 }
                 
                 return data.user;
             } catch (error) {
+                console.error('Auth check error:', error);
                 showCustomAlert('Session error. Please login again.', 'error', function() {
-                    window.location.href = '../index.html';
+                    window.location.href = 'index.html';
                 });
                 return null;
             }
@@ -1726,7 +1739,7 @@
                 uploadFormData.append('form_data', JSON.stringify(formData));
                 
                 // Submit to backend
-                const response = await fetch('../api/submissions.php', {
+                const response = await fetch('api/submissions.php', {
                     method: 'POST',
                     body: uploadFormData
                 });
@@ -1736,7 +1749,7 @@
                 if (result.ok) {
                     showCustomAlert(`DOCUMENT SUBMITTED SUCCESSFULLY\n\nBarangay: ${barangayValue}\nDocument Type: ${getDocumentType(category)}\nSubmitted by: ${formData.captainName}\nNoted by: ${formData.secretaryName}\nDate Submitted: ${new Date().toLocaleDateString()}\n\nYour document has been forwarded to the ABC for review and appropriate action.`, 'success', function() {
                         clearForm(category);
-                        window.location.href = '../barangayportal.html#submissions';
+                        window.location.href = 'barangayportal.html#submissions';
                     });
                 } else {
                     showCustomAlert('Submission failed: ' + (result.error || 'Unknown error'), 'error');
