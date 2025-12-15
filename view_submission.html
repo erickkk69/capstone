@@ -480,7 +480,7 @@
                             <div class="form-value">${data.docType || 'N/A'}</div>
                         </div>
                         <div class="form-row">
-                            <div class="form-label">Document Number:</div>
+                            <div class="form-label">Document Title:</div>
                             <div class="form-value">${data.docNumber || 'N/A'}</div>
                         </div>
                         <div class="form-row">
@@ -631,6 +631,10 @@
                 html += `
                     <div class="form-section">
                         <h3>Sangguniang Kabataan Report</h3>
+                        <div class="form-row">
+                            <div class="form-label">Reporting Period:</div>
+                            <div class="form-value">${data.period ? data.period.charAt(0).toUpperCase() + data.period.slice(1) : 'N/A'}</div>
+                        </div>
                         <div class="form-row">
                             <div class="form-label">Programs/Activities:</div>
                             <div class="form-value textarea-value">${data.programs || 'N/A'}</div>

@@ -637,7 +637,7 @@
             
             <div class="form-row">
                 <div class="form-col">
-                    <label for="admin-doc-number">Document Number:</label>
+                    <label for="admin-doc-number">Document Title:</label>
                     <input type="text" id="admin-doc-number" placeholder="e.g., 2023-001">
                 </div>
                 <div class="form-col">
@@ -1195,7 +1195,11 @@
                 </div>
                 <div class="form-col">
                     <label for="sk-period">Reporting Period:</label>
-                    <input type="text" id="sk-period" placeholder="e.g., January 2024">
+                    <select id="sk-period" style="width: 200px;">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="annual">Annual</option>
+                    </select>
                 </div>
             </div>
             
@@ -1313,7 +1317,7 @@
             
             <div class="form-row">
                 <div class="form-col">
-                    <label for="others-doc-number">Document Number:</label>
+                    <label for="others-doc-number">Document Title:</label>
                     <input type="text" id="others-doc-number" placeholder="e.g., 2024-001">
                 </div>
                 <div class="form-col">
@@ -1567,6 +1571,7 @@
                 data.impact = document.getElementById('welfare-impact')?.value || '';
                 data.title = `Social Welfare Report - ${data.barangay}`;
             } else if (category === 'sk') {
+                data.period = document.getElementById('sk-period')?.value || '';
                 data.programs = document.getElementById('sk-programs')?.value || '';
                 data.participants = document.getElementById('sk-participants')?.value || '';
                 data.budget = document.getElementById('sk-budget')?.value || '';
@@ -1663,7 +1668,7 @@
             // Category-specific content
             if (category === 'administrative') {
                 yPos = addText('Document Type: ' + (formData.docType || 'N/A'), margin, yPos + 5, { fontSize: 11, bold: true });
-                yPos = addText('Document Number: ' + (formData.docNumber || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Document Title: ' + (formData.docNumber || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos = addText('Date Issued: ' + (formData.issuedDate || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos = addText('Recipient: ' + (formData.recipient || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos += 5;
@@ -1833,7 +1838,7 @@
             if (category === 'administrative') {
                 requiredFields = [
                     {id: 'admin-doc-type', label: 'Document Type'},
-                    {id: 'admin-doc-number', label: 'Document Number'},
+                    {id: 'admin-doc-number', label: 'Document Title'},
                     {id: 'admin-purpose', label: 'Purpose'}
                 ];
             } else if (category === 'resolutions') {

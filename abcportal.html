@@ -374,6 +374,32 @@
         max-height: 400px;
     }
     
+    .grid-toggle-btn {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        padding: 6px 12px;
+        background: #004c99;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        z-index: 10;
+    }
+    
+    .grid-toggle-btn:hover {
+        background: #003d7a;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    
+    .grid-toggle-btn:active {
+        transform: scale(0.95);
+    }
+    
     /* Multi-Chart Grid Layout */
     .charts-grid {
         display: grid;
@@ -1538,19 +1564,14 @@
             </div>
           </div>
           
-          <!-- Chart Type Selection Tabs -->
-          <div class="chart-type-tabs">
-            <button class="chart-tab active" onclick="switchChartView('documents')">📄 Documents</button>
-            <button class="chart-tab" onclick="switchChartView('users')">👥 Users</button>
-            <button class="chart-tab" onclick="switchChartView('engagement')">📈 Engagement</button>
-            <button class="chart-tab" onclick="switchChartView('trends')">📊 Trends</button>
-          </div>
+          <!-- Chart Type Selection Tabs - REMOVED -->
           
           <!-- Documents View -->
           <div id="view-documents" class="chart-view">
             <div class="chart-container">
               <h4 style="margin: 0 0 15px 0; color: #004c99;">📄 Document Submissions by Barangay</h4>
               <canvas id="chartSubmissions"></canvas>
+              <button class="grid-toggle-btn" onclick="toggleChartGrid()" id="gridToggleBtn">Hide Grid</button>
             </div>
             
             <div class="charts-grid" style="margin-top: 20px;">
@@ -1565,68 +1586,7 @@
             </div>
           </div>
           
-          <!-- Users View -->
-          <div id="view-users" class="chart-view" style="display: none;">
-            <div class="charts-grid">
-              <div class="chart-box">
-                <h4>👥 User Distribution by Barangay</h4>
-                <canvas id="chartUsersByBarangay"></canvas>
-              </div>
-              <div class="chart-box">
-                <h4>📊 User Status Overview</h4>
-                <canvas id="chartUserStatus"></canvas>
-              </div>
-              <div class="chart-box">
-                <h4>🔐 Password Reset Requests</h4>
-                <canvas id="chartResetRequests"></canvas>
-              </div>
-              <div class="chart-box">
-                <h4>📈 User Activity Trend</h4>
-                <canvas id="chartUserTrend"></canvas>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Engagement View -->
-          <div id="view-engagement" class="chart-view" style="display: none;">
-            <div class="charts-grid">
-              <div class="chart-box">
-                <h4>🏛️ Barangay Participation Rate</h4>
-                <canvas id="chartParticipation"></canvas>
-              </div>
-              <div class="chart-box">
-                <h4>📊 Top Performing Barangays</h4>
-                <canvas id="chartTopBarangays"></canvas>
-              </div>
-              <div class="chart-box">
-                <h4>⚠️ Barangays Needing Attention</h4>
-                <canvas id="chartNeedsAttention"></canvas>
-              </div>
-              <div class="chart-box">
-                <h4>📈 Submission Growth Rate</h4>
-                <canvas id="chartGrowthRate"></canvas>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Trends View -->
-          <div id="view-trends" class="chart-view" style="display: none;">
-            <div class="chart-container">
-              <h4 style="margin: 0 0 15px 0; color: #004c99;">📅 Monthly Submission Trends</h4>
-              <canvas id="chartMonthlyTrend"></canvas>
-            </div>
-            
-            <div class="charts-grid" style="margin-top: 20px;">
-              <div class="chart-box">
-                <h4>⏰ Recent Activity (Last 30 Days)</h4>
-                <canvas id="chartRecentActivity"></canvas>
-              </div>
-              <div class="chart-box">
-                <h4>🔄 Approval Rate Trend</h4>
-                <canvas id="chartApprovalRate"></canvas>
-              </div>
-            </div>
-          </div>
+          <!-- Additional chart views removed -->
         </div>
         
         <hr style="border: 0; height: 1px; background-color: #ccc; margin: 30px 0;">
@@ -2205,7 +2165,8 @@
             const res = await fetch('api/users.php');
             const data = await res.json();
             if (data.ok && Array.isArray(data.users)) {
-                allUsers = data.users.filter(u => u.status === 'active');
+                // Load all users (both active and archived) for analytics
+                allUsers = data.users;
             }
         } catch (error) {
             console.error('Error loading users data:', error);
@@ -2216,7 +2177,8 @@
     // Load reset requests data for analytics
     async function loadResetRequestsData() {
         try {
-            const res = await fetch('api/get_reset_requests.php');
+            // Load all reset requests for analytics (not just pending)
+            const res = await fetch('api/get_reset_requests.php?status=all');
             const data = await res.json();
             if (data.ok && Array.isArray(data.requests)) {
                 allResetRequests = data.requests;
@@ -2278,6 +2240,9 @@
                 updateSidebarBadge('manageNotifBadge', actionNeeded);
                 
                 // Populate month filter dropdown (this will also update the chart)
+                console.log('Initializing dashboard with', allSubmissions.length, 'submissions');
+                console.log('Users loaded:', allUsers.length);
+                console.log('Reset requests loaded:', allResetRequests.length);
                 populateMonthFilter();
                 
                 // Generate analysis dashboard
@@ -2464,6 +2429,14 @@
                         beginAtZero: true,
                         ticks: {
                             stepSize: 1
+                        },
+                        grid: {
+                            display: true
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: true
                         }
                     }
                 }
@@ -2479,8 +2452,23 @@
         updateAllCharts(filteredSubmissions);
     }
     
+    // Toggle grid visibility for main submissions chart
+    let gridVisible = true;
+    function toggleChartGrid() {
+        gridVisible = !gridVisible;
+        const btn = document.getElementById('gridToggleBtn');
+        
+        if (window.submissionsChart) {
+            window.submissionsChart.options.scales.y.grid.display = gridVisible;
+            window.submissionsChart.options.scales.x.grid.display = gridVisible;
+            window.submissionsChart.update();
+            
+            btn.textContent = gridVisible ? 'Hide Grid' : 'Show Grid';
+        }
+    }
+    
     // Switch between different chart views
-    function switchChartView(view) {
+    function switchChartView(view, buttonElement) {
         // Hide all views
         document.getElementById('view-documents').style.display = 'none';
         document.getElementById('view-users').style.display = 'none';
@@ -2494,7 +2482,9 @@
         
         // Show selected view and activate tab
         document.getElementById('view-' + view).style.display = 'block';
-        event.target.classList.add('active');
+        if (buttonElement) {
+            buttonElement.classList.add('active');
+        }
         
         // Generate charts for the selected view if not already generated
         const filteredSubmissions = allSubmissions; // Use current filtered data
@@ -2503,11 +2493,15 @@
     
     // Update all analytics charts
     function updateAllCharts(filteredSubmissions) {
+        // Check if Chart.js is loaded
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js is not loaded!');
+            return;
+        }
+        
+        // Only update Document view charts (User, Engagement, and Trends views removed)
         updateStatusPieChart(filteredSubmissions);
         updateCategoryPieChart(filteredSubmissions);
-        updateUserCharts();
-        updateEngagementCharts(filteredSubmissions);
-        updateTrendCharts(filteredSubmissions);
     }
     
     // Update Status Distribution Pie Chart
@@ -2577,8 +2571,12 @@
         };
         
         submissions.forEach(s => {
-            if (s.document_category && categories.hasOwnProperty(s.document_category)) {
-                categories[s.document_category]++;
+            // Use 'category' field instead of 'document_category'
+            if (s.category) {
+                const cat = s.category.toLowerCase().trim();
+                if (categories.hasOwnProperty(cat)) {
+                    categories[cat]++;
+                }
             }
         });
         
@@ -2670,7 +2668,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -2751,7 +2753,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -2802,7 +2808,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -2888,7 +2898,11 @@
                 scales: {
                     x: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    y: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -2929,7 +2943,11 @@
                 scales: {
                     x: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    y: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -2981,7 +2999,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -3039,7 +3061,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 },
                 plugins: {
@@ -3105,7 +3131,11 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        ticks: { stepSize: 1 }
+                        ticks: { stepSize: 1 },
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 }
             }
@@ -3171,7 +3201,11 @@
                             callback: function(value) {
                                 return value + '%';
                             }
-                        }
+                        },
+                        grid: { display: false }
+                    },
+                    x: {
+                        grid: { display: false }
                     }
                 },
                 plugins: {
@@ -3247,9 +3281,11 @@
         if (months.length > 0) {
             monthFilter.value = months[0]; // Select the latest month
             // Trigger initial chart update with selected month
+            console.log('Initializing charts with latest month:', months[0]);
             updateFilters();
         } else {
             // If no months available, still show chart with all data
+            console.log('No months found, initializing with all data');
             updateChart('all', 'all', 'all', 'all');
         }
     }
@@ -3332,12 +3368,8 @@
                     <span class="analysis-metric-value ${participationRate >= 75 ? 'positive' : participationRate >= 50 ? 'neutral' : 'negative'}">${activeBarangays}/${totalBarangays} (${participationRate}%)</span>
                 </div>
                 <div class="analysis-metric">
-                    <span class="analysis-metric-label">Total Users</span>
-                    <span class="analysis-metric-value">${activeUsers} active, ${archivedUsers} archived</span>
-                </div>
-                <div class="analysis-metric">
                     <span class="analysis-metric-label">Pending Actions</span>
-                    <span class="analysis-metric-value ${(pending + review + pendingResets) > 10 ? 'negative' : 'neutral'}">${pending + review} submissions, ${pendingResets} resets</span>
+                    <span class="analysis-metric-value ${(pending + review) > 10 ? 'negative' : 'neutral'}">${pending + review} submissions</span>
                 </div>
                 <div class="analysis-metric">
                     <span class="analysis-metric-label">Recent Activity (30 days)</span>
@@ -3379,39 +3411,7 @@
             </div>
         `;
         
-        // Card 3: User Management & Access
-        const userCoverage = totalBarangays > 0 ? ((barangays.filter(b => allUsers.some(u => u.barangay === b && u.status === 'active')).length / totalBarangays) * 100).toFixed(1) : 0;
-        
-        html += `
-            <div class="analysis-card">
-                <div class="analysis-card-header">
-                    <div class="analysis-card-icon">👥</div>
-                    <div class="analysis-card-title">User Management</div>
-                </div>
-                <div class="analysis-metric">
-                    <span class="analysis-metric-label">Total User Accounts</span>
-                    <span class="analysis-metric-value">${totalUsers}</span>
-                </div>
-                <div class="analysis-metric">
-                    <span class="analysis-metric-label">Active Accounts</span>
-                    <span class="analysis-metric-value positive">${activeUsers}</span>
-                </div>
-                <div class="analysis-metric">
-                    <span class="analysis-metric-label">Barangay Coverage</span>
-                    <span class="analysis-metric-value ${userCoverage >= 90 ? 'positive' : userCoverage >= 70 ? 'neutral' : 'negative'}">${userCoverage}%</span>
-                </div>
-                <div class="analysis-metric">
-                    <span class="analysis-metric-label">Pending Reset Requests</span>
-                    <span class="analysis-metric-value ${pendingResets > 5 ? 'negative' : pendingResets > 0 ? 'neutral' : 'positive'}">${pendingResets}</span>
-                </div>
-                <div class="analysis-metric">
-                    <span class="analysis-metric-label">Reset Approval Rate</span>
-                    <span class="analysis-metric-value">${resetApprovalRate}%</span>
-                </div>
-            </div>
-        `;
-        
-        // Card 4: Top Performers
+        // Card 3: Top Performers
         html += `
             <div class="analysis-card">
                 <div class="analysis-card-header">
@@ -3432,7 +3432,7 @@
             </div>
         `;
         
-        // Card 5: Needs Attention
+        // Card 4: Needs Attention
         html += `
             <div class="analysis-card">
                 <div class="analysis-card-header">
@@ -3456,7 +3456,7 @@
             </div>
         `;
         
-        // Card 6: Trend Analysis
+        // Card 5: Trend Analysis
         const trendDirection = recentSubmissions > (totalSubmissions / 2) ? 'up' : recentSubmissions < (totalSubmissions / 4) ? 'down' : 'stable';
         const trendText = trendDirection === 'up' ? 'Increasing' : trendDirection === 'down' ? 'Decreasing' : 'Stable';
         const trendIcon = trendDirection === 'up' ? '↗' : trendDirection === 'down' ? '↘' : '→';
@@ -3478,19 +3478,8 @@
             </div>
         `;
         
-        // Card 7: Actionable Recommendations
+        // Card 6: Actionable Recommendations
         const recommendations = [];
-        
-        // User Management Recommendations
-        if (userCoverage < 70) {
-            recommendations.push('👤 Create user accounts for barangays without access');
-        }
-        if (pendingResets > 5) {
-            recommendations.push('🔑 Review pending password reset requests urgently');
-        }
-        if (archivedUsers > activeUsers * 0.3) {
-            recommendations.push('📊 Review archived user accounts for reactivation');
-        }
         
         // Submission Recommendations
         if (participationRate < 60) {
@@ -3509,9 +3498,6 @@
         // Positive Recognition
         if (approvalRate >= 70 && participationRate >= 75) {
             recommendations.push('🎉 Recognize high-performing barangays publicly');
-        }
-        if (userCoverage >= 90 && pendingResets === 0) {
-            recommendations.push('✅ User management is in excellent condition');
         }
         
         if (recommendations.length === 0) {
@@ -3552,23 +3538,9 @@
         
         // USER MANAGEMENT ALERTS
         
-        // 1. Barangays without user accounts
-        const barangaysWithoutUsers = barangays.filter(b => 
-            !allUsers.some(u => u.barangay === b && u.status === 'active')
-        );
+        // Barangays without user accounts alert - REMOVED
         
-        if (barangaysWithoutUsers.length > 0) {
-            alerts.push({
-                type: 'critical',
-                icon: '👤',
-                title: 'Barangays Without User Access',
-                message: `${barangaysWithoutUsers.length} barangay(s) do not have active user accounts. They cannot submit documents.`,
-                list: barangaysWithoutUsers.slice(0, 5),
-                extra: barangaysWithoutUsers.length > 5 ? `and ${barangaysWithoutUsers.length - 5} more...` : null
-            });
-        }
-        
-        // 2. Pending password reset requests
+        // 1. Pending password reset requests
         const pendingResets = allResetRequests.filter(r => r.status === 'pending');
         
         if (pendingResets.length > 0) {
@@ -3688,13 +3660,12 @@
         const totalBarangays = barangays.length;
         const activeBarangays = barangays.filter(b => submissions.some(s => s.barangay === b)).length;
         const completionRate = ((activeBarangays / totalBarangays) * 100).toFixed(1);
-        const barangaysWithAccess = barangays.filter(b => allUsers.some(u => u.barangay === b && u.status === 'active')).length;
         
         alerts.push({
             type: 'info',
             icon: '📊',
             title: 'System Status Overview',
-            message: `${barangaysWithAccess}/${totalBarangays} barangays have user access. ${activeBarangays}/${totalBarangays} (${completionRate}%) have submitted documents. ${pendingResets.length} pending reset requests.`,
+            message: `${activeBarangays}/${totalBarangays} (${completionRate}%) barangays have submitted documents.`,
             list: null,
             extra: null
         });
@@ -6102,6 +6073,9 @@
         window.restoreAnnouncement = restoreAnnouncement;
         window.permanentDeleteAnnouncement = permanentDeleteAnnouncement;
         window.filterAnnouncements = filterAnnouncements;
+        
+        // Expose chart function to global scope for inline onclick handlers
+        window.switchChartView = switchChartView;
         
         // ========== END ANNOUNCEMENTS FUNCTIONALITY ==========
 

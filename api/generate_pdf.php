@@ -205,7 +205,7 @@ if ($category === 'administrative') {
         <span class="field-value">' . htmlspecialchars($formData['docType'] ?? 'N/A') . '</span>
     </div>
     <div class="field">
-        <span class="field-label">Document Number:</span>
+        <span class="field-label">Document Title:</span>
         <span class="field-value">' . htmlspecialchars($formData['docNumber'] ?? 'N/A') . '</span>
     </div>
     <div class="field">
@@ -337,6 +337,10 @@ if ($category === 'administrative') {
     </div>';
 } elseif ($category === 'sk') {
     $html .= '
+    <div class="field">
+        <span class="field-label">Reporting Period:</span>
+        <span class="field-value">' . htmlspecialchars(ucfirst($formData['period'] ?? 'N/A')) . '</span>
+    </div>
     <div class="field">
         <span class="field-label">Participants Count:</span>
         <span class="field-value">' . htmlspecialchars($formData['participants'] ?? 'N/A') . '</span>
