@@ -338,6 +338,10 @@ if ($category === 'administrative') {
 } elseif ($category === 'sk') {
     $html .= '
     <div class="field">
+        <span class="field-label">SK Chairperson:</span>
+        <span class="field-value">' . htmlspecialchars($formData['chairperson'] ?? 'N/A') . '</span>
+    </div>
+    <div class="field">
         <span class="field-label">Reporting Period:</span>
         <span class="field-value">' . htmlspecialchars(ucfirst($formData['period'] ?? 'N/A')) . '</span>
     </div>
@@ -360,6 +364,10 @@ if ($category === 'administrative') {
     <div class="field">
         <span class="field-label">Achievements:</span>
         <div class="textarea-value">' . nl2br(htmlspecialchars($formData['achievements'] ?? 'N/A')) . '</div>
+    </div>
+    <div class="field">
+        <span class="field-label">Future Plans:</span>
+        <div class="textarea-value">' . nl2br(htmlspecialchars($formData['plans'] ?? 'N/A')) . '</div>
     </div>';
 } elseif ($category === 'others') {
     $html .= '
@@ -370,6 +378,18 @@ if ($category === 'administrative') {
     <div class="field">
         <span class="field-label">Document Type:</span>
         <span class="field-value">' . htmlspecialchars($formData['docType'] ?? 'N/A') . '</span>
+    </div>
+    <div class="field">
+        <span class="field-label">Document Number:</span>
+        <span class="field-value">' . htmlspecialchars($formData['docNumber'] ?? 'N/A') . '</span>
+    </div>
+    <div class="field">
+        <span class="field-label">Document Date:</span>
+        <span class="field-value">' . htmlspecialchars($formData['docDate'] ?? 'N/A') . '</span>
+    </div>
+    <div class="field">
+        <span class="field-label">Purpose:</span>
+        <div class="textarea-value">' . nl2br(htmlspecialchars($formData['purpose'] ?? 'N/A')) . '</div>
     </div>
     <div class="field">
         <span class="field-label">Content:</span>

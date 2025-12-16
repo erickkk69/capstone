@@ -4361,7 +4361,7 @@
                     <td style="padding: 10px;">${date}</td>
                     <td style="padding: 10px;"><span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}</td>
                     <td style="padding: 10px;">
-                        <a href="view_submission.html?id=${sub.id}" style="color: #0066cc; margin-right: 10px; cursor: pointer; text-decoration: none;" title="View form data">📋 View Form</a>
+                        <a href="view_submission.html?id=${sub.id}" style="color: #0066cc; margin-right: 10px; cursor: pointer; text-decoration: none;" title="View form data">📋 View</a>
                         <a href="javascript:void(0)" onclick="showDocumentViewer('${sub.filename}', '${sub.title}', ${sub.id})" style="color: #28a745; margin-right: 10px; cursor: pointer; text-decoration: none;" title="View PDF">📄 PDF</a>
                         <button onclick="showCommentModal(${sub.id}, '${sub.title}', '${sub.barangay}')" style="padding: 4px 8px; background: ${hasComments ? '#17a2b8' : '#28a745'}; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; font-size: 0.85em;" title="${hasComments ? 'View and manage comments' : 'Add a comment'}">💬 ${hasComments ? 'Comments (' + commentCount + ')' : 'Comment'}</button>
                         <select onchange="if(this.value) { updateSubmissionStatus(${sub.id}, this.value); this.value=''; }" style="padding: 4px; border: 1px solid #ccc; border-radius: 4px; margin-left: 5px;">

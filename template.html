@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Barangay Document Submission System - ABC</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -559,6 +562,22 @@
         .custom-modal-button.primary:hover {
             background: #0052a3;
         }
+
+        .custom-modal-button.secondary {
+            background: #6c757d;
+            color: white;
+            margin-right: 10px;
+        }
+
+        .custom-modal-button.secondary:hover {
+            background: #5a6268;
+        }
+
+        .custom-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -566,7 +585,7 @@
     
     <div class="system-header">
         <div class="system-title">Barangay Document Submission System</div>
-        <div class="system-subtitle">Official Portal to the Association of Barangay Captains (ABC)</div>
+        <div class="system-subtitle">Official Portal to the Association of Barangay Captains (ABC) <span style="font-size: 10px; color: #999;">v2.0</span></div>
     </div>
     
     <div class="category-selector" id="categorySelector">
@@ -1114,6 +1133,11 @@
             </div>
             
             <div class="form-group">
+                <label for="welfare-impact">Impact/Results:</label>
+                <textarea id="welfare-impact" placeholder="Describe the impact and results of the programs..."></textarea>
+            </div>
+            
+            <div class="form-group">
                 <label for="welfare-challenges">Challenges and Issues:</label>
                 <textarea id="welfare-challenges" placeholder="Identify challenges faced in implementation..."></textarea>
             </div>
@@ -1220,6 +1244,11 @@
             </div>
             
             <div class="form-group">
+                <label for="sk-activities">Activities Conducted:</label>
+                <textarea id="sk-activities" placeholder="Describe SK activities and events conducted..."></textarea>
+            </div>
+            
+            <div class="form-group">
                 <label for="sk-achievements">Achievements and Awards:</label>
                 <textarea id="sk-achievements" placeholder="List achievements and recognitions received..."></textarea>
             </div>
@@ -1311,24 +1340,24 @@
             </div>
             
             <div class="form-group">
+                <label for="others-title">Document Title/Subject:</label>
+                <input type="text" id="others-title" placeholder="Enter document title or subject">
+            </div>
+            
+            <div class="form-group">
                 <label for="others-doc-type">Type of Document:</label>
                 <input type="text" id="others-doc-type" placeholder="Specify type of document">
             </div>
             
             <div class="form-row">
                 <div class="form-col">
-                    <label for="others-doc-number">Document Title:</label>
+                    <label for="others-doc-number">Document Number/Reference:</label>
                     <input type="text" id="others-doc-number" placeholder="e.g., 2024-001">
                 </div>
                 <div class="form-col">
                     <label for="others-doc-date">Document Date:</label>
                     <input type="date" id="others-doc-date">
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="others-title">Document Title/Subject:</label>
-                <input type="text" id="others-title" placeholder="Enter document title or subject">
             </div>
             
             <div class="form-group">
@@ -1400,9 +1429,9 @@
                     return;
                 }
                 
-                // Validate file size (max 2MB)
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('Image size should not exceed 2MB.');
+                // Validate file size (max 10MB for e-signatures)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('Image size should not exceed 10MB.');
                     return;
                 }
                 
@@ -1564,23 +1593,50 @@
                 data.recommendations = document.getElementById('peace-recommendations')?.value || '';
                 data.title = `Peace & Order Report - ${data.barangay}`;
             } else if (category === 'welfare') {
+                const impactEl = document.getElementById('welfare-impact');
+                const challengesEl = document.getElementById('welfare-challenges');
+                console.log('Welfare Impact Element:', impactEl, 'Value:', impactEl?.value);
+                console.log('Welfare Challenges Element:', challengesEl, 'Value:', challengesEl?.value);
+                
                 data.programs = document.getElementById('welfare-programs')?.value || '';
                 data.beneficiaries = document.getElementById('welfare-beneficiaries')?.value || '';
                 data.budget = document.getElementById('welfare-budget')?.value || '';
                 data.activities = document.getElementById('welfare-activities')?.value || '';
-                data.impact = document.getElementById('welfare-impact')?.value || '';
+                data.impact = impactEl?.value || '';
+                data.challenges = challengesEl?.value || '';
                 data.title = `Social Welfare Report - ${data.barangay}`;
             } else if (category === 'sk') {
+                const chairpersonEl = document.getElementById('sk-chairperson');
+                const activitiesEl = document.getElementById('sk-activities');
+                const plansEl = document.getElementById('sk-plans');
+                console.log('SK Chairperson Element:', chairpersonEl, 'Value:', chairpersonEl?.value);
+                console.log('SK Activities Element:', activitiesEl, 'Value:', activitiesEl?.value);
+                console.log('SK Plans Element:', plansEl, 'Value:', plansEl?.value);
+                
+                data.chairperson = chairpersonEl?.value || '';
                 data.period = document.getElementById('sk-period')?.value || '';
                 data.programs = document.getElementById('sk-programs')?.value || '';
                 data.participants = document.getElementById('sk-participants')?.value || '';
                 data.budget = document.getElementById('sk-budget')?.value || '';
-                data.activities = document.getElementById('sk-activities')?.value || '';
+                data.activities = activitiesEl?.value || '';
                 data.achievements = document.getElementById('sk-achievements')?.value || '';
+                data.plans = plansEl?.value || '';
                 data.title = `SK Report - ${data.barangay}`;
             } else if (category === 'others') {
-                data.docTitle = document.getElementById('others-doc-title')?.value || '';
+                const titleEl = document.getElementById('others-title');
+                const numberEl = document.getElementById('others-doc-number');
+                const dateEl = document.getElementById('others-doc-date');
+                const purposeEl = document.getElementById('others-purpose');
+                console.log('Others Title Element:', titleEl, 'Value:', titleEl?.value);
+                console.log('Others Number Element:', numberEl, 'Value:', numberEl?.value);
+                console.log('Others Date Element:', dateEl, 'Value:', dateEl?.value);
+                console.log('Others Purpose Element:', purposeEl, 'Value:', purposeEl?.value);
+                
+                data.docTitle = titleEl?.value || '';
                 data.docType = document.getElementById('others-doc-type')?.value || '';
+                data.docNumber = numberEl?.value || '';
+                data.docDate = dateEl?.value || '';
+                data.purpose = purposeEl?.value || '';
                 data.content = document.getElementById('others-content')?.value || '';
                 data.remarks = document.getElementById('others-remarks')?.value || '';
                 data.title = data.docTitle || 'Other Document';
@@ -1680,6 +1736,7 @@
                     yPos = addText(formData.remarks, margin, yPos + 3, { fontSize: 10 });
                 }
             } else if (category === 'resolutions') {
+                yPos = addText('Document Type: ' + (formData.docType || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos = addText('Number: ' + (formData.number || 'N/A'), margin, yPos + 5, { fontSize: 11, bold: true });
                 yPos = addText('Date Passed: ' + (formData.datePassed || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos = addText('Title: ' + (formData.title || 'N/A'), margin, yPos + 5, { fontSize: 11 });
@@ -1711,6 +1768,9 @@
                 yPos += 5;
                 yPos = addText('Programs Implemented:', margin, yPos + 3, { fontSize: 11, bold: true });
                 yPos = addText(formData.programs || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Recommendations:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.recommendations || 'N/A', margin, yPos + 3, { fontSize: 10 });
             } else if (category === 'welfare') {
                 yPos = addText('Beneficiaries Count: ' + (formData.beneficiaries || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos = addText('Budget Utilized: ' + (formData.budget || 'N/A'), margin, yPos + 5, { fontSize: 11 });
@@ -1720,17 +1780,36 @@
                 yPos += 5;
                 yPos = addText('Activities Conducted:', margin, yPos + 3, { fontSize: 11, bold: true });
                 yPos = addText(formData.activities || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Impact/Results:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.impact || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Challenges and Issues:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.challenges || 'N/A', margin, yPos + 3, { fontSize: 10 });
             } else if (category === 'sk') {
+                yPos = addText('SK Chairperson: ' + (formData.chairperson || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos = addText('Participants Count: ' + (formData.participants || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos = addText('Budget Utilized: ' + (formData.budget || 'N/A'), margin, yPos + 5, { fontSize: 11 });
                 yPos += 5;
                 yPos = addText('Programs/Activities:', margin, yPos + 3, { fontSize: 11, bold: true });
                 yPos = addText(formData.programs || 'N/A', margin, yPos + 3, { fontSize: 10 });
                 yPos += 5;
+                yPos = addText('Activities Conducted:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.activities || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
                 yPos = addText('Achievements:', margin, yPos + 3, { fontSize: 11, bold: true });
                 yPos = addText(formData.achievements || 'N/A', margin, yPos + 3, { fontSize: 10 });
+                yPos += 5;
+                yPos = addText('Future Plans:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.plans || 'N/A', margin, yPos + 3, { fontSize: 10 });
             } else if (category === 'others') {
+                yPos = addText('Document Title: ' + (formData.docTitle || 'N/A'), margin, yPos + 5, { fontSize: 11, bold: true });
                 yPos = addText('Document Type: ' + (formData.docType || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Document Number: ' + (formData.docNumber || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos = addText('Document Date: ' + (formData.docDate || 'N/A'), margin, yPos + 5, { fontSize: 11 });
+                yPos += 5;
+                yPos = addText('Purpose:', margin, yPos + 3, { fontSize: 11, bold: true });
+                yPos = addText(formData.purpose || 'N/A', margin, yPos + 3, { fontSize: 10 });
                 yPos += 5;
                 yPos = addText('Content:', margin, yPos + 3, { fontSize: 11, bold: true });
                 yPos = addText(formData.content || 'N/A', margin, yPos + 3, { fontSize: 10 });
@@ -1807,6 +1886,28 @@
             // Check authentication
             const user = await checkAuth();
             if (!user) return;
+
+            // Show confirmation dialog first
+            const categoryNames = {
+                'administrative': 'Administrative Document',
+                'resolutions': 'Barangay Resolution/Ordinance',
+                'plans': 'Plans and Budget',
+                'peace': 'Peace and Order Report',
+                'welfare': 'Social Welfare Report',
+                'sk': 'SK Report',
+                'others': 'Other Document'
+            };
+
+            const confirmMessage = `Are you sure you want to submit this ${categoryNames[category] || 'document'}?\n\nOnce submitted, the document will be sent to the ABC for review and appropriate action.\n\nPlease ensure all information is accurate before proceeding.`;
+
+            // Wrap the rest of the function in the confirm callback
+            showCustomConfirm(confirmMessage, async function() {
+                await processSubmission(category, fieldPrefix, user);
+            });
+        }
+
+        // Process the actual submission
+        async function processSubmission(category, fieldPrefix, user) {
             
             // Validate all required fields first
             let isValid = true;
@@ -1894,13 +1995,15 @@
             // Get all form data after validation
             const formData = getFormData(category);
             
-            // Debug: Log signature data
-            console.log('Form data with signatures:', {
+            // Debug: Log all form data
+            console.log('=== FORM DATA DEBUG ===');
+            console.log('Category:', category);
+            console.log('Complete Form Data:', formData);
+            console.log('Signatures:', {
                 captainSignature: formData.captainSignature ? 'Present' : 'Missing',
-                secretarySignature: formData.secretarySignature ? 'Present' : 'Missing',
-                captainSignatureLength: formData.captainSignature?.length,
-                secretarySignatureLength: formData.secretarySignature?.length
+                secretarySignature: formData.secretarySignature ? 'Present' : 'Missing'
             });
+            console.log('======================');
             
             // Show loading message - find the submit button for this category
             const submitBtn = document.querySelector(`#${category} .btn-submit`);
@@ -2097,7 +2200,63 @@
             document.addEventListener('keydown', escHandler);
         }
 
+        function showCustomConfirm(message, onConfirm, onCancel = null) {
+            const overlay = document.createElement('div');
+            overlay.className = 'custom-modal-overlay';
+
+            overlay.innerHTML = `
+                <div class="custom-modal-content">
+                    <div class="custom-modal-header info">
+                        <div class="custom-modal-icon">?</div>
+                        <h3 class="custom-modal-title">Confirm Submission</h3>
+                    </div>
+                    <div class="custom-modal-body">
+                        ${message}
+                    </div>
+                    <div class="custom-modal-footer">
+                        <button class="custom-modal-button secondary" id="cancelBtn">Cancel</button>
+                        <button class="custom-modal-button primary" id="confirmBtn">Submit</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            // Confirm button handler
+            const confirmButton = overlay.querySelector('#confirmBtn');
+            confirmButton.addEventListener('click', function() {
+                overlay.remove();
+                if (onConfirm) onConfirm();
+            });
+
+            // Cancel button handler
+            const cancelButton = overlay.querySelector('#cancelBtn');
+            cancelButton.addEventListener('click', function() {
+                overlay.remove();
+                if (onCancel) onCancel();
+            });
+
+            // Click outside to close
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.remove();
+                    if (onCancel) onCancel();
+                }
+            });
+
+            // ESC key to close
+            const escHandler = function(e) {
+                if (e.key === 'Escape') {
+                    overlay.remove();
+                    if (onCancel) onCancel();
+                    document.removeEventListener('keydown', escHandler);
+                }
+            };
+            document.addEventListener('keydown', escHandler);
+        }
+
         window.showCustomAlert = showCustomAlert;
+        window.showCustomConfirm = showCustomConfirm;
     </script>
 </body>
 </html>

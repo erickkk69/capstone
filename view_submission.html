@@ -632,6 +632,10 @@
                     <div class="form-section">
                         <h3>Sangguniang Kabataan Report</h3>
                         <div class="form-row">
+                            <div class="form-label">SK Chairperson:</div>
+                            <div class="form-value">${data.chairperson || 'N/A'}</div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-label">Reporting Period:</div>
                             <div class="form-value">${data.period ? data.period.charAt(0).toUpperCase() + data.period.slice(1) : 'N/A'}</div>
                         </div>
@@ -655,6 +659,10 @@
                             <div class="form-label">Achievements:</div>
                             <div class="form-value textarea-value">${data.achievements || 'N/A'}</div>
                         </div>
+                        <div class="form-row">
+                            <div class="form-label">Future Plans:</div>
+                            <div class="form-value textarea-value">${data.plans || 'N/A'}</div>
+                        </div>
                     </div>
                 `;
             } else if (category === 'others') {
@@ -668,6 +676,18 @@
                         <div class="form-row">
                             <div class="form-label">Document Type:</div>
                             <div class="form-value">${data.docType || 'N/A'}</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">Document Number:</div>
+                            <div class="form-value">${data.docNumber || 'N/A'}</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">Document Date:</div>
+                            <div class="form-value">${data.docDate || 'N/A'}</div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-label">Purpose:</div>
+                            <div class="form-value textarea-value">${data.purpose || 'N/A'}</div>
                         </div>
                         <div class="form-row">
                             <div class="form-label">Content:</div>

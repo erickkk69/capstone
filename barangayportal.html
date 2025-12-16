@@ -2049,7 +2049,7 @@
               <span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}
             </td>
             <td>
-              <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View Form</a>
+              <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View</a>
               <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none; margin-right: 8px;" title="View PDF">📄PDF</a>
               ${hasComments ? `<a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
                  class="comment-button" title="View ABC comments">💬View Comments</a>` : ''}
@@ -2711,7 +2711,7 @@
           <td>${date}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}</td>
           <td>
-            <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View Form</a>
+            <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View</a>
             <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none;" title="View PDF">📄PDF</a>
             ${hasComments ? ` | <a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
                style="color: #17a2b8; text-decoration: none;">💬Comments</a>` : ''}
