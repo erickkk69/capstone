@@ -54,19 +54,21 @@ $html = '<!DOCTYPE html>
     <meta charset="UTF-8">
     <style>
         @page {
-            margin: 0;
+            margin: 20mm 15mm;
+            size: A4;
         }
         
         @media print {
             body {
                 margin: 0;
-                padding: 40px;
+                padding: 0;
             }
         }
         
         body {
             font-family: Arial, sans-serif;
-            margin: 40px;
+            margin: 0;
+            padding: 20px;
         }
         .header {
             text-align: center;

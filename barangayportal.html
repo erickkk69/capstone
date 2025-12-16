@@ -638,6 +638,275 @@
         100% { transform: rotate(360deg); }
     }
 
+    /* Submission Viewer Modal */
+    .submission-viewer-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.8);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .submission-viewer-container {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 1200px;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .submission-viewer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 2px solid #e0e0e0;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .submission-viewer-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #004c99;
+        flex: 1;
+    }
+
+    .submission-viewer-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .submission-viewer-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 30px;
+        background: #f4f6f9;
+    }
+
+    .submission-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .submission-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .submission-info-label {
+        font-weight: bold;
+        color: #6c757d;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .submission-info-value {
+        color: #212529;
+        font-size: 14px;
+    }
+
+    .submission-form-container {
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .submission-official-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #333;
+    }
+
+    .submission-header-logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 15px;
+        display: block;
+    }
+
+    .submission-republic {
+        font-size: 14px;
+        font-weight: bold;
+        letter-spacing: 1px;
+    }
+
+    .submission-city {
+        font-size: 16px;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin: 5px 0;
+    }
+
+    .submission-office {
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-decoration: underline;
+        margin-top: 20px;
+    }
+
+    .submission-form-section {
+        margin: 25px 0;
+    }
+
+    .submission-form-section h3 {
+        font-size: 16px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #333;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 8px;
+    }
+
+    .submission-form-row {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 15px;
+        margin-bottom: 12px;
+        padding: 8px;
+    }
+
+    .submission-form-row:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .submission-form-label {
+        font-weight: bold;
+        color: #495057;
+    }
+
+    .submission-form-value {
+        color: #212529;
+    }
+
+    .submission-textarea-value {
+        white-space: pre-wrap;
+        line-height: 1.6;
+    }
+
+    .submission-signature-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        margin-top: 60px;
+        padding-top: 30px;
+    }
+
+    .submission-signature-box {
+        text-align: center;
+    }
+
+    .submission-signature-image {
+        max-width: 200px;
+        max-height: 80px;
+        margin: 10px 0;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .submission-signature-line {
+        border-top: 2px solid #000;
+        padding-top: 5px;
+        font-weight: bold;
+        margin-top: 5px;
+        text-transform: uppercase;
+    }
+
+    .submission-signature-title {
+        font-size: 12px;
+        color: #666;
+        margin-top: 3px;
+    }
+
+    /* Print Styles */
+    @media print {
+        @page {
+            margin: 0;
+            size: A4 portrait;
+        }
+
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+
+        html {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        body {
+            margin: 0 !important;
+            padding: 20mm 15mm !important;
+            background: white !important;
+        }
+
+        .submission-viewer-modal {
+            position: static;
+            background: transparent;
+            padding: 0;
+        }
+
+        .submission-viewer-container {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        .submission-viewer-header,
+        .submission-viewer-actions {
+            display: none;
+        }
+
+        .submission-viewer-content {
+            padding: 0;
+            background: white;
+            overflow: visible;
+        }
+
+        .submission-form-container {
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .submission-info-grid {
+            box-shadow: none;
+            page-break-inside: avoid;
+        }
+
+        .submission-form-section {
+            page-break-inside: avoid;
+        }
+
+        .submission-signature-section {
+            page-break-inside: avoid;
+            margin-top: 40mm;
+        }
+    }
+
     /* Custom Alert Modal */
     .custom-modal-overlay {
         position: fixed;
@@ -918,9 +1187,29 @@
         transition: opacity 0.2s, transform 0.2s;
     }
 
+    .notification-item-action.read-btn {
+        background: #28a745;
+        color: white;
+        border: 1px solid #28a745;
+        border-radius: 4px;
+        padding: 4px 10px;
+        font-size: 0.75em;
+        font-weight: 600;
+        opacity: 1;
+    }
+
+    .notification-item-action.read-btn:hover {
+        background: #218838;
+        border-color: #1e7e34;
+    }
+
     .notification-item-action:hover {
         opacity: 1;
         transform: scale(1.2);
+    }
+
+    .notification-item-action.read-btn:hover {
+        transform: scale(1.05);
     }
 
     .notification-item-content {
@@ -2049,11 +2338,17 @@
               <span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}
             </td>
             <td>
-              <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View</a>
-              <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none; margin-right: 8px;" title="View PDF">📄PDF</a>
-              ${hasComments ? `<a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
-                 class="comment-button" title="View ABC comments">💬View Comments</a>` : ''}
-              ${actionButtons}
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <a href="javascript:void(0)" onclick="showSubmissionViewer(${submission.id})" style="color: #0066cc; text-decoration: none; white-space: nowrap;" title="View form data">📋View</a>
+                  <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none; white-space: nowrap;" title="View PDF">📄PDF</a>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                  ${hasComments ? `<a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
+                     class="comment-button" title="View ABC comments">💬View Comments</a>` : ''}
+                  ${actionButtons}
+                </div>
+              </div>
             </td>
           `;
           
@@ -2233,6 +2528,7 @@
                   <h4 style="margin: ${isUnread ? '5px 0 0 0' : '0'}; color: #004c99;">${ann.title}</h4>
                 </div>
                 <div style="display: flex; gap: 8px;">
+                  ${isUnread ? `<button onclick="markAnnouncementAsRead(${ann.id}, event)" style="background: #28a745; border: 1px solid #28a745; color: white; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; margin: 0;" title="Mark as read">✓ Read</button>` : ''}
                   <button onclick="toggleAnnouncementContent(${ann.id})" class="announcement-toggle-btn" style="background: none; border: 1px solid #ccc; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; color: #666; margin: 0;" title="Collapse/Expand">
                     <span id="toggle-text-${ann.id}">▼</span>
                   </button>
@@ -2431,7 +2727,7 @@
             <div class="notification-item-header">
               <div class="notification-item-title">${ann.title}</div>
               <div class="notification-item-actions">
-                ${isUnread ? `<button class="notification-item-action" onclick="markAnnouncementAsRead(${ann.id}, event)" title="Mark as read">✓</button>` : ''}
+                ${isUnread ? `<button class="notification-item-action read-btn" onclick="markAnnouncementAsRead(${ann.id}, event)" title="Mark as read">Read</button>` : ''}
                 <button class="notification-item-action" onclick="deleteNotification(${ann.id}, event)" title="Remove">✕</button>
               </div>
             </div>
@@ -2711,11 +3007,17 @@
           <td>${date}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span>${statusChangedTime}</td>
           <td>
-            <a href="view_submission.html?id=${submission.id}" style="color: #0066cc; text-decoration: none; margin-right: 8px;" title="View form data">📋View</a>
-            <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none;" title="View PDF">📄PDF</a>
-            ${hasComments ? ` | <a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
-               style="color: #17a2b8; text-decoration: none;">💬Comments</a>` : ''}
-            ${actionButtons}
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="javascript:void(0)" onclick="showSubmissionViewer(${submission.id})" style="color: #0066cc; text-decoration: none; white-space: nowrap;" title="View form data">📋View</a>
+                <a href="javascript:void(0)" onclick="showDocumentViewer('${submission.filename}', '${submission.title}', ${submission.id})" style="color: #28a745; text-decoration: none; white-space: nowrap;" title="View PDF">📄PDF</a>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                ${hasComments ? `<a href="#" onclick="viewComments(${submission.id}, '${submission.title.replace(/'/g, "\\'")}'); return false;" 
+                   style="color: #17a2b8; text-decoration: none;">💬Comments</a> |` : ''}
+                ${actionButtons}
+              </div>
+            </div>
           </td>
         `;
         
@@ -3086,6 +3388,431 @@
         }
     }
     
+    // Function to show submission viewer modal
+    async function showSubmissionViewer(submissionId) {
+        const modal = document.createElement('div');
+        modal.className = 'submission-viewer-modal';
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        };
+        
+        modal.innerHTML = `
+            <div class="submission-viewer-container" onclick="event.stopPropagation()">
+                <div class="submission-viewer-header">
+                    <div class="submission-viewer-title">📄 View Submission</div>
+                    <div class="submission-viewer-actions">
+                        <button class="doc-viewer-btn doc-viewer-close" onclick="this.closest('.submission-viewer-modal').remove()">
+                            ✖ Close
+                        </button>
+                    </div>
+                </div>
+                <div class="submission-viewer-content">
+                    <div class="doc-viewer-loading">
+                        <div class="doc-viewer-spinner"></div>
+                        <p>Loading submission...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const content = modal.querySelector('.submission-viewer-content');
+        const loading = modal.querySelector('.doc-viewer-loading');
+        
+        try {
+            const response = await fetch(`api/submissions.php?id=${submissionId}`, {
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to load submission');
+            }
+            
+            const result = await response.json();
+            
+            if (!result.ok || !result.submission) {
+                throw new Error(result.error || 'Submission not found');
+            }
+            
+            loading.style.display = 'none';
+            displaySubmissionInModal(result.submission, content);
+        } catch (error) {
+            loading.innerHTML = `
+                <div style="text-align: center; color: #dc3545; padding: 40px;">
+                    <p style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">⚠️ Error Loading Submission</p>
+                    <p style="color: #888;">${error.message}</p>
+                </div>
+            `;
+        }
+    }
+    
+    function displaySubmissionInModal(submission, container) {
+        // Submission info
+        let html = `
+            <div class="submission-info-grid">
+                <div class="submission-info-item">
+                    <div class="submission-info-label">Submission ID</div>
+                    <div class="submission-info-value">${submission.id}</div>
+                </div>
+                <div class="submission-info-item">
+                    <div class="submission-info-label">Status</div>
+                    <div class="submission-info-value">
+                        <span class="status-badge status-${submission.status}">${submission.status}</span>
+                    </div>
+                </div>
+                <div class="submission-info-item">
+                    <div class="submission-info-label">Category</div>
+                    <div class="submission-info-value">${getCategoryDisplayName(submission.category)}</div>
+                </div>
+                <div class="submission-info-item">
+                    <div class="submission-info-label">Submitted By</div>
+                    <div class="submission-info-value">${submission.uploaded_by || submission.barangay}</div>
+                </div>
+                <div class="submission-info-item">
+                    <div class="submission-info-label">Date Submitted</div>
+                    <div class="submission-info-value">${new Date(submission.uploaded_at).toLocaleString()}</div>
+                </div>
+                <div class="submission-info-item">
+                    <div class="submission-info-label">Period</div>
+                    <div class="submission-info-value">${submission.period || submission.reporting_period || 'N/A'}</div>
+                </div>
+            </div>
+        `;
+        
+        // Parse form data
+        let formData = null;
+        if (submission.form_data) {
+            try {
+                formData = typeof submission.form_data === 'string' 
+                    ? JSON.parse(submission.form_data) 
+                    : submission.form_data;
+            } catch (e) {
+                console.error('Error parsing form data:', e);
+            }
+        }
+        
+        if (formData) {
+            html += `<div class="submission-form-container">`;
+            
+            // Official header
+            html += `
+                <div class="submission-official-header">
+                    <img src="images/Mbnlg.png" alt="Barangay Logo" class="submission-header-logo">
+                    <div class="submission-republic">REPUBLIC OF THE PHILIPPINES</div>
+                    <div class="submission-city">MUNICIPALITY OF MABINI, BATANGAS</div>
+                    <div class="submission-office">BARANGAY ${(formData.barangay || '').toUpperCase()}</div>
+                </div>
+            `;
+            
+            // Common information
+            html += `
+                <div class="submission-form-section">
+                    <h3>Document Information</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Barangay:</div>
+                        <div class="submission-form-value">${formData.barangay || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Date:</div>
+                        <div class="submission-form-value">${formData.date || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Reporting Period:</div>
+                        <div class="submission-form-value">${formData.period || 'N/A'}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Category-specific fields
+            html += generateCategoryFields(formData, submission.category);
+            
+            // Signatures
+            html += `
+                <div class="submission-signature-section">
+                    <div class="submission-signature-box">
+                        <p style="margin-bottom: 5px; font-size: 12px;">Noted by:</p>
+                        ${formData.secretarySignature ? `<img src="${formData.secretarySignature}" alt="Secretary Signature" class="submission-signature-image">` : ''}
+                        <div class="submission-signature-line">${formData.secretaryName || ''}</div>
+                        <div class="submission-signature-title">BARANGAY SECRETARY</div>
+                    </div>
+                    <div class="submission-signature-box">
+                        <p style="margin-bottom: 5px; font-size: 12px;">Respectfully submitted,</p>
+                        ${formData.captainSignature ? `<img src="${formData.captainSignature}" alt="Captain Signature" class="submission-signature-image">` : ''}
+                        <div class="submission-signature-line">${formData.captainName || ''}</div>
+                        <div class="submission-signature-title">PUNONG BARANGAY</div>
+                    </div>
+                </div>
+            `;
+            
+            html += `</div>`;
+        } else {
+            html += `
+                <div class="submission-form-container">
+                    <div style="text-align: center; padding: 40px; color: #6c757d;">
+                        <p>No form data available for this submission.</p>
+                        <p style="margin-top: 10px;">The document was submitted before form data tracking was implemented.</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    function generateCategoryFields(data, category) {
+        let html = '';
+        
+        if (category === 'administrative') {
+            html = `
+                <div class="submission-form-section">
+                    <h3>Administrative Document Details</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Document Type:</div>
+                        <div class="submission-form-value">${data.docType || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Document Title:</div>
+                        <div class="submission-form-value">${data.docNumber || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Date Issued:</div>
+                        <div class="submission-form-value">${data.issuedDate || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Recipient/Addressee:</div>
+                        <div class="submission-form-value">${data.recipient || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Purpose:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.purpose || 'N/A'}</div>
+                    </div>
+                    ${data.remarks ? `
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Remarks:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.remarks}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        } else if (category === 'resolutions') {
+            html = `
+                <div class="submission-form-section">
+                    <h3>Resolution/Ordinance Details</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Document Type:</div>
+                        <div class="submission-form-value">${data.docType || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Number:</div>
+                        <div class="submission-form-value">${data.number || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Date Passed:</div>
+                        <div class="submission-form-value">${data.datePassed || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Title:</div>
+                        <div class="submission-form-value">${data.title || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Author/Sponsor:</div>
+                        <div class="submission-form-value">${data.author || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Background:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.background || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Be It Resolved:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.resolved || 'N/A'}</div>
+                    </div>
+                </div>
+            `;
+        } else if (category === 'plans') {
+            html = `
+                <div class="submission-form-section">
+                    <h3>Plans and Budget Details</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Plan Type:</div>
+                        <div class="submission-form-value">${data.planType || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Plan Title:</div>
+                        <div class="submission-form-value">${data.title || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Fiscal Year:</div>
+                        <div class="submission-form-value">${data.fiscalYear || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Total Budget:</div>
+                        <div class="submission-form-value">${data.totalBudget || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Source of Funds:</div>
+                        <div class="submission-form-value">${data.sourceFunds || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Programs/Projects:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.programs || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Objectives:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.objectives || 'N/A'}</div>
+                    </div>
+                </div>
+            `;
+        } else if (category === 'peace') {
+            html = `
+                <div class="submission-form-section">
+                    <h3>Peace & Order Report</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Incidents Reported:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.incidents || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Crime Count:</div>
+                        <div class="submission-form-value">${data.crimeCount || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Resolved Cases:</div>
+                        <div class="submission-form-value">${data.resolved || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Programs Implemented:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.programs || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Recommendations:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.recommendations || 'N/A'}</div>
+                    </div>
+                </div>
+            `;
+        } else if (category === 'welfare') {
+            html = `
+                <div class="submission-form-section">
+                    <h3>Social Welfare Report</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Programs/Services:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.programs || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Beneficiaries Count:</div>
+                        <div class="submission-form-value">${data.beneficiaries || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Budget Utilized:</div>
+                        <div class="submission-form-value">${data.budget || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Activities Conducted:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.activities || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Impact/Results:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.impact || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Challenges and Issues:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.challenges || 'N/A'}</div>
+                    </div>
+                </div>
+            `;
+        } else if (category === 'sk') {
+            html = `
+                <div class="submission-form-section">
+                    <h3>Sangguniang Kabataan Report</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">SK Chairperson:</div>
+                        <div class="submission-form-value">${data.chairperson || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Reporting Period:</div>
+                        <div class="submission-form-value">${data.period ? data.period.charAt(0).toUpperCase() + data.period.slice(1) : 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Programs/Activities:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.programs || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Participants Count:</div>
+                        <div class="submission-form-value">${data.participants || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Budget Utilized:</div>
+                        <div class="submission-form-value">${data.budget || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Activities Conducted:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.activities || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Achievements:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.achievements || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Future Plans:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.plans || 'N/A'}</div>
+                    </div>
+                </div>
+            `;
+        } else if (category === 'others') {
+            html = `
+                <div class="submission-form-section">
+                    <h3>Document Details</h3>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Document Title:</div>
+                        <div class="submission-form-value">${data.docTitle || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Document Type:</div>
+                        <div class="submission-form-value">${data.docType || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Document Number:</div>
+                        <div class="submission-form-value">${data.docNumber || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Document Date:</div>
+                        <div class="submission-form-value">${data.docDate || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Purpose:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.purpose || 'N/A'}</div>
+                    </div>
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Content:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.content || 'N/A'}</div>
+                    </div>
+                    ${data.remarks ? `
+                    <div class="submission-form-row">
+                        <div class="submission-form-label">Remarks:</div>
+                        <div class="submission-form-value submission-textarea-value">${data.remarks}</div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        return html;
+    }
+    
+    function getCategoryDisplayName(category) {
+        const names = {
+            'administrative': 'Administrative Document',
+            'resolutions': 'Barangay Resolution/Ordinance',
+            'plans': 'Plans and Budget',
+            'peace': 'Peace and Order Report',
+            'welfare': 'Social Welfare Report',
+            'sk': 'SK Report',
+            'others': 'Other Document'
+        };
+        return names[category] || category;
+    }
+    
     // Custom Alert Modal Function
     function showCustomAlert(message, type = 'info', callback = null) {
         const icons = {
@@ -3218,6 +3945,7 @@
     // Make viewComments function global
     window.viewComments = viewComments;
     window.showDocumentViewer = showDocumentViewer;
+    window.showSubmissionViewer = showSubmissionViewer;
     window.downloadFile = downloadFile;
     
     // Print PDF function for iframe content
